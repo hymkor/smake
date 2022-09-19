@@ -15,5 +15,8 @@
        (x "gmnlpp$(EXE)" $<)
        )
      )
+    ((rule "clean")
+     (rm "smake$(EXE)~")
+     )
     )
   )

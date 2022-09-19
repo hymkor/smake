@@ -52,6 +52,20 @@ func expandLiteral(w *gm.World, s string) string {
 	})
 }
 
+func funRemove(ctx context.Context, w *gm.World, list []gm.Node) (gm.Node, error) {
+	for _, fnNode := range list {
+		fnStr, ok := fnNode.(gm.StringTypes)
+		if !ok {
+			return nil, gm.ErrExpectedString
+		}
+		fname := expandLiteral(w, fnStr.String())
+		if err := os.Remove(fname); err == nil {
+			fmt.Fprintf(w.Errout(), "rm \"%s\"\n", fname)
+		}
+	}
+	return gm.Null, nil
+}
+
 func funTouch(ctx context.Context, w *gm.World, list []gm.Node) (gm.Node, error) {
 	stamp := time.Now()
 	for _, fnNode := range list {
@@ -303,6 +317,7 @@ func mains(args []string) error {
 			gm.NewSymbol("1>"):     gm.SpecialF(cmdWithRedirectOut),
 			gm.NewSymbol("1>>"):    gm.SpecialF(cmdWithRedirectOutAppend),
 			gm.NewSymbol("touch"):  &gm.Function{C: -1, F: funTouch},
+			gm.NewSymbol("rm"):     &gm.Function{C: -1, F: funRemove},
 		})
 
 	_, err = lisp.InterpretBytes(ctx, source)
