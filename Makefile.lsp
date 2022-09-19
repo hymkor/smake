@@ -1,4 +1,5 @@
-(let ((EXE ".exe"))
+(let ((EXE (q "go" "env" "GOEXE")))
+  (format (standard-output) "EXE=~a~%" EXE)
   (make
     ((update "smake$(EXE)" "main.go")
      (x "go" "fmt")

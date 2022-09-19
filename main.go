@@ -48,9 +48,7 @@ func funEcho(ctx context.Context, w *gm.World, list []gm.Node) (gm.Node, error) 
 	return gm.Null, nil
 }
 
-func funExecute(ctx context.Context, w *gm.World, list []gm.Node) (gm.Node, error) {
-	stdout := w.Stdout()
-
+func nodesToCommand(ctx context.Context, w *gm.World, list []gm.Node, stdout io.Writer) *exec.Cmd {
 	argv := make([]string, len(list))
 	for i, value := range list {
 		var buffer strings.Builder
@@ -63,11 +61,27 @@ func funExecute(ctx context.Context, w *gm.World, list []gm.Node) (gm.Node, erro
 	}
 	fmt.Fprintln(stdout)
 
-	cmd := exec.CommandContext(ctx, argv[0], argv[1:]...)
-	cmd.Stdout = w.Stdout()
+	return exec.CommandContext(ctx, argv[0], argv[1:]...)
+}
+
+func funExecute(ctx context.Context, w *gm.World, list []gm.Node) (gm.Node, error) {
+	stdout := w.Stdout()
+	cmd := nodesToCommand(ctx, w, list, stdout)
+	cmd.Stdout = stdout
 	cmd.Stderr = w.Errout()
 	cmd.Stdin = os.Stdin // w.Stdin()
 	return gm.Null, cmd.Run()
+}
+
+func funQuoteCommand(ctx context.Context, w *gm.World, list []gm.Node) (gm.Node, error) {
+	cmd := nodesToCommand(ctx, w, list, io.Discard)
+	cmd.Stderr = w.Errout()
+	cmd.Stdin = os.Stdin // w.Stdin()
+	output, err := cmd.Output()
+	if err != nil {
+		return gm.Null, err
+	}
+	return gm.String(strings.TrimSpace(string(output))), nil
 }
 
 func funUpdate(ctx context.Context, w *gm.World, list []gm.Node) (gm.Node, error) {
@@ -89,15 +103,14 @@ func shouldUpdate(list gm.Vector) (bool, error) {
 	}
 	targetPath, ok := list[0].(gm.StringTypes)
 	if !ok {
-		return false, gm.ErrExpectedString
+		return false, fmt.Errorf("%s: %w", gm.ToString(list[0], gm.PRINT), gm.ErrExpectedString)
 	}
-	// println("targetPath=", targetPath.String())
 	targetInfo, err := os.Stat(targetPath.String())
 	if err != nil {
 		if os.IsNotExist(err) {
 			return true, nil
 		}
-		return false, err
+		return false, fmt.Errorf("os.Stat('%s'): %w", targetPath.String(), err)
 	}
 	targetStamp := targetInfo.ModTime()
 
@@ -203,6 +216,7 @@ func mains(args []string) error {
 			gm.NewSymbol("x"):      &gm.Function{C: -1, F: funExecute},
 			gm.NewSymbol("echo"):   &gm.Function{C: -1, F: funEcho},
 			gm.NewSymbol("target"): gm.String(target),
+			gm.NewSymbol("q"):      &gm.Function{C: -1, F: funQuoteCommand},
 		})
 
 	_, err = lisp.InterpretBytes(ctx, source)
