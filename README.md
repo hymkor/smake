@@ -1,7 +1,7 @@
 SMake (Make by S-expression)
 ============================
 
-```
+```lisp
 (let ((EXE (q "go" "env" "GOEXE")))
   (format (standard-output) "EXE=~a~%" EXE)
   (make

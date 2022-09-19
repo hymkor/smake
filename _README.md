@@ -1,7 +1,7 @@
 SMake (Make by S-expression)
 ============================
 
-```
+```lisp
 <%
 (let ((line nil))
     (with-open-input-file (fd "Makefile.lsp")
