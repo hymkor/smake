@@ -142,7 +142,7 @@ func withRedirect(ctx context.Context, w *gm.World, node gm.Node, f func(string)
 	return gm.Progn(ctx, w, prog)
 }
 
-func funUpdate(ctx context.Context, w *gm.World, list []gm.Node) (gm.Node, error) {
+func funRule(ctx context.Context, w *gm.World, list []gm.Node) (gm.Node, error) {
 	var result []gm.Node
 	for _, _name := range list {
 		name, ok := _name.(gm.StringTypes)
@@ -282,7 +282,7 @@ func mains(args []string) error {
 
 	lisp := gm.New().Let(
 		gm.Variables{
-			gm.NewSymbol("update"): &gm.Function{C: -1, F: funUpdate},
+			gm.NewSymbol("rule"):   &gm.Function{C: -1, F: funRule},
 			gm.NewSymbol("make"):   gm.SpecialF(cmdMake),
 			gm.NewSymbol("x"):      &gm.Function{C: -1, F: funExecute},
 			gm.NewSymbol("echo"):   &gm.Function{C: -1, F: funEcho},
