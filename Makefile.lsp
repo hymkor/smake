@@ -6,7 +6,7 @@
      (x "go" "build")
      )
     ((update "update")
-     (x "touch" "main.go")
+     (touch "main.go")
      )
     ((update "readme" "README.md")
      )

@@ -9,6 +9,7 @@ import (
 	"os/exec"
 	"regexp"
 	"strings"
+	"time"
 
 	gm "github.com/hymkor/gmnlisp"
 )
@@ -37,6 +38,27 @@ func expandLiteral(w *gm.World, s string) string {
 		}
 		return newString.String()
 	})
+}
+
+func funTouch(ctx context.Context, w *gm.World, list []gm.Node) (gm.Node, error) {
+	stamp := time.Now()
+	for _, fnNode := range list {
+		fnStr, ok := fnNode.(gm.StringTypes)
+		if !ok {
+			return nil, gm.ErrExpectedString
+		}
+		fname := fnStr.String()
+		fd, err := os.OpenFile(fname, os.O_WRONLY|os.O_APPEND|os.O_CREATE, 0666)
+		if err == nil {
+			if err = fd.Close(); err != nil {
+				return nil, fmt.Errorf("close %s: %w", fname, err)
+			}
+			os.Chtimes(fname, stamp, stamp)
+		} else {
+			return nil, fmt.Errorf("open %s: %w", fname, err)
+		}
+	}
+	return gm.Null, nil
 }
 
 func funEcho(ctx context.Context, w *gm.World, list []gm.Node) (gm.Node, error) {
@@ -270,6 +292,7 @@ func mains(args []string) error {
 			gm.NewSymbol("q"):      &gm.Function{C: -1, F: funQuoteCommand},
 			gm.NewSymbol("1>"):     gm.SpecialF(cmdWithRedirectOut),
 			gm.NewSymbol("1>>"):    gm.SpecialF(cmdWithRedirectOutAppend),
+			gm.NewSymbol("touch"):  &gm.Function{C: -1, F: funTouch},
 		})
 
 	_, err = lisp.InterpretBytes(ctx, source)
