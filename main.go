@@ -26,6 +26,9 @@ func expandLiteral(w *gm.World, s string) string {
 		//println("replace:", key)
 		value, err := w.Get(gm.NewSymbol(key))
 		if err != nil {
+			if value, ok := os.LookupEnv(key); ok {
+				return value
+			}
 			return s
 		}
 		newString, ok := value.(gm.String)
