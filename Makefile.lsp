@@ -8,5 +8,10 @@
     ((update "update")
      (x "touch" "main.go")
      )
+    ((update "README.md" "_README.md")
+     (1> "README.md"
+       (x "gmnlpp" "_README.md")
+       )
+     )
     )
   )

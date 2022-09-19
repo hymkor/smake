@@ -48,26 +48,25 @@ func funEcho(ctx context.Context, w *gm.World, list []gm.Node) (gm.Node, error) 
 	return gm.Null, nil
 }
 
-func nodesToCommand(ctx context.Context, w *gm.World, list []gm.Node, stdout io.Writer) *exec.Cmd {
+func nodesToCommand(ctx context.Context, w *gm.World, list []gm.Node, out io.Writer) *exec.Cmd {
 	argv := make([]string, len(list))
 	for i, value := range list {
 		var buffer strings.Builder
 		value.PrintTo(&buffer, gm.PRINC)
 		argv[i] = buffer.String()
 		if i > 0 {
-			stdout.Write([]byte{' '})
+			out.Write([]byte{' '})
 		}
-		io.WriteString(stdout, argv[i])
+		io.WriteString(out, argv[i])
 	}
-	fmt.Fprintln(stdout)
+	fmt.Fprintln(out)
 
 	return exec.CommandContext(ctx, argv[0], argv[1:]...)
 }
 
 func funExecute(ctx context.Context, w *gm.World, list []gm.Node) (gm.Node, error) {
-	stdout := w.Stdout()
-	cmd := nodesToCommand(ctx, w, list, stdout)
-	cmd.Stdout = stdout
+	cmd := nodesToCommand(ctx, w, list, w.Errout())
+	cmd.Stdout = w.Stdout()
 	cmd.Stderr = w.Errout()
 	cmd.Stdin = os.Stdin // w.Stdin()
 	return gm.Null, cmd.Run()
@@ -82,6 +81,28 @@ func funQuoteCommand(ctx context.Context, w *gm.World, list []gm.Node) (gm.Node,
 		return gm.Null, err
 	}
 	return gm.String(strings.TrimSpace(string(output))), nil
+}
+
+func cmdWithRedirectOut(ctx context.Context, w *gm.World, node gm.Node) (gm.Node, error) {
+	_outputPath, prog, err := w.ShiftAndEvalCar(ctx, node)
+	if err != nil {
+		return nil, err
+	}
+	outputPath, ok := _outputPath.(gm.StringTypes)
+	if !ok {
+		return nil, gm.ErrExpectedString
+	}
+	fd, err := os.Create(outputPath.String())
+	if err != nil {
+		return nil, err
+	}
+	defer fd.Close()
+
+	orgStdout := w.Stdout()
+	defer w.SetStdout(orgStdout)
+
+	w.SetStdout(fd)
+	return gm.Progn(ctx, w, prog)
 }
 
 func funUpdate(ctx context.Context, w *gm.World, list []gm.Node) (gm.Node, error) {
@@ -217,6 +238,7 @@ func mains(args []string) error {
 			gm.NewSymbol("echo"):   &gm.Function{C: -1, F: funEcho},
 			gm.NewSymbol("target"): gm.String(target),
 			gm.NewSymbol("q"):      &gm.Function{C: -1, F: funQuoteCommand},
+			gm.NewSymbol("1>"):     gm.SpecialF(cmdWithRedirectOut),
 		})
 
 	_, err = lisp.InterpretBytes(ctx, source)
