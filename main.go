@@ -73,18 +73,13 @@ func expandLiteral(w *gm.World, s string) string {
 			value, ok, err := dic(key)
 			if err != nil {
 				println(err.Error())
-				return s
-			}
-			if ok {
+			} else if ok {
 				return value
 			}
-			return s
+		} else if newString, ok := value.(gm.String); ok {
+			return newString.String()
 		}
-		newString, ok := value.(gm.String)
-		if !ok {
-			return s
-		}
-		return newString.String()
+		return ""
 	})
 }
 
