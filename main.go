@@ -87,6 +87,17 @@ func funQuoteCommand(ctx context.Context, w *gm.World, list []gm.Node) (gm.Node,
 }
 
 func cmdWithRedirectOut(ctx context.Context, w *gm.World, node gm.Node) (gm.Node, error) {
+
+	return withRedirect(ctx, w, node, os.Create)
+}
+
+func cmdWithRedirectOutAppend(ctx context.Context, w *gm.World, node gm.Node) (gm.Node, error) {
+	return withRedirect(ctx, w, node, func(fn string) (*os.File, error) {
+		return os.OpenFile(fn, os.O_WRONLY|os.O_APPEND|os.O_CREATE, 0644)
+	})
+}
+
+func withRedirect(ctx context.Context, w *gm.World, node gm.Node, f func(string) (*os.File, error)) (gm.Node, error) {
 	_outputPath, prog, err := w.ShiftAndEvalCar(ctx, node)
 	if err != nil {
 		return nil, err
@@ -95,11 +106,14 @@ func cmdWithRedirectOut(ctx context.Context, w *gm.World, node gm.Node) (gm.Node
 	if !ok {
 		return nil, gm.ErrExpectedString
 	}
-	fd, err := os.Create(outputPath.String())
+	fd, err := f(outputPath.String())
 	if err != nil {
 		return nil, err
 	}
-	defer fd.Close()
+	defer func() {
+		fd.Sync()
+		fd.Close()
+	}()
 
 	orgStdout := w.Stdout()
 	defer w.SetStdout(orgStdout)
@@ -255,6 +269,7 @@ func mains(args []string) error {
 			gm.NewSymbol("target"): gm.String(target),
 			gm.NewSymbol("q"):      &gm.Function{C: -1, F: funQuoteCommand},
 			gm.NewSymbol("1>"):     gm.SpecialF(cmdWithRedirectOut),
+			gm.NewSymbol("1>>"):    gm.SpecialF(cmdWithRedirectOutAppend),
 		})
 
 	_, err = lisp.InterpretBytes(ctx, source)
