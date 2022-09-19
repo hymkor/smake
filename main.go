@@ -76,7 +76,7 @@ func funEcho(ctx context.Context, w *gm.World, list []gm.Node) (gm.Node, error) 
 func nodesToCommand(ctx context.Context, w *gm.World, list []gm.Node, out io.Writer) *exec.Cmd {
 	argv := make([]string, len(list))
 	for i, value := range list {
-		argv[i] = gm.ToString(value, gm.PRINC)
+		argv[i] = expandLiteral(w, gm.ToString(value, gm.PRINC))
 		if i > 0 {
 			out.Write([]byte{' '})
 		}

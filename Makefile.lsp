@@ -12,7 +12,7 @@
      )
     ((rule "README.md" "_README.md" "Makefile.lsp")
      (1> $@
-       (x "gmnlpp" $<)
+       (x "gmnlpp$(EXE)" $<)
        )
      )
     )
