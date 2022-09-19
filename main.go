@@ -176,7 +176,16 @@ func doMake(ctx context.Context, w *gm.World, depend map[gm.String][2]gm.Node, r
 		return err
 	}
 	if isUpdate {
-		_, err = gm.Progn(ctx, w, rule[1])
+		var firstSource gm.Node = gm.String("")
+		if len(sources) >= 2 {
+			firstSource = sources[1]
+		}
+		newWorld := w.Let(
+			gm.Variables{
+				gm.NewSymbol("$@"): sources[0],
+				gm.NewSymbol("$<"): firstSource,
+			})
+		_, err = gm.Progn(ctx, newWorld, rule[1])
 		if err != nil {
 			return err
 		}

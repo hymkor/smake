@@ -8,9 +8,9 @@
     ((update "update")
      (x "touch" "main.go")
      )
-    ((update "README.md" "_README.md")
-     (1> "README.md"
-       (x "gmnlpp" "_README.md")
+    ((update "README.md" "_README.md" "Makefile.lsp")
+     (1> $@
+       (x "gmnlpp" $<)
        )
      )
     )
