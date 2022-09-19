@@ -27,6 +27,33 @@ var (
 	symbolFirstSource = gm.NewSymbol(stringFirstSource)
 )
 
+func dollar(w *gm.World) func(string) (string, bool, error) {
+	assoc, err := w.Get(gm.NewSymbol("$"))
+	if err != nil {
+		return func(string) (string, bool, error) {
+			return "", false, nil
+		}
+	}
+	return func(s string) (string, bool, error) {
+		pair, err := gm.Assoc(gm.String(s), assoc)
+		if err != nil {
+			return "", false, err
+		}
+		if gm.IsNull(pair) {
+			return "", false, nil
+		}
+		cons, ok := pair.(*gm.Cons)
+		if !ok {
+			return "", false, gm.ErrExpectedCons
+		}
+		valueStr, ok := cons.Cdr.(gm.String)
+		if !ok {
+			return "", false, gm.ErrExpectedString
+		}
+		return valueStr.String(), true, nil
+	}
+}
+
 func expandLiteral(w *gm.World, s string) string {
 	if val, err := w.Get(symbolTarget); err == nil {
 		s = strings.ReplaceAll(s, stringTarget, gm.ToString(val, gm.PRINC))
@@ -34,12 +61,21 @@ func expandLiteral(w *gm.World, s string) string {
 	if val, err := w.Get(symbolFirstSource); err == nil {
 		s = strings.ReplaceAll(s, stringFirstSource, gm.ToString(val, gm.PRINC))
 	}
+	dic := dollar(w)
 	return rxEmbed.ReplaceAllStringFunc(s, func(s string) string {
 		key := s[2 : len(s)-1]
 		//println("replace:", key)
 		value, err := w.Get(gm.NewSymbol(key))
 		if err != nil {
 			if value, ok := os.LookupEnv(key); ok {
+				return value
+			}
+			value, ok, err := dic(key)
+			if err != nil {
+				println(err.Error())
+				return s
+			}
+			if ok {
 				return value
 			}
 			return s
@@ -301,24 +337,36 @@ func mains(args []string) error {
 		return err
 	}
 
-	var target string
-	if len(args) >= 1 {
-		target = args[0]
-	}
-
 	lisp := gm.New().Let(
 		gm.Variables{
-			gm.NewSymbol("rule"):   &gm.Function{C: -1, F: funRule},
-			gm.NewSymbol("make"):   gm.SpecialF(cmdMake),
-			gm.NewSymbol("x"):      &gm.Function{C: -1, F: funExecute},
-			gm.NewSymbol("echo"):   &gm.Function{C: -1, F: funEcho},
-			gm.NewSymbol("target"): gm.String(target),
-			gm.NewSymbol("q"):      &gm.Function{C: -1, F: funQuoteCommand},
-			gm.NewSymbol("1>"):     gm.SpecialF(cmdWithRedirectOut),
-			gm.NewSymbol("1>>"):    gm.SpecialF(cmdWithRedirectOutAppend),
-			gm.NewSymbol("touch"):  &gm.Function{C: -1, F: funTouch},
-			gm.NewSymbol("rm"):     &gm.Function{C: -1, F: funRemove},
+			gm.NewSymbol("rule"):  &gm.Function{C: -1, F: funRule},
+			gm.NewSymbol("make"):  gm.SpecialF(cmdMake),
+			gm.NewSymbol("x"):     &gm.Function{C: -1, F: funExecute},
+			gm.NewSymbol("echo"):  &gm.Function{C: -1, F: funEcho},
+			gm.NewSymbol("q"):     &gm.Function{C: -1, F: funQuoteCommand},
+			gm.NewSymbol("1>"):    gm.SpecialF(cmdWithRedirectOut),
+			gm.NewSymbol("1>>"):   gm.SpecialF(cmdWithRedirectOutAppend),
+			gm.NewSymbol("touch"): &gm.Function{C: -1, F: funTouch},
+			gm.NewSymbol("rm"):    &gm.Function{C: -1, F: funRemove},
 		})
+
+	var cons gm.Node = gm.Null
+	for _, s := range args {
+		if name, value, ok := strings.Cut(s, "="); ok {
+			cons = &gm.Cons{
+				Car: &gm.Cons{
+					Car: gm.String(name),
+					Cdr: gm.String(value)},
+				Cdr: cons}
+		} else {
+			lisp = lisp.Let(&gm.Pair{
+				Key:   gm.NewSymbol("target"),
+				Value: gm.String(s)})
+		}
+	}
+	lisp = lisp.Let(&gm.Pair{
+		Key:   gm.NewSymbol("$"),
+		Value: cons})
 
 	_, err = lisp.InterpretBytes(ctx, source)
 	return err
