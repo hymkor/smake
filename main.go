@@ -226,7 +226,11 @@ func cmdMake(ctx context.Context, w *gm.World, node gm.Node) (gm.Node, error) {
 		}
 		depend[target] = [...]gm.Node{condVector, action}
 	}
-	return gm.Null, doMake(ctx, w, depend, depend[defaultTarget])
+	startRule, ok := depend[defaultTarget]
+	if !ok {
+		return nil, fmt.Errorf("*** No rule to make target '%s'.  Stop.", defaultTarget)
+	}
+	return gm.Null, doMake(ctx, w, depend, startRule)
 }
 
 func mains(args []string) error {
