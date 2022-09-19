@@ -47,7 +47,7 @@ func funTouch(ctx context.Context, w *gm.World, list []gm.Node) (gm.Node, error)
 		if !ok {
 			return nil, gm.ErrExpectedString
 		}
-		fname := fnStr.String()
+		fname := expandLiteral(w, fnStr.String())
 		fd, err := os.OpenFile(fname, os.O_WRONLY|os.O_APPEND|os.O_CREATE, 0666)
 		if err == nil {
 			if err = fd.Close(); err != nil {
@@ -67,7 +67,7 @@ func funEcho(ctx context.Context, w *gm.World, list []gm.Node) (gm.Node, error) 
 		if i > 0 {
 			stdout.Write([]byte{' '})
 		}
-		s.PrintTo(stdout, gm.PRINC)
+		io.WriteString(stdout, expandLiteral(w, gm.ToString(s, gm.PRINC)))
 	}
 	fmt.Fprintln(stdout)
 	return gm.Null, nil
@@ -76,9 +76,7 @@ func funEcho(ctx context.Context, w *gm.World, list []gm.Node) (gm.Node, error) 
 func nodesToCommand(ctx context.Context, w *gm.World, list []gm.Node, out io.Writer) *exec.Cmd {
 	argv := make([]string, len(list))
 	for i, value := range list {
-		var buffer strings.Builder
-		value.PrintTo(&buffer, gm.PRINC)
-		argv[i] = buffer.String()
+		argv[i] = gm.ToString(value, gm.PRINC)
 		if i > 0 {
 			out.Write([]byte{' '})
 		}
