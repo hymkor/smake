@@ -14,14 +14,26 @@ import (
 	gm "github.com/hymkor/gmnlisp"
 )
 
+const (
+	stringTarget      = "$@"
+	stringFirstSource = "$<"
+)
+
 var (
 	rxEmbed = regexp.MustCompile(`\$\(.*?\)`)
 
 	errExpectedVector = errors.New("Expected Vector")
+	symbolTarget      = gm.NewSymbol(stringTarget)
+	symbolFirstSource = gm.NewSymbol(stringFirstSource)
 )
 
 func expandLiteral(w *gm.World, s string) string {
-	//println(s)
+	if val, err := w.Get(symbolTarget); err == nil {
+		s = strings.ReplaceAll(s, stringTarget, gm.ToString(val, gm.PRINC))
+	}
+	if val, err := w.Get(symbolFirstSource); err == nil {
+		s = strings.ReplaceAll(s, stringFirstSource, gm.ToString(val, gm.PRINC))
+	}
 	return rxEmbed.ReplaceAllStringFunc(s, func(s string) string {
 		key := s[2 : len(s)-1]
 		//println("replace:", key)
@@ -216,8 +228,8 @@ func doMake(ctx context.Context, w *gm.World, depend map[gm.String][2]gm.Node, r
 		}
 		newWorld := w.Let(
 			gm.Variables{
-				gm.NewSymbol("$@"): sources[0],
-				gm.NewSymbol("$<"): firstSource,
+				symbolTarget:      sources[0],
+				symbolFirstSource: firstSource,
 			})
 		_, err = gm.Progn(ctx, newWorld, rule[1])
 		if err != nil {
