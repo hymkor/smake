@@ -1,0 +1,11 @@
+(let ((EXE ".exe"))
+  (make
+    ((update "smake$(EXE)" "main.go")
+     (x "go" "fmt")
+     (x "go" "build")
+     )
+    ((update "update")
+     (x "touch" "main.go")
+     )
+    )
+  )
