@@ -107,6 +107,18 @@ func expandLiteralNodes(w *gm.World, node gm.Node) (gm.Node, error) {
 	return result.Sequence(), nil
 }
 
+func funJoinPath(ctx context.Context, w *gm.World, list []gm.Node) (gm.Node, error) {
+	paths := make([]string, 0, len(list))
+	for _, node := range list {
+		str, ok := node.(gm.StringTypes)
+		if !ok {
+			return nil, fmt.Errorf("%w: %s", gm.ErrExpectedString, gm.ToString(node, gm.PRINT))
+		}
+		paths = append(paths, expandLiteral(w, str.String()))
+	}
+	return gm.String(filepath.Join(paths...)), nil
+}
+
 func funGlob(ctx context.Context, w *gm.World, list []gm.Node) (gm.Node, error) {
 	pattern, ok := list[0].(gm.StringTypes)
 	if !ok {
@@ -420,19 +432,20 @@ func mains(args []string) error {
 
 	lisp := gm.New().Let(
 		gm.Variables{
-			gm.NewSymbol("1>"):     gm.SpecialF(cmdWithRedirectOut),
-			gm.NewSymbol("1>>"):    gm.SpecialF(cmdWithRedirectOutAppend),
-			gm.NewSymbol("assert"): gm.SpecialF(cmdAssert),
-			gm.NewSymbol("echo"):   &gm.Function{C: -1, F: funEcho},
-			gm.NewSymbol("getenv"): &gm.Function{C: 1, F: funGetenv},
-			gm.NewSymbol("glob"):   &gm.Function{C: 1, F: funGlob},
-			gm.NewSymbol("make"):   gm.SpecialF(cmdMake),
-			gm.NewSymbol("q"):      &gm.Function{C: -1, F: funQuoteCommand},
-			gm.NewSymbol("rm"):     &gm.Function{C: -1, F: funRemove},
-			gm.NewSymbol("setenv"): &gm.Function{C: 2, F: funSetenv},
-			gm.NewSymbol("touch"):  &gm.Function{C: -1, F: funTouch},
-			gm.NewSymbol("x"):      &gm.Function{C: -1, F: funExecute},
-			symbolPathSep:          gm.String(os.PathSeparator),
+			gm.NewSymbol("1>"):       gm.SpecialF(cmdWithRedirectOut),
+			gm.NewSymbol("1>>"):      gm.SpecialF(cmdWithRedirectOutAppend),
+			gm.NewSymbol("assert"):   gm.SpecialF(cmdAssert),
+			gm.NewSymbol("echo"):     &gm.Function{C: -1, F: funEcho},
+			gm.NewSymbol("getenv"):   &gm.Function{C: 1, F: funGetenv},
+			gm.NewSymbol("glob"):     &gm.Function{C: 1, F: funGlob},
+			gm.NewSymbol("make"):     gm.SpecialF(cmdMake),
+			gm.NewSymbol("pathjoin"): &gm.Function{C: -1, F: funJoinPath},
+			gm.NewSymbol("q"):        &gm.Function{C: -1, F: funQuoteCommand},
+			gm.NewSymbol("rm"):       &gm.Function{C: -1, F: funRemove},
+			gm.NewSymbol("setenv"):   &gm.Function{C: 2, F: funSetenv},
+			gm.NewSymbol("touch"):    &gm.Function{C: -1, F: funTouch},
+			gm.NewSymbol("x"):        &gm.Function{C: -1, F: funExecute},
+			symbolPathSep:            gm.String(os.PathSeparator),
 		})
 
 	var cons gm.Node = gm.Null
