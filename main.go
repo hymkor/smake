@@ -209,16 +209,17 @@ func funRule(ctx context.Context, w *gm.World, list []gm.Node) (gm.Node, error) 
 		resultOne := expandLiteral(w, name.String())
 		result = append(result, gm.String(resultOne))
 	}
-	return gm.Vector(result), nil
+	return gm.List(result...), nil
 }
 
-func shouldUpdate(list gm.Vector) (bool, error) {
-	if len(list) < 1 {
-		return false, gm.ErrTooFewArguments
+func shouldUpdate(list gm.Node) (bool, error) {
+	targetNode, list, err := gm.Shift(list)
+	if err != nil {
+		return false, fmt.Errorf("shouldUpdate(1): %w", err)
 	}
-	targetPath, ok := list[0].(gm.StringTypes)
+	targetPath, ok := targetNode.(gm.StringTypes)
 	if !ok {
-		return false, fmt.Errorf("%s: %w", gm.ToString(list[0], gm.PRINT), gm.ErrExpectedString)
+		return false, fmt.Errorf("%s: %w", gm.ToString(targetNode, gm.PRINT), gm.ErrExpectedString)
 	}
 	targetInfo, err := os.Stat(targetPath.String())
 	if err != nil {
@@ -229,8 +230,14 @@ func shouldUpdate(list gm.Vector) (bool, error) {
 	}
 	targetStamp := targetInfo.ModTime()
 
-	for _, _sourcePath := range list[1:] {
-		sourcePath, ok := _sourcePath.(gm.StringTypes)
+	for gm.HasValue(list) {
+		var sourceNode gm.Node
+
+		sourceNode, list, err = gm.Shift(list)
+		if err != nil {
+			return false, fmt.Errorf("shouldUpdate(2): %w", err)
+		}
+		sourcePath, ok := sourceNode.(gm.StringTypes)
 		if !ok {
 			return false, gm.ErrExpectedString
 		}
@@ -247,33 +254,45 @@ func shouldUpdate(list gm.Vector) (bool, error) {
 }
 
 func doMake(ctx context.Context, w *gm.World, depend map[gm.String][2]gm.Node, rule [2]gm.Node) error {
-	sources, ok := rule[0].(gm.Vector)
-	if !ok {
-		return errExpectedVector
+	// skip first (=target)
+	_, sources, err := gm.Shift(rule[0])
+	if err != nil {
+		return err
 	}
-	for _, source := range sources[1:] {
+	for gm.HasValue(sources) {
+		var source gm.Node
+		var err error
+
+		source, sources, err = gm.Shift(sources)
+		if err != nil {
+			return fmt.Errorf("doMake(1): %w", err)
+		}
 		sourceStr, ok := source.(gm.String)
 		if !ok {
 			return gm.ErrExpectedString
 		}
 		if _rule, ok := depend[sourceStr]; ok {
 			if err := doMake(ctx, w, depend, _rule); err != nil {
-				return err
+				return fmt.Errorf("doMake(2): %w", err)
 			}
 		}
 	}
-	isUpdate, err := shouldUpdate(sources)
+	isUpdate, err := shouldUpdate(rule[0])
 	if err != nil {
 		return err
 	}
 	if isUpdate {
+		var target gm.Node = gm.String("")
 		var firstSource gm.Node = gm.String("")
-		if len(sources) >= 2 {
-			firstSource = sources[1]
+		if cons1, ok := rule[0].(*gm.Cons); ok {
+			target = cons1.Car
+			if cons2, ok := cons1.Cdr.(*gm.Cons); ok {
+				firstSource = cons2.Car
+			}
 		}
 		newWorld := w.Let(
 			gm.Variables{
-				symbolTarget:      sources[0],
+				symbolTarget:      target,
 				symbolFirstSource: firstSource,
 			})
 		_, err = gm.Progn(ctx, newWorld, rule[1])
@@ -302,20 +321,20 @@ func cmdMake(ctx context.Context, w *gm.World, node gm.Node) (gm.Node, error) {
 		}
 		cond, action, err := w.ShiftAndEvalCar(ctx, condAndAction)
 		if err != nil {
-			return nil, err
+			return nil, fmt.Errorf("cmdMake(1): %w", err)
 		}
-		condVector, ok := cond.(gm.Vector)
-		if !ok || len(condVector) < 1 {
-			return nil, errExpectedVector
+		targetNode, _, err := gm.Shift(cond)
+		if err != nil {
+			return nil, fmt.Errorf("cmdMake(2): %w", err)
 		}
-		target, ok := condVector[0].(gm.String)
+		target, ok := targetNode.(gm.String)
 		if !ok {
 			return nil, gm.ErrExpectedString
 		}
 		if defaultTarget == "" {
 			defaultTarget = target
 		}
-		depend[target] = [...]gm.Node{condVector, action}
+		depend[target] = [...]gm.Node{cond, action}
 	}
 	startRule, ok := depend[defaultTarget]
 	if !ok {
