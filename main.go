@@ -228,19 +228,36 @@ func nodesToCommand(ctx context.Context, w *gm.World, list []gm.Node, out io.Wri
 	}
 	fmt.Fprintln(out)
 
-	return exec.CommandContext(ctx, argv[0], argv[1:]...)
+	cmd := exec.CommandContext(ctx, argv[0], argv[1:]...)
+	cmd.Stdin = os.Stdin
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+	return cmd
 }
 
 func funExecute(ctx context.Context, w *gm.World, list []gm.Node) (gm.Node, error) {
 	cmd := nodesToCommand(ctx, w, list, w.Errout())
 	cmd.Stdout = w.Stdout()
 	cmd.Stderr = w.Errout()
-	cmd.Stdin = os.Stdin // w.Stdin()
+	return gm.Null, cmd.Run()
+}
+
+func funShell(ctx context.Context, w *gm.World, list []gm.Node) (gm.Node, error) {
+	s, ok := list[0].(gm.StringTypes)
+	if !ok {
+		return nil, gm.ErrExpectedString
+	}
+	cmdline := expandLiteral(w, s.String())
+	fmt.Fprintln(os.Stderr, cmdline)
+	cmd := newShell(cmdline)
+	// cmd.Stdout = w.Stdout()
+	// cmd.Stderr = w.Errout()
 	return gm.Null, cmd.Run()
 }
 
 func funQuoteCommand(ctx context.Context, w *gm.World, list []gm.Node) (gm.Node, error) {
 	cmd := nodesToCommand(ctx, w, list, io.Discard)
+	cmd.Stdout = nil
 	cmd.Stderr = w.Errout()
 	cmd.Stdin = os.Stdin // w.Stdin()
 	output, err := cmd.Output()
@@ -443,6 +460,7 @@ func mains(args []string) error {
 			gm.NewSymbol("q"):        &gm.Function{C: -1, F: funQuoteCommand},
 			gm.NewSymbol("rm"):       &gm.Function{C: -1, F: funRemove},
 			gm.NewSymbol("setenv"):   &gm.Function{C: 2, F: funSetenv},
+			gm.NewSymbol("sh"):       &gm.Function{C: 1, F: funShell},
 			gm.NewSymbol("touch"):    &gm.Function{C: -1, F: funTouch},
 			gm.NewSymbol("x"):        &gm.Function{C: -1, F: funExecute},
 			symbolPathSep:            gm.String(os.PathSeparator),
