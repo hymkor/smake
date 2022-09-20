@@ -106,6 +106,30 @@ func expandLiteralNodes(w *gm.World, node gm.Node) (gm.Node, error) {
 	return result.Sequence(), nil
 }
 
+func funGetenv(ctx context.Context, w *gm.World, list []gm.Node) (gm.Node, error) {
+	key, ok := list[0].(gm.StringTypes)
+	if !ok {
+		return nil, gm.ErrExpectedString
+	}
+	value, ok := os.LookupEnv(key.String())
+	if !ok {
+		return gm.Null, nil
+	}
+	return gm.String(value), nil
+}
+
+func funSetenv(ctx context.Context, w *gm.World, list []gm.Node) (gm.Node, error) {
+	key, ok := list[0].(gm.StringTypes)
+	if !ok {
+		return nil, gm.ErrExpectedString
+	}
+	value, ok := list[1].(gm.StringTypes)
+	if !ok {
+		return nil, gm.ErrExpectedString
+	}
+	return gm.Null, os.Setenv(key.String(), value.String())
+}
+
 func funRemove(ctx context.Context, w *gm.World, list []gm.Node) (gm.Node, error) {
 	for _, fnNode := range list {
 		fnStr, ok := fnNode.(gm.StringTypes)
@@ -368,15 +392,17 @@ func mains(args []string) error {
 
 	lisp := gm.New().Let(
 		gm.Variables{
-			gm.NewSymbol("make"):  gm.SpecialF(cmdMake),
-			gm.NewSymbol("x"):     &gm.Function{C: -1, F: funExecute},
-			gm.NewSymbol("echo"):  &gm.Function{C: -1, F: funEcho},
-			gm.NewSymbol("q"):     &gm.Function{C: -1, F: funQuoteCommand},
-			gm.NewSymbol("1>"):    gm.SpecialF(cmdWithRedirectOut),
-			gm.NewSymbol("1>>"):   gm.SpecialF(cmdWithRedirectOutAppend),
-			gm.NewSymbol("touch"): &gm.Function{C: -1, F: funTouch},
-			gm.NewSymbol("rm"):    &gm.Function{C: -1, F: funRemove},
-			symbolPathSep:         gm.String(os.PathSeparator),
+			gm.NewSymbol("1>"):     gm.SpecialF(cmdWithRedirectOut),
+			gm.NewSymbol("1>>"):    gm.SpecialF(cmdWithRedirectOutAppend),
+			gm.NewSymbol("echo"):   &gm.Function{C: -1, F: funEcho},
+			gm.NewSymbol("getenv"): &gm.Function{C: 1, F: funGetenv},
+			gm.NewSymbol("make"):   gm.SpecialF(cmdMake),
+			gm.NewSymbol("q"):      &gm.Function{C: -1, F: funQuoteCommand},
+			gm.NewSymbol("rm"):     &gm.Function{C: -1, F: funRemove},
+			gm.NewSymbol("setenv"): &gm.Function{C: 2, F: funSetenv},
+			gm.NewSymbol("touch"):  &gm.Function{C: -1, F: funTouch},
+			gm.NewSymbol("x"):      &gm.Function{C: -1, F: funExecute},
+			symbolPathSep:          gm.String(os.PathSeparator),
 		})
 
 	var cons gm.Node = gm.Null
