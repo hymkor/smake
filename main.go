@@ -267,42 +267,6 @@ func funQuoteCommand(ctx context.Context, w *gm.World, list []gm.Node) (gm.Node,
 	return gm.String(strings.TrimSpace(string(output))), nil
 }
 
-func cmdWithRedirectOut(ctx context.Context, w *gm.World, node gm.Node) (gm.Node, error) {
-
-	return withRedirect(ctx, w, node, os.Create)
-}
-
-func cmdWithRedirectOutAppend(ctx context.Context, w *gm.World, node gm.Node) (gm.Node, error) {
-	return withRedirect(ctx, w, node, func(fn string) (*os.File, error) {
-		return os.OpenFile(fn, os.O_WRONLY|os.O_APPEND|os.O_CREATE, 0644)
-	})
-}
-
-func withRedirect(ctx context.Context, w *gm.World, node gm.Node, f func(string) (*os.File, error)) (gm.Node, error) {
-	_outputPath, prog, err := w.ShiftAndEvalCar(ctx, node)
-	if err != nil {
-		return nil, err
-	}
-	outputPath, ok := _outputPath.(gm.StringTypes)
-	if !ok {
-		return nil, gm.ErrExpectedString
-	}
-	fd, err := f(expandLiteral(w, outputPath.String()))
-	if err != nil {
-		return nil, err
-	}
-	defer func() {
-		fd.Sync()
-		fd.Close()
-	}()
-
-	orgStdout := w.Stdout()
-	defer w.SetStdout(orgStdout)
-
-	w.SetStdout(fd)
-	return gm.Progn(ctx, w, prog)
-}
-
 func shouldUpdate(list gm.Node) (bool, error) {
 	targetNode, list, err := gm.Shift(list)
 	if err != nil {
@@ -449,8 +413,6 @@ func mains(args []string) error {
 
 	lisp := gm.New().Let(
 		gm.Variables{
-			gm.NewSymbol("1>"):       gm.SpecialF(cmdWithRedirectOut),
-			gm.NewSymbol("1>>"):      gm.SpecialF(cmdWithRedirectOutAppend),
 			gm.NewSymbol("assert"):   gm.SpecialF(cmdAssert),
 			gm.NewSymbol("echo"):     &gm.Function{C: -1, F: funEcho},
 			gm.NewSymbol("getenv"):   &gm.Function{C: 1, F: funGetenv},
