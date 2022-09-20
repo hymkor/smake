@@ -7,6 +7,7 @@ import (
 	"io"
 	"os"
 	"os/exec"
+	"path/filepath"
 	"regexp"
 	"strings"
 	"time"
@@ -102,6 +103,22 @@ func expandLiteralNodes(w *gm.World, node gm.Node) (gm.Node, error) {
 			return nil, gm.ErrExpectedString
 		}
 		result.Add(gm.String(expandLiteral(w, s.String())))
+	}
+	return result.Sequence(), nil
+}
+
+func funGlob(ctx context.Context, w *gm.World, list []gm.Node) (gm.Node, error) {
+	pattern, ok := list[0].(gm.StringTypes)
+	if !ok {
+		return nil, gm.ErrExpectedString
+	}
+	match, err := filepath.Glob(pattern.String())
+	if err != nil {
+		return nil, err
+	}
+	var result gm.ListBuilder
+	for _, s := range match {
+		result.Add(gm.String(s))
 	}
 	return result.Sequence(), nil
 }
@@ -408,6 +425,7 @@ func mains(args []string) error {
 			gm.NewSymbol("assert"): gm.SpecialF(cmdAssert),
 			gm.NewSymbol("echo"):   &gm.Function{C: -1, F: funEcho},
 			gm.NewSymbol("getenv"): &gm.Function{C: 1, F: funGetenv},
+			gm.NewSymbol("glob"):   &gm.Function{C: 1, F: funGlob},
 			gm.NewSymbol("make"):   gm.SpecialF(cmdMake),
 			gm.NewSymbol("q"):      &gm.Function{C: -1, F: funQuoteCommand},
 			gm.NewSymbol("rm"):     &gm.Function{C: -1, F: funRemove},
