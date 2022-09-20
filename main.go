@@ -17,6 +17,7 @@ import (
 const (
 	stringTarget      = "$@"
 	stringFirstSource = "$<"
+	stringPathSep     = "$/"
 )
 
 var (
@@ -25,6 +26,7 @@ var (
 	errExpectedVector = errors.New("Expected Vector")
 	symbolTarget      = gm.NewSymbol(stringTarget)
 	symbolFirstSource = gm.NewSymbol(stringFirstSource)
+	symbolPathSep     = gm.NewSymbol(stringPathSep)
 )
 
 func dollar(w *gm.World) func(string) (string, bool, error) {
@@ -61,6 +63,8 @@ func expandLiteral(w *gm.World, s string) string {
 	if val, err := w.Get(symbolFirstSource); err == nil {
 		s = strings.ReplaceAll(s, stringFirstSource, gm.ToString(val, gm.PRINC))
 	}
+	s = strings.ReplaceAll(s, stringPathSep, string(os.PathSeparator))
+
 	dic := dollar(w)
 	return rxEmbed.ReplaceAllStringFunc(s, func(s string) string {
 		key := s[2 : len(s)-1]
@@ -372,6 +376,7 @@ func mains(args []string) error {
 			gm.NewSymbol("1>>"):   gm.SpecialF(cmdWithRedirectOutAppend),
 			gm.NewSymbol("touch"): &gm.Function{C: -1, F: funTouch},
 			gm.NewSymbol("rm"):    &gm.Function{C: -1, F: funRemove},
+			symbolPathSep:         gm.String(os.PathSeparator),
 		})
 
 	var cons gm.Node = gm.Null

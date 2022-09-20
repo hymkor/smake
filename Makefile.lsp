@@ -23,6 +23,7 @@
      (echo (let ((hoge (assoc "hoge" $)))
              (if hoge (cdr hoge) "(not found)")))
      (echo "dollar=$(hoge)")
+     (echo "os.PathSeparator='$/'" $/)
      )
     )
   )
