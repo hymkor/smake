@@ -1,4 +1,4 @@
-(let ((EXE (q "go" "env" "GOEXE")))
+(let ((EXE (qs "go env GOEXE")))
   (format (standard-output) "EXE=~a~%" EXE)
   (make
     ((append '("smake$(EXE)") (glob "*.go"))

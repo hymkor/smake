@@ -2,7 +2,7 @@ SMake (Make by S-expression)
 ============================
 
 ```lisp
-(let ((EXE (q "go" "env" "GOEXE")))
+(let ((EXE (qs "go env GOEXE")))
   (format (standard-output) "EXE=~a~%" EXE)
   (make
     ((append '("smake$(EXE)") (glob "*.go"))
@@ -46,6 +46,10 @@ If the file TARGET is newer than SOURCE or TARGET does not exist, execute COMMAN
 ### (sh "SHELL-COMMAND")
 
 Execute the shell command. If it fails, stop.
+
+### (qs "SHELL-COMMAND")
+
+Execute the shell command and return its standard-output.
 
 ### (echo STRING...)
 

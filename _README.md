@@ -23,6 +23,10 @@ If the file TARGET is newer than SOURCE or TARGET does not exist, execute COMMAN
 
 Execute the shell command. If it fails, stop.
 
+### (qs "SHELL-COMMAND")
+
+Execute the shell command and return its standard-output.
+
 ### (echo STRING...)
 
 Same as the UNIX command echo.
