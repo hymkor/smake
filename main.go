@@ -83,6 +83,25 @@ func expandLiteral(w *gm.World, s string) string {
 	})
 }
 
+func expandLiteralNodes(w *gm.World, node gm.Node) (gm.Node, error) {
+	var result gm.ListBuilder
+	for gm.HasValue(node) {
+		var car gm.Node
+		var err error
+
+		car, node, err = gm.Shift(node)
+		if err != nil {
+			return nil, err
+		}
+		s, ok := car.(gm.StringTypes)
+		if !ok {
+			return nil, gm.ErrExpectedString
+		}
+		result.Add(gm.String(expandLiteral(w, s.String())))
+	}
+	return result.Sequence(), nil
+}
+
 func funRemove(ctx context.Context, w *gm.World, list []gm.Node) (gm.Node, error) {
 	for _, fnNode := range list {
 		fnStr, ok := fnNode.(gm.StringTypes)
@@ -199,19 +218,6 @@ func withRedirect(ctx context.Context, w *gm.World, node gm.Node, f func(string)
 	return gm.Progn(ctx, w, prog)
 }
 
-func funRule(ctx context.Context, w *gm.World, list []gm.Node) (gm.Node, error) {
-	var result []gm.Node
-	for _, _name := range list {
-		name, ok := _name.(gm.StringTypes)
-		if !ok {
-			return nil, gm.ErrExpectedString
-		}
-		resultOne := expandLiteral(w, name.String())
-		result = append(result, gm.String(resultOne))
-	}
-	return gm.List(result...), nil
-}
-
 func shouldUpdate(list gm.Node) (bool, error) {
 	targetNode, list, err := gm.Shift(list)
 	if err != nil {
@@ -323,6 +329,11 @@ func cmdMake(ctx context.Context, w *gm.World, node gm.Node) (gm.Node, error) {
 		if err != nil {
 			return nil, fmt.Errorf("cmdMake(1): %w", err)
 		}
+		// expand $(...)
+		cond, err = expandLiteralNodes(w, cond)
+		if err != nil {
+			return nil, err
+		}
 		targetNode, _, err := gm.Shift(cond)
 		if err != nil {
 			return nil, fmt.Errorf("cmdMake(2): %w", err)
@@ -353,7 +364,6 @@ func mains(args []string) error {
 
 	lisp := gm.New().Let(
 		gm.Variables{
-			gm.NewSymbol("rule"):  &gm.Function{C: -1, F: funRule},
 			gm.NewSymbol("make"):  gm.SpecialF(cmdMake),
 			gm.NewSymbol("x"):     &gm.Function{C: -1, F: funExecute},
 			gm.NewSymbol("echo"):  &gm.Function{C: -1, F: funEcho},
