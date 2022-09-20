@@ -5,9 +5,9 @@ SMake (Make by S-expression)
 (let ((EXE (q "go" "env" "GOEXE")))
   (format (standard-output) "EXE=~a~%" EXE)
   (make
-    ('("smake$(EXE)" "main.go")
-     (x "go" "fmt")
-     (x "go" "build")
+    ((append '("smake$(EXE)") (glob "*.go"))
+     (sh "go fmt")
+     (sh "go build")
      )
     ('("update")
      (touch "main.go")
@@ -15,9 +15,7 @@ SMake (Make by S-expression)
     ('("readme" "README.md")
      )
     ('("README.md" "_README.md" "Makefile.lsp")
-     (1> $@
-       (x "gmnlpp$(EXE)" $<)
-       )
+       (sh "gmnlpp$(EXE) $< > \"$@\"")
      )
     ('("clean")
      (rm "smake$(EXE)~")
@@ -28,9 +26,15 @@ SMake (Make by S-expression)
              (if hoge (cdr hoge) "(not found)")))
      (echo "dollar=$(hoge)")
      (echo "os.PathSeparator='$/'" $/)
-     )
+     (setenv "PATH" (string-append (getenv "PATH") ";hogehoge"))
+     (echo (string-append "PATH=" (getenv "PATH")))
+     (assert (equal 1 1))
+     (mapc #'echo (glob "*"))
+     (echo (pathjoin "C:$/ahaha$/ihihi" "ufufu"))
+     (sh "dir")
     )
   )
+)
 ```
 
 ## The functions available in Makefile.lsp
@@ -39,9 +43,9 @@ SMake (Make by S-expression)
 
 If the file TARGET is newer than SOURCE or TARGET does not exist, execute COMMANDS.
 
-### (x COMMANDNAME ARGS...)
+### (sh "SHELL-COMMAND")
 
-Execute the external COMMAND. If it fails, stop.
+Execute the shell command. If it fails, stop.
 
 ### (echo STRING...)
 
@@ -54,14 +58,6 @@ Same as the UNIX command rm.
 ### (touch FILENAME...)
 
 Same as the UNIX command touch.
-
-### (1&gt; FILENAME COMMANDS...)
-
-Open FILENAME for writing and redirect Standard-output to it while COMMANDS are executed.
-
-### (1&gt;&gt; FILENAME COMMANDS...)
-
-Open FILENAME for appending and redirect Standard-output to it while COMMANDS are executed.
 
 ### (let),(format) and so on
 

@@ -19,9 +19,9 @@ SMake (Make by S-expression)
 
 If the file TARGET is newer than SOURCE or TARGET does not exist, execute COMMANDS.
 
-### (x COMMANDNAME ARGS...)
+### (sh "SHELL-COMMAND")
 
-Execute the external COMMAND. If it fails, stop.
+Execute the shell command. If it fails, stop.
 
 ### (echo STRING...)
 
@@ -34,14 +34,6 @@ Same as the UNIX command rm.
 ### (touch FILENAME...)
 
 Same as the UNIX command touch.
-
-### (1&gt; FILENAME COMMANDS...)
-
-Open FILENAME for writing and redirect Standard-output to it while COMMANDS are executed.
-
-### (1&gt;&gt; FILENAME COMMANDS...)
-
-Open FILENAME for appending and redirect Standard-output to it while COMMANDS are executed.
 
 ### (let),(format) and so on
 
