@@ -19,10 +19,6 @@ SMake (Make by S-expression)
 
 If the file TARGET is newer than SOURCE or TARGET does not exist, execute COMMANDS.
 
-### (rule STRING...)
-
-Expand $(SYMBOL) for each STRING into its value.
-
 ### (x COMMANDNAME ARGS...)
 
 Execute the external COMMAND. If it fails, stop.
