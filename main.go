@@ -106,6 +106,17 @@ func expandLiteralNodes(w *gm.World, node gm.Node) (gm.Node, error) {
 	return result.Sequence(), nil
 }
 
+func cmdAssert(ctx context.Context, w *gm.World, node gm.Node) (gm.Node, error) {
+	value, _, err := w.ShiftAndEvalCar(ctx, node)
+	if err != nil {
+		return gm.Null, err
+	}
+	if gm.HasValue(value) {
+		return gm.Null, nil
+	}
+	return gm.Null, fmt.Errorf("Assertion failed: %s", gm.ToString(node, gm.PRINT))
+}
+
 func funGetenv(ctx context.Context, w *gm.World, list []gm.Node) (gm.Node, error) {
 	key, ok := list[0].(gm.StringTypes)
 	if !ok {
@@ -394,6 +405,7 @@ func mains(args []string) error {
 		gm.Variables{
 			gm.NewSymbol("1>"):     gm.SpecialF(cmdWithRedirectOut),
 			gm.NewSymbol("1>>"):    gm.SpecialF(cmdWithRedirectOutAppend),
+			gm.NewSymbol("assert"): gm.SpecialF(cmdAssert),
 			gm.NewSymbol("echo"):   &gm.Function{C: -1, F: funEcho},
 			gm.NewSymbol("getenv"): &gm.Function{C: 1, F: funGetenv},
 			gm.NewSymbol("make"):   gm.SpecialF(cmdMake),
