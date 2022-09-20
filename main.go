@@ -183,7 +183,7 @@ func withRedirect(ctx context.Context, w *gm.World, node gm.Node, f func(string)
 	if !ok {
 		return nil, gm.ErrExpectedString
 	}
-	fd, err := f(outputPath.String())
+	fd, err := f(expandLiteral(w, outputPath.String()))
 	if err != nil {
 		return nil, err
 	}
