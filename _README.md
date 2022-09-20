@@ -45,12 +45,13 @@ Open FILENAME for appending and redirect Standard-output to it while COMMANDS ar
 
 ### (let),(format) and so on
 
-They are compatible functions with ISLisp.
+They are compatible functions with ISLisp. See also [hymkor/gmnlisp](https://github.com/hymkor/gmnlisp)
 
 ## The built-in variables
 
 - $@ - the target filename
 - $&lt; - the first source filename
+- $/ - OS-specific path separator (Windows \ , UNIX / )
 
 ## The macros in the STRING
 
@@ -59,3 +60,4 @@ They are compatible functions with ISLisp.
 - "$(x)" to the value of the symbol x
 - "$&lt;" is same as "$($&lt;)"
 - "$@" is same as "$($@)"
+- "$/" is same as "$($/)"
