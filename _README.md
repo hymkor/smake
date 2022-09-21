@@ -39,6 +39,14 @@ Same as the UNIX command rm.
 
 Same as the UNIX command touch.
 
+### (getenv "NAME")
+
+Return the value of the environment variable NAME. If it does not exist, return nil.
+
+### (glob "PATTERN")
+
+Expand the PATTERN as a wildcard and return them as a list.
+
 ### (let),(format) and so on
 
 They are compatible functions with ISLisp. See also [hymkor/gmnlisp](https://github.com/hymkor/gmnlisp)
