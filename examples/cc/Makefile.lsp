@@ -2,24 +2,42 @@
 ;     gcc -o $@
 ; .c.o:
 ;     gcc -c $<
-(flet
+(labels
   ((c-to-o (c)
            (string-append (subseq c 0 (- (length c) 2)) ".o"))
-   (string-join (dem seq)
-                (apply #'string-append (mapcan (lambda (c) (list dem c)) seq)))
+   (string-join
+     (dem seq)
+     (if seq
+       (apply #'string-append (cdr (mapcan (lambda (c) (list dem c)) seq)))
+       ""))
+    (getfname (path)
+      (let ((index (string-index $/ path)))
+        (if index
+          (getfname (subseq path (1+ index)))
+          path
+          )
+        )
+    )
    ) ; flet param
   (let*
     ((c-files (glob "*.c"))
      (o-files (mapcar #'c-to-o c-files))
+     (windows (equal (getenv "OS") "Windows_NT"))
+     (exe (if windows ".exe" ""))
+     (cwd (qs (if windows "cd" "pwd")))
+     (a-out (string-append (getfname cwd) exe))
      )
     (apply
       #'make
-      ((cons "a.out" o-files)
-       (sh (string-append "gcc -o $@" (string-join " " o-files)))
+
+      ((cons a-out o-files)
+       (sh (string-join " " (cons "gcc -o $@" o-files)))
        )
+
       ('("clean")
-       (apply #'rm (cons "a.out" o-files))
+       (apply #'rm a-out o-files)
        )
+
       (mapcar
         (lambda (c-fname)
           (list
