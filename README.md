@@ -1,6 +1,10 @@
 SMake (Make by S-expression)
 ============================
 
+SMake is the build tool like make(UNIX) whose Makefile is written with S-expression.
+
+Makefile.lsp:
+
 ```lisp
 (let ((EXE (qs "go env GOEXE")))
   (make
@@ -21,6 +25,12 @@ SMake (Make by S-expression)
      )
   )
 )
+```
+
+## How to build SMake
+
+```
+go build
 ```
 
 ## The functions available in Makefile.lsp
@@ -71,7 +81,7 @@ They are compatible functions with ISLisp. See also [hymkor/gmnlisp](https://git
 
 (rule),(x),(touch),(1&gt;) and (1&gt;&gt;) expands these in their parameters.
 
-- "$(x)" to the value of the symbol x
+- "$(x)" to the value of the symbol x or the environment variable.
 - "$&lt;" is same as "$($&lt;)"
 - "$@" is same as "$($@)"
 - "$/" is same as "$($/)"
