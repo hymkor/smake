@@ -6,12 +6,17 @@ SMake is the build tool like make(UNIX) whose Makefile is written with S-express
 Makefile.lsp:
 
 ```lisp
-(let* ((windows (equal (getenv "OS") "Windows_NT"))
-       (EXE (if windows ".exe" "")))
+(let*
+  ((windows (equal (getenv "OS") "Windows_NT"))
+   (EXE (if windows ".exe" "")))
   (make
-    ((append '("smake$(EXE)") (glob "*.go"))
+    ((cons "smake$(EXE)" (glob "*.go"))
      (sh "go fmt")
      (sh "go build")
+     )
+    ('("get")
+     (sh "go get -u")
+     (sh "go mod tidy")
      )
     ('("update")
      (touch "main.go")
