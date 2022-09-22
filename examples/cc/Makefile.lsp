@@ -11,12 +11,11 @@
        (apply #'string-append (cdr (mapcan (lambda (c) (list dem c)) seq)))
        ""))
     (getfname (path)
-      (let ((index (string-index $/ path)))
-        (if index
-          (getfname (subseq path (1+ index)))
-          path
-          )
+      (let ((index nil))
+        (while (setq index (string-index $/ path))
+               (setq path (subseq path (1+ index)))
         )
+        path)
     )
    ) ; flet param
   (let*
