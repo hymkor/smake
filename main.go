@@ -18,15 +18,18 @@ import (
 const (
 	stringTarget      = "$@"
 	stringFirstSource = "$<"
+	stringUpdated     = "$?"
 	stringPathSep     = "$/"
 )
 
 var (
-	rxEmbed = regexp.MustCompile(`\$\(.*?\)`)
+	rxEmbed  = regexp.MustCompile(`\$\(.*?\)`)
+	rxOneVar = regexp.MustCompile(`\$[@<\?/\$]`)
 
 	errExpectedVector = errors.New("Expected Vector")
 	symbolTarget      = gm.NewSymbol(stringTarget)
 	symbolFirstSource = gm.NewSymbol(stringFirstSource)
+	symbolUpdated     = gm.NewSymbol(stringUpdated)
 	symbolPathSep     = gm.NewSymbol(stringPathSep)
 )
 
@@ -57,15 +60,44 @@ func dollar(w *gm.World) func(string) (string, bool, error) {
 	}
 }
 
-func expandLiteral(w *gm.World, s string) string {
-	if val, err := w.Get(symbolTarget); err == nil {
-		s = strings.ReplaceAll(s, stringTarget, gm.ToString(val, gm.PRINC))
+func joinSequence(w *gm.World, node gm.Node) string {
+	var buffer strings.Builder
+	if _, ok := node.(gm.Sequence); ok {
+		gm.SeqEach(node, func(value gm.Node) error {
+			if buffer.Len() > 0 {
+				buffer.WriteByte(' ')
+			}
+			value.PrintTo(&buffer, gm.PRINC)
+			return nil
+		})
+	} else {
+		node.PrintTo(&buffer, gm.PRINC)
 	}
-	if val, err := w.Get(symbolFirstSource); err == nil {
-		s = strings.ReplaceAll(s, stringFirstSource, gm.ToString(val, gm.PRINC))
-	}
-	s = strings.ReplaceAll(s, stringPathSep, string(os.PathSeparator))
+	return buffer.String()
+}
 
+func expandLiteral(w *gm.World, s string) string {
+	s = rxOneVar.ReplaceAllStringFunc(s, func(s string) string {
+		switch s[1] {
+		case '@':
+			if val, err := w.Get(symbolTarget); err == nil {
+				return gm.ToString(val, gm.PRINC)
+			}
+		case '<':
+			if val, err := w.Get(symbolFirstSource); err == nil {
+				return gm.ToString(val, gm.PRINC)
+			}
+		case '?':
+			if list, err := w.Get(symbolUpdated); err == nil {
+				return joinSequence(w, list)
+			}
+		case '/':
+			return string(os.PathSeparator)
+		case '$':
+			return "$"
+		}
+		return s
+	})
 	dic := dollar(w)
 	return rxEmbed.ReplaceAllStringFunc(s, func(s string) string {
 		key := s[2 : len(s)-1]
@@ -81,10 +113,8 @@ func expandLiteral(w *gm.World, s string) string {
 			} else if ok {
 				return value
 			}
-		} else if newString, ok := value.(gm.String); ok {
-			return newString.String()
 		}
-		return ""
+		return gm.ToString(value, gm.PRINC)
 	})
 }
 
@@ -282,34 +312,35 @@ func funQuoteCommand(ctx context.Context, w *gm.World, list []gm.Node) (gm.Node,
 	return gm.String(strings.TrimSpace(string(output))), nil
 }
 
-func shouldUpdate(list gm.Node) (bool, error) {
+func shouldUpdate(list gm.Node) (bool, gm.Node, error) {
 	targetNode, list, err := gm.Shift(list)
 	if err != nil {
-		return false, fmt.Errorf("shouldUpdate(1): %w", err)
+		return false, nil, fmt.Errorf("shouldUpdate(1): %w", err)
 	}
 	targetPath, ok := targetNode.(gm.StringTypes)
 	if !ok {
-		return false, fmt.Errorf("%s: %w", gm.ToString(targetNode, gm.PRINT), gm.ErrExpectedString)
+		return false, nil, fmt.Errorf("%s: %w", gm.ToString(targetNode, gm.PRINT), gm.ErrExpectedString)
 	}
 	targetInfo, err := os.Stat(targetPath.String())
 	if err != nil {
 		if os.IsNotExist(err) {
-			return true, nil
+			return true, list, nil
 		}
-		return false, fmt.Errorf("os.Stat('%s'): %w", targetPath.String(), err)
+		return false, nil, fmt.Errorf("os.Stat('%s'): %w", targetPath.String(), err)
 	}
 	targetStamp := targetInfo.ModTime()
 
+	var updatedFiles gm.Node = gm.Null
 	for gm.HasValue(list) {
 		var sourceNode gm.Node
 
 		sourceNode, list, err = gm.Shift(list)
 		if err != nil {
-			return false, fmt.Errorf("shouldUpdate(2): %w", err)
+			return false, nil, fmt.Errorf("shouldUpdate(2): %w", err)
 		}
 		sourcePath, ok := sourceNode.(gm.StringTypes)
 		if !ok {
-			return false, gm.ErrExpectedString
+			return false, nil, gm.ErrExpectedString
 		}
 		sourceInfo, err := os.Stat(sourcePath.String())
 		if err != nil {
@@ -317,10 +348,13 @@ func shouldUpdate(list gm.Node) (bool, error) {
 		}
 		sourceStamp := sourceInfo.ModTime()
 		if sourceStamp.After(targetStamp) {
-			return true, nil
+			updatedFiles = &gm.Cons{
+				Car: sourceNode,
+				Cdr: updatedFiles,
+			}
 		}
 	}
-	return false, nil
+	return gm.HasValue(updatedFiles), updatedFiles, nil
 }
 
 func doMake(ctx context.Context, w *gm.World, depend map[gm.String][2]gm.Node, rule [2]gm.Node) error {
@@ -347,7 +381,7 @@ func doMake(ctx context.Context, w *gm.World, depend map[gm.String][2]gm.Node, r
 			}
 		}
 	}
-	isUpdate, err := shouldUpdate(rule[0])
+	isUpdate, updatedFiles, err := shouldUpdate(rule[0])
 	if err != nil {
 		return err
 	}
@@ -364,6 +398,7 @@ func doMake(ctx context.Context, w *gm.World, depend map[gm.String][2]gm.Node, r
 			gm.Variables{
 				symbolTarget:      target,
 				symbolFirstSource: firstSource,
+				symbolUpdated:     updatedFiles,
 			})
 		_, err = gm.Progn(ctx, newWorld, rule[1])
 		if err != nil {
