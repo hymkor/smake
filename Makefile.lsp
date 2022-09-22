@@ -1,4 +1,5 @@
-(let ((EXE (qs "go env GOEXE")))
+(let* ((windows (equal (getenv "OS") "Windows_NT"))
+       (EXE (if windows ".exe" "")))
   (make
     ((append '("smake$(EXE)") (glob "*.go"))
      (sh "go fmt")
