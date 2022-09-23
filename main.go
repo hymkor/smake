@@ -23,8 +23,7 @@ const (
 )
 
 var (
-	rxEmbed  = regexp.MustCompile(`\$\(.*?\)`)
-	rxOneVar = regexp.MustCompile(`\$[@<\?/\$]`)
+	rxEmbed = regexp.MustCompile(`\$(\(.*?\)|[\<\?\/\$\@])`)
 
 	errExpectedVector = errors.New("Expected Vector")
 	symbolTarget      = gm.NewSymbol(stringTarget)
@@ -77,44 +76,45 @@ func joinSequence(w *gm.World, node gm.Node) string {
 }
 
 func expandLiteral(w *gm.World, s string) string {
-	s = rxOneVar.ReplaceAllStringFunc(s, func(s string) string {
-		switch s[1] {
-		case '@':
-			if val, err := w.Get(symbolTarget); err == nil {
-				return gm.ToString(val, gm.PRINC)
-			}
-		case '<':
-			if val, err := w.Get(symbolFirstSource); err == nil {
-				return gm.ToString(val, gm.PRINC)
-			}
-		case '?':
-			if list, err := w.Get(symbolUpdated); err == nil {
-				return joinSequence(w, list)
-			}
-		case '/':
-			return string(os.PathSeparator)
-		case '$':
-			return "$"
-		}
-		return s
-	})
 	dic := dollar(w)
 	return rxEmbed.ReplaceAllStringFunc(s, func(s string) string {
-		key := s[2 : len(s)-1]
-		//println("replace:", key)
-		value, err := w.Get(gm.NewSymbol(key))
-		if err != nil {
-			if value, ok := os.LookupEnv(key); ok {
-				return value
+		if len(s) == 2 {
+			switch s[1] {
+			case '@':
+				if val, err := w.Get(symbolTarget); err == nil {
+					return gm.ToString(val, gm.PRINC)
+				}
+			case '<':
+				if val, err := w.Get(symbolFirstSource); err == nil {
+					return gm.ToString(val, gm.PRINC)
+				}
+			case '?':
+				if list, err := w.Get(symbolUpdated); err == nil {
+					return joinSequence(w, list)
+				}
+			case '/':
+				return string(os.PathSeparator)
+			case '$':
+				return "$"
 			}
-			value, ok, err := dic(key)
+			return s
+		} else {
+			key := s[2 : len(s)-1]
+			//println("replace:", key)
+			value, err := w.Get(gm.NewSymbol(key))
 			if err != nil {
-				println(err.Error())
-			} else if ok {
-				return value
+				if value, ok := os.LookupEnv(key); ok {
+					return value
+				}
+				value, ok, err := dic(key)
+				if err != nil {
+					println(err.Error())
+				} else if ok {
+					return value
+				}
 			}
+			return gm.ToString(value, gm.PRINC)
 		}
-		return gm.ToString(value, gm.PRINC)
 	})
 }
 
