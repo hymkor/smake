@@ -466,6 +466,20 @@ func mains(args []string) error {
 		return err
 	}
 
+	var cons gm.Node = gm.Null
+	var argsList gm.ListBuilder
+	for _, s := range args {
+		if name, value, ok := strings.Cut(s, "="); ok {
+			cons = &gm.Cons{
+				Car: &gm.Cons{
+					Car: gm.String(name),
+					Cdr: gm.String(value)},
+				Cdr: cons}
+		} else {
+			argsList.Add(gm.String(s))
+		}
+	}
+
 	lisp := gm.New().Let(
 		gm.Variables{
 			gm.NewSymbol("assert"):   gm.SpecialF(cmdAssert),
@@ -481,26 +495,10 @@ func mains(args []string) error {
 			gm.NewSymbol("sh"):       &gm.Function{C: 1, F: funShell},
 			gm.NewSymbol("touch"):    &gm.Function{C: -1, F: funTouch},
 			gm.NewSymbol("x"):        &gm.Function{C: -1, F: funExecute},
+			gm.NewSymbol("*args*"):   argsList.Sequence(),
+			gm.NewSymbol("$"):        cons,
 			symbolPathSep:            gm.String(os.PathSeparator),
 		})
-
-	var cons gm.Node = gm.Null
-	for _, s := range args {
-		if name, value, ok := strings.Cut(s, "="); ok {
-			cons = &gm.Cons{
-				Car: &gm.Cons{
-					Car: gm.String(name),
-					Cdr: gm.String(value)},
-				Cdr: cons}
-		} else {
-			lisp = lisp.Let(&gm.Pair{
-				Key:   gm.NewSymbol("target"),
-				Value: gm.String(s)})
-		}
-	}
-	lisp = lisp.Let(&gm.Pair{
-		Key:   gm.NewSymbol("$"),
-		Value: cons})
 
 	_, err = lisp.InterpretBytes(ctx, source)
 	return err
