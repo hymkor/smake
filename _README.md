@@ -25,9 +25,12 @@ go build
 
 ## The functions available in Makefile.lsp
 
-### (make ('(TARGET [SOURCE...]) COMMANDS...)...)
+### (make MAINTARGET ('(TARGET [SOURCES...]) COMMANDS...)...)
 
 If the file TARGET is newer than SOURCE or TARGET does not exist, execute COMMANDS.
+
+The entry after MAINTARGET is evaluated when the TARGET equals the MAINTARGET
+or the TARGET is written on other evaluated SOURCES.
 
 ### (sh "SHELL-COMMAND")
 
