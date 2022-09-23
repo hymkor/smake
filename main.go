@@ -410,8 +410,13 @@ func doMake(ctx context.Context, w *gm.World, depend map[gm.String][2]gm.Node, r
 
 func cmdMake(ctx context.Context, w *gm.World, node gm.Node) (gm.Node, error) {
 	var defaultTarget gm.String
-	if target, err := w.Get(gm.NewSymbol("target")); err == nil {
-		defaultTarget = target.(gm.String)
+
+	_defaultTarget, node, err := w.ShiftAndEvalCar(ctx, node)
+	if err != nil {
+		return nil, err
+	}
+	if val, ok := _defaultTarget.(gm.String); ok {
+		defaultTarget = val
 	}
 
 	depend := map[gm.String][2]gm.Node{}
