@@ -70,6 +70,8 @@ They are compatible functions with ISLisp. See also [hymkor/gmnlisp](https://git
 - $&lt; - the first source filename
 - $? - the updated source filenames
 - $/ - OS-specific path separator (Windows \ , UNIX / )
+- \*args\* - the command-line arguments
+- $1...$9 - the same as (elt \*args\* N)
 
 ## The macros in the STRING
 
