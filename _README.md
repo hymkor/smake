@@ -65,6 +65,7 @@ They are compatible functions with ISLisp. See also [hymkor/gmnlisp](https://git
 
 - $@ - the target filename
 - $&lt; - the first source filename
+- $? - the updated source filenames
 - $/ - OS-specific path separator (Windows \ , UNIX / )
 
 ## The macros in the STRING
@@ -73,5 +74,6 @@ They are compatible functions with ISLisp. See also [hymkor/gmnlisp](https://git
 
 - "$(x)" to the value of the symbol x or the environment variable.
 - "$&lt;" is same as "$($&lt;)"
+- "$?" is same as "$($?)"
 - "$@" is same as "$($@)"
 - "$/" is same as "$($/)"
