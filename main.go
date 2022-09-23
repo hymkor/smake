@@ -479,26 +479,35 @@ func mains(args []string) error {
 			argsList.Add(gm.String(s))
 		}
 	}
+	argsSeq := argsList.Sequence()
 
-	lisp := gm.New().Let(
-		gm.Variables{
-			gm.NewSymbol("assert"):   gm.SpecialF(cmdAssert),
-			gm.NewSymbol("echo"):     &gm.Function{C: -1, F: funEcho},
-			gm.NewSymbol("getenv"):   &gm.Function{C: 1, F: funGetenv},
-			gm.NewSymbol("glob"):     &gm.Function{C: 1, F: funGlob},
-			gm.NewSymbol("make"):     gm.SpecialF(cmdMake),
-			gm.NewSymbol("pathjoin"): &gm.Function{C: -1, F: funJoinPath},
-			gm.NewSymbol("q"):        &gm.Function{C: -1, F: funQuoteCommand},
-			gm.NewSymbol("qs"):       &gm.Function{C: 1, F: funQuote},
-			gm.NewSymbol("rm"):       &gm.Function{C: -1, F: funRemove},
-			gm.NewSymbol("setenv"):   &gm.Function{C: 2, F: funSetenv},
-			gm.NewSymbol("sh"):       &gm.Function{C: 1, F: funShell},
-			gm.NewSymbol("touch"):    &gm.Function{C: -1, F: funTouch},
-			gm.NewSymbol("x"):        &gm.Function{C: -1, F: funExecute},
-			gm.NewSymbol("*args*"):   argsList.Sequence(),
-			gm.NewSymbol("$"):        cons,
-			symbolPathSep:            gm.String(os.PathSeparator),
-		})
+	vars := gm.Variables{
+		gm.NewSymbol("assert"):   gm.SpecialF(cmdAssert),
+		gm.NewSymbol("echo"):     &gm.Function{C: -1, F: funEcho},
+		gm.NewSymbol("getenv"):   &gm.Function{C: 1, F: funGetenv},
+		gm.NewSymbol("glob"):     &gm.Function{C: 1, F: funGlob},
+		gm.NewSymbol("make"):     gm.SpecialF(cmdMake),
+		gm.NewSymbol("pathjoin"): &gm.Function{C: -1, F: funJoinPath},
+		gm.NewSymbol("q"):        &gm.Function{C: -1, F: funQuoteCommand},
+		gm.NewSymbol("qs"):       &gm.Function{C: 1, F: funQuote},
+		gm.NewSymbol("rm"):       &gm.Function{C: -1, F: funRemove},
+		gm.NewSymbol("setenv"):   &gm.Function{C: 2, F: funSetenv},
+		gm.NewSymbol("sh"):       &gm.Function{C: 1, F: funShell},
+		gm.NewSymbol("touch"):    &gm.Function{C: -1, F: funTouch},
+		gm.NewSymbol("x"):        &gm.Function{C: -1, F: funExecute},
+		gm.NewSymbol("*args*"):   argsSeq,
+		gm.NewSymbol("$"):        cons,
+		symbolPathSep:            gm.String(os.PathSeparator),
+	}
+	for i, sq := 0, argsSeq; i < 9; i++ {
+		var val gm.Node = gm.Null
+		if cons, ok := sq.(*gm.Cons); ok && cons != nil {
+			val = cons.Car
+			sq = cons.Cdr
+		}
+		vars[gm.NewSymbol("$"+string("123456789"[i]))] = val
+	}
+	lisp := gm.New().Let(vars)
 
 	_, err = lisp.InterpretBytes(ctx, source)
 	return err
