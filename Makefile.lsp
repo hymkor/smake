@@ -2,6 +2,7 @@
   ((windows (equal (getenv "OS") "Windows_NT"))
    (EXE (if windows ".exe" "")))
   (make
+    (and *args* (car *args*))
     ((cons "smake$(EXE)" (glob "*.go"))
      (sh "go fmt")
      (sh "go build")

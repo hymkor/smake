@@ -28,6 +28,7 @@
      )
     (apply
       #'make
+      (and *args* (car *args*))
 
       ((cons a-out o-files)
        (sh (string-join " " (cons "gcc -o $@" o-files)))
