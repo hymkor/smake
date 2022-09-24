@@ -482,6 +482,7 @@ func mains(args []string) error {
 	argsSeq := argsList.Sequence()
 
 	vars := gm.Variables{
+		gm.NewSymbol("abspath"):  &gm.Function{C: 1, F: funAbsPath},
 		gm.NewSymbol("assert"):   gm.SpecialF(cmdAssert),
 		gm.NewSymbol("echo"):     &gm.Function{C: -1, F: funEcho},
 		gm.NewSymbol("getenv"):   &gm.Function{C: 1, F: funGetenv},
