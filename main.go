@@ -487,6 +487,7 @@ func mains(args []string) error {
 		gm.NewSymbol("getenv"):   &gm.Function{C: 1, F: funGetenv},
 		gm.NewSymbol("glob"):     &gm.Function{C: 1, F: funGlob},
 		gm.NewSymbol("make"):     gm.SpecialF(cmdMake),
+		gm.NewSymbol("notdir"):   &gm.Function{C: 1, F: funNotDir},
 		gm.NewSymbol("pathjoin"): &gm.Function{C: -1, F: funJoinPath},
 		gm.NewSymbol("q"):        &gm.Function{C: -1, F: funQuoteCommand},
 		gm.NewSymbol("qs"):       &gm.Function{C: 1, F: funQuote},
