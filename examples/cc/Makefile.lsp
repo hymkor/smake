@@ -10,25 +10,15 @@
      (if seq
        (apply #'string-append (cdr (mapcan (lambda (c) (list dem c)) seq)))
        ""))
-    (getfname (path)
-      (let ((index nil))
-        (while (setq index (string-index $/ path))
-               (setq path (subseq path (1+ index)))
-        )
-        path)
-    )
    ) ; flet param
   (let*
     ((c-files (glob "*.c"))
      (o-files (mapcar #'c-to-o c-files))
      (windows (equal (getenv "OS") "Windows_NT"))
      (exe (if windows ".exe" ""))
-     (cwd (qs (if windows "cd" "pwd")))
-     (a-out (string-append (getfname cwd) exe))
+     (a-out (string-append (notdir (abspath ".")) exe))
      )
-    (apply
-      #'make
-      $1
+    (apply #'make $1
 
       ((cons a-out o-files)
        (sh (string-join " " (cons "gcc -o $@" o-files)))
