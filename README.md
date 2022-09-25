@@ -81,6 +81,7 @@ Same as (sh) but ignores errors.
 ### (shell "SHELL-COMMAND")
 
 Execute the shell command and return its standard-output as string.
+Same as $(shell "..") of GNU Make.
 
 ### (echo STRING...)
 
