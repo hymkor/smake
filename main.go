@@ -281,6 +281,28 @@ func funQuoteCommand(ctx context.Context, w *gm.World, list []gm.Node) (gm.Node,
 	return gm.String(strings.TrimSpace(string(output))), nil
 }
 
+func cmdPushd(ctx context.Context, w *gm.World, node gm.Node) (gm.Node, error) {
+	dirNode, node, err := w.ShiftAndEvalCar(ctx, node)
+	if err != nil {
+		return nil, err
+	}
+	dir, ok := dirNode.(gm.StringTypes)
+	if !ok {
+		return nil, gm.ErrExpectedString
+	}
+	curDir, err := os.Getwd()
+	if err != nil {
+		return nil, err
+	}
+	defer os.Chdir(curDir)
+
+	err = os.Chdir(dir.String())
+	if err != nil {
+		return nil, err
+	}
+	return gm.Progn(ctx, w, node)
+}
+
 func shouldUpdate(_list gm.Node) (bool, gm.Node, error) {
 	targetNode, list, err := gm.Shift(_list)
 	if err != nil {
@@ -468,6 +490,7 @@ func mains(args []string) error {
 		gm.NewSymbol("$"):        &gm.Function{C: 1, F: funExpandString},
 		gm.NewSymbol("-e"):       &gm.Function{C: 1, F: funIsExist},
 		gm.NewSymbol("-d"):       &gm.Function{C: 1, F: funIsDirectory},
+		gm.NewSymbol("pushd"):    gm.SpecialF(cmdPushd),
 		symbolPathSep:            gm.String(os.PathSeparator),
 	}
 	for i, sq := 0, argsSeq; i < 9; i++ {
