@@ -256,22 +256,7 @@ func funExecute(ctx context.Context, w *gm.World, list []gm.Node) (gm.Node, erro
 	return gm.Null, cmd.Run()
 }
 
-func funQuote(ctx context.Context, w *gm.World, list []gm.Node) (gm.Node, error) {
-	s, ok := list[0].(gm.StringTypes)
-	if !ok {
-		return nil, gm.ErrExpectedString
-	}
-	cmdline := expandLiteral(w, s.String())
-	cmd := newShell(cmdline)
-	cmd.Stdout = nil
-	output, err := cmd.Output()
-	if err != nil {
-		return nil, err
-	}
-	return gm.String(strings.TrimSpace(string(output))), nil
-}
-
-func funShell(ctx context.Context, w *gm.World, list []gm.Node) (gm.Node, error) {
+func funSh(ctx context.Context, w *gm.World, list []gm.Node) (gm.Node, error) {
 	s, ok := list[0].(gm.StringTypes)
 	if !ok {
 		return nil, gm.ErrExpectedString
@@ -476,10 +461,10 @@ func mains(args []string) error {
 		gm.NewSymbol("notdir"):   &gm.Function{C: 1, F: funNotDir},
 		gm.NewSymbol("pathjoin"): &gm.Function{C: -1, F: funJoinPath},
 		gm.NewSymbol("q"):        &gm.Function{C: -1, F: funQuoteCommand},
-		gm.NewSymbol("qs"):       &gm.Function{C: 1, F: funQuote},
+		gm.NewSymbol("shell"):    &gm.Function{C: 1, F: funShell},
 		gm.NewSymbol("rm"):       &gm.Function{C: -1, F: funRemove},
 		gm.NewSymbol("setenv"):   &gm.Function{C: 2, F: funSetenv},
-		gm.NewSymbol("sh"):       &gm.Function{C: 1, F: funShell},
+		gm.NewSymbol("sh"):       &gm.Function{C: 1, F: funSh},
 		gm.NewSymbol("touch"):    &gm.Function{C: -1, F: funTouch},
 		gm.NewSymbol("x"):        &gm.Function{C: -1, F: funExecute},
 		gm.NewSymbol("*args*"):   argsSeq,
