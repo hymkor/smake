@@ -270,6 +270,16 @@ func funSh(ctx context.Context, w *gm.World, list []gm.Node) (gm.Node, error) {
 	return gm.Null, cmd.Run()
 }
 
+func funShIgnoreError(ctx context.Context, w *gm.World, list []gm.Node) (gm.Node, error) {
+	rv, err := funSh(ctx, w, list)
+	var ignoreType *exec.ExitError
+	if errors.As(err, &ignoreType) {
+		// fmt.Printf("%+T\n", err)
+		return rv, nil
+	}
+	return rv, err
+}
+
 func funQuoteCommand(ctx context.Context, w *gm.World, list []gm.Node) (gm.Node, error) {
 	cmd := nodesToCommand(ctx, w, list, io.Discard)
 	cmd.Stdout = nil
@@ -466,6 +476,7 @@ func mains(args []string) error {
 		gm.NewSymbol("rm"):       &gm.Function{C: -1, F: funRemove},
 		gm.NewSymbol("setenv"):   &gm.Function{C: 2, F: funSetenv},
 		gm.NewSymbol("sh"):       &gm.Function{C: 1, F: funSh},
+		gm.NewSymbol("sh-"):      &gm.Function{C: 1, F: funShIgnoreError},
 		gm.NewSymbol("touch"):    &gm.Function{C: -1, F: funTouch},
 		gm.NewSymbol("x"):        &gm.Function{C: -1, F: funExecute},
 		gm.NewSymbol("*args*"):   argsSeq,
