@@ -126,25 +126,6 @@ func funExpandString(ctx context.Context, w *gm.World, list []gm.Node) (gm.Node,
 	return gm.String(expandLiteral(w, s.String())), nil
 }
 
-func expandLiteralNodes(w *gm.World, node gm.Node) (gm.Node, error) {
-	var result gm.ListBuilder
-	for gm.HasValue(node) {
-		var car gm.Node
-		var err error
-
-		car, node, err = gm.Shift(node)
-		if err != nil {
-			return nil, err
-		}
-		s, ok := car.(gm.StringTypes)
-		if !ok {
-			return nil, gm.ErrExpectedString
-		}
-		result.Add(gm.String(expandLiteral(w, s.String())))
-	}
-	return result.Sequence(), nil
-}
-
 func funJoinPath(ctx context.Context, w *gm.World, list []gm.Node) (gm.Node, error) {
 	paths := make([]string, 0, len(list))
 	for _, node := range list {
@@ -420,11 +401,6 @@ func cmdMake(ctx context.Context, w *gm.World, node gm.Node) (gm.Node, error) {
 		cond, action, err := w.ShiftAndEvalCar(ctx, condAndAction)
 		if err != nil {
 			return nil, fmt.Errorf("%w: %s", err, gm.ToString(condAndAction, gm.PRINT))
-		}
-		// expand $(...)
-		cond, err = expandLiteralNodes(w, cond)
-		if err != nil {
-			return nil, err
 		}
 		targetNode, _, err := gm.Shift(cond)
 		if err != nil {
