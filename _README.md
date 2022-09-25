@@ -36,6 +36,16 @@ If the file TARGET is newer than SOURCE or TARGET does not exist, execute COMMAN
 The entry after MAINTARGET is evaluated when the TARGET equals the MAINTARGET
 or the TARGET is written on other evaluated SOURCES.
 
+### ($ "$(VARNAME)")
+
+Expand the value of the variable written in the string-literal.
+
+- "$(x)" to the value of the symbol x or the environment variable.
+- "$&lt;" is same as "$($&lt;)"
+- "$?" is same as "$($?)"
+- "$@" is same as "$($@)"
+- "$/" is same as "$($/)"
+
 ### (x "COMMAND" "ARG-1" "ARG-2" ...)
 
 Execute the external executable directly. If it failes, top.
@@ -98,13 +108,3 @@ They are compatible functions with ISLisp. See also [hymkor/gmnlisp](https://git
 - $/ - OS-specific path separator (Windows \ , UNIX / )
 - \*args\* - the command-line arguments
 - $1...$9 - the same as (elt \*args\* N)
-
-## The macros in the STRING
-
-(rule),(x),(touch),(1&gt;) and (1&gt;&gt;) expands these in their parameters.
-
-- "$(x)" to the value of the symbol x or the environment variable.
-- "$&lt;" is same as "$($&lt;)"
-- "$?" is same as "$($?)"
-- "$@" is same as "$($@)"
-- "$/" is same as "$($/)"
