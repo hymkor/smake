@@ -130,6 +130,11 @@ Same as -e of Perl.
 If FILENAME exists and it is a directory, it returns t. Otherwise nil.
 Same as -d of Perl.
 
+### (pushd "DIRNAME" COMMANDS)
+
+Change the current directory to "DIRNAME" and execute COMMANDS like (progn).
+After COMMANDS, return to the original current directory.
+
 ### (let),(format) and so on
 
 They are compatible functions with ISLisp. See also [hymkor/gmnlisp](https://github.com/hymkor/gmnlisp)
