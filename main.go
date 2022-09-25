@@ -282,21 +282,21 @@ func funQuoteCommand(ctx context.Context, w *gm.World, list []gm.Node) (gm.Node,
 	return gm.String(strings.TrimSpace(string(output))), nil
 }
 
-func shouldUpdate(list gm.Node) (bool, gm.Node, error) {
-	targetNode, list, err := gm.Shift(list)
+func shouldUpdate(_list gm.Node) (bool, gm.Node, error) {
+	targetNode, list, err := gm.Shift(_list)
 	if err != nil {
-		return false, nil, fmt.Errorf("shouldUpdate(1): %w", err)
+		return false, nil, fmt.Errorf("%w: %s", err, gm.ToString(_list, gm.PRINT))
 	}
 	targetPath, ok := targetNode.(gm.StringTypes)
 	if !ok {
-		return false, nil, fmt.Errorf("%s: %w", gm.ToString(targetNode, gm.PRINT), gm.ErrExpectedString)
+		return false, nil, fmt.Errorf("%w: %s", gm.ErrExpectedString, gm.ToString(targetNode, gm.PRINT))
 	}
 	targetInfo, err := os.Stat(targetPath.String())
 	if err != nil {
 		if os.IsNotExist(err) {
 			return true, list, nil
 		}
-		return false, nil, fmt.Errorf("os.Stat('%s'): %w", targetPath.String(), err)
+		return false, nil, fmt.Errorf("%w: '%s'", err, targetPath.String())
 	}
 	targetStamp := targetInfo.ModTime()
 
@@ -306,7 +306,7 @@ func shouldUpdate(list gm.Node) (bool, gm.Node, error) {
 
 		sourceNode, list, err = gm.Shift(list)
 		if err != nil {
-			return false, nil, fmt.Errorf("shouldUpdate(2): %w", err)
+			return false, nil, fmt.Errorf("%w: ..%s", err, gm.ToString(list, gm.PRINT))
 		}
 		sourcePath, ok := sourceNode.(gm.StringTypes)
 		if !ok {
@@ -339,7 +339,7 @@ func doMake(ctx context.Context, w *gm.World, depend map[gm.String][2]gm.Node, r
 
 		source, sources, err = gm.Shift(sources)
 		if err != nil {
-			return fmt.Errorf("doMake(1): %w", err)
+			return fmt.Errorf("%w: %s", err, gm.ToString(sources, gm.PRINT))
 		}
 		sourceStr, ok := source.(gm.String)
 		if !ok {
@@ -347,7 +347,7 @@ func doMake(ctx context.Context, w *gm.World, depend map[gm.String][2]gm.Node, r
 		}
 		if _rule, ok := depend[sourceStr]; ok {
 			if err := doMake(ctx, w, depend, _rule); err != nil {
-				return fmt.Errorf("doMake(2): %w", err)
+				return err
 			}
 		}
 	}
@@ -401,7 +401,7 @@ func cmdMake(ctx context.Context, w *gm.World, node gm.Node) (gm.Node, error) {
 		}
 		cond, action, err := w.ShiftAndEvalCar(ctx, condAndAction)
 		if err != nil {
-			return nil, fmt.Errorf("cmdMake(1): %w", err)
+			return nil, fmt.Errorf("%w: %s", err, gm.ToString(condAndAction, gm.PRINT))
 		}
 		// expand $(...)
 		cond, err = expandLiteralNodes(w, cond)
@@ -410,11 +410,11 @@ func cmdMake(ctx context.Context, w *gm.World, node gm.Node) (gm.Node, error) {
 		}
 		targetNode, _, err := gm.Shift(cond)
 		if err != nil {
-			return nil, fmt.Errorf("cmdMake(2): %w", err)
+			return nil, fmt.Errorf("%w: %s", err, gm.ToString(condAndAction, gm.PRINT))
 		}
 		target, ok := targetNode.(gm.String)
 		if !ok {
-			return nil, gm.ErrExpectedString
+			return nil, fmt.Errorf("%w: %s", gm.ErrExpectedString, targetNode, gm.PRINT)
 		}
 		if defaultTarget == "" {
 			defaultTarget = target
