@@ -49,9 +49,13 @@ If the file TARGET is newer than SOURCE or TARGET does not exist, execute COMMAN
 The entry after MAINTARGET is evaluated when the TARGET equals the MAINTARGET
 or the TARGET is written on other evaluated SOURCES.
 
+### (x "COMMAND" "ARG-1" "ARG-2" ...)
+
+Execute the external executable directly. If it failes, top.
+
 ### (sh "SHELL-COMMAND")
 
-Execute the shell command. If it fails, stop.
+Execute the shell command by CMD.exe or /bin/sh. If it fails, stop.
 
 ### (qs "SHELL-COMMAND")
 
