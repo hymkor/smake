@@ -12,7 +12,7 @@ func fileTest(w *gm.World, args []gm.Node, test func(os.FileInfo) bool) (gm.Node
 	if !ok {
 		return nil, gm.ErrExpectedString
 	}
-	fname := expandLiteral(w, fnameStr.String())
+	fname := fnameStr.String()
 	stat, err := os.Stat(fname)
 	if err != nil {
 		if os.IsNotExist(err) {

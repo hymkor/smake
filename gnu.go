@@ -49,7 +49,7 @@ func funShell(ctx context.Context, w *gm.World, list []gm.Node) (gm.Node, error)
 	if !ok {
 		return nil, gm.ErrExpectedString
 	}
-	cmdline := expandLiteral(w, s.String())
+	cmdline := s.String()
 	cmd := newShell(cmdline)
 	cmd.Stdout = nil
 	output, err := cmd.Output()

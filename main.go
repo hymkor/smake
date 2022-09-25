@@ -152,7 +152,7 @@ func funJoinPath(ctx context.Context, w *gm.World, list []gm.Node) (gm.Node, err
 		if !ok {
 			return nil, fmt.Errorf("%w: %s", gm.ErrExpectedString, gm.ToString(node, gm.PRINT))
 		}
-		paths = append(paths, expandLiteral(w, str.String()))
+		paths = append(paths, str.String())
 	}
 	return gm.String(filepath.Join(paths...)), nil
 }
@@ -198,7 +198,7 @@ func funRemove(ctx context.Context, w *gm.World, list []gm.Node) (gm.Node, error
 		if !ok {
 			return nil, gm.ErrExpectedString
 		}
-		fname := expandLiteral(w, fnStr.String())
+		fname := fnStr.String()
 		if err := os.Remove(fname); err == nil {
 			fmt.Fprintf(w.Errout(), "rm \"%s\"\n", fname)
 		}
@@ -213,7 +213,7 @@ func funTouch(ctx context.Context, w *gm.World, list []gm.Node) (gm.Node, error)
 		if !ok {
 			return nil, gm.ErrExpectedString
 		}
-		fname := expandLiteral(w, fnStr.String())
+		fname := fnStr.String()
 		fd, err := os.OpenFile(fname, os.O_WRONLY|os.O_APPEND|os.O_CREATE, 0666)
 		if err == nil {
 			if err = fd.Close(); err != nil {
@@ -234,7 +234,7 @@ func funEcho(ctx context.Context, w *gm.World, list []gm.Node) (gm.Node, error) 
 		if i > 0 {
 			stdout.Write([]byte{' '})
 		}
-		io.WriteString(stdout, expandLiteral(w, gm.ToString(s, gm.PRINC)))
+		io.WriteString(stdout, gm.ToString(s, gm.PRINC))
 	}
 	fmt.Fprintln(stdout)
 	return gm.Null, nil
@@ -243,7 +243,7 @@ func funEcho(ctx context.Context, w *gm.World, list []gm.Node) (gm.Node, error) 
 func nodesToCommand(ctx context.Context, w *gm.World, list []gm.Node, out io.Writer) *exec.Cmd {
 	argv := make([]string, len(list))
 	for i, value := range list {
-		argv[i] = expandLiteral(w, gm.ToString(value, gm.PRINC))
+		argv[i] = gm.ToString(value, gm.PRINC)
 		if i > 0 {
 			out.Write([]byte{' '})
 		}
@@ -270,7 +270,7 @@ func funSh(ctx context.Context, w *gm.World, list []gm.Node) (gm.Node, error) {
 	if !ok {
 		return nil, gm.ErrExpectedString
 	}
-	cmdline := expandLiteral(w, s.String())
+	cmdline := s.String()
 	fmt.Fprintln(os.Stderr, cmdline)
 	cmd := newShell(cmdline)
 	// cmd.Stdout = w.Stdout()
