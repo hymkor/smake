@@ -36,13 +36,17 @@ or the TARGET is written on other evaluated SOURCES.
 
 Execute the external executable directly. If it failes, top.
 
+### (q "COMMAND" "ARG-1" "ARG-2" ...)
+
+Execute the external executable directly and return its standard-output as string.
+
 ### (sh "SHELL-COMMAND")
 
 Execute the shell command by CMD.exe or /bin/sh. If it fails, stop.
 
-### (qs "SHELL-COMMAND")
+### (shell "SHELL-COMMAND")
 
-Execute the shell command and return its standard-output.
+Execute the shell command and return its standard-output as string.
 
 ### (echo STRING...)
 

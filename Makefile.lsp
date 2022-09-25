@@ -13,7 +13,7 @@
     ('("update")
      (touch "main.go")
      )
-    ('("readme" "README.md")
+    ('("readme" "README.md" "Makefile.lsp")
      )
     ('("README.md" "_README.md" "Makefile.lsp")
        (sh "gmnlpp$(EXE) $< > \"$@\"")

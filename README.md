@@ -7,11 +7,10 @@ Makefile.lsp:
 
 ```lisp
 (let*
-  ((windows (equal (getenv "OS") "Windows_NT"))
-   (EXE (if windows ".exe" "")))
+  ((EXE (if (equal (getenv "OS") "Windows_NT") ".exe" "")))
   (make
     $1
-    ((cons "smake$(EXE)" (glob "*.go"))
+    ((cons "smake$(EXE)" (wildcard "*.go"))
      (sh "go fmt")
      (sh "go build")
      )
@@ -22,7 +21,7 @@ Makefile.lsp:
     ('("update")
      (touch "main.go")
      )
-    ('("readme" "README.md")
+    ('("readme" "README.md" "Makefile.lsp")
      )
     ('("README.md" "_README.md" "Makefile.lsp")
        (sh "gmnlpp$(EXE) $< > \"$@\"")
@@ -53,13 +52,17 @@ or the TARGET is written on other evaluated SOURCES.
 
 Execute the external executable directly. If it failes, top.
 
+### (q "COMMAND" "ARG-1" "ARG-2" ...)
+
+Execute the external executable directly and return its standard-output as string.
+
 ### (sh "SHELL-COMMAND")
 
 Execute the shell command by CMD.exe or /bin/sh. If it fails, stop.
 
-### (qs "SHELL-COMMAND")
+### (shell "SHELL-COMMAND")
 
-Execute the shell command and return its standard-output.
+Execute the shell command and return its standard-output as string.
 
 ### (echo STRING...)
 
