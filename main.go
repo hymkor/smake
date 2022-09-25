@@ -118,6 +118,14 @@ func expandLiteral(w *gm.World, s string) string {
 	})
 }
 
+func funExpandString(ctx context.Context, w *gm.World, list []gm.Node) (gm.Node, error) {
+	s, ok := list[0].(gm.StringTypes)
+	if !ok {
+		return nil, gm.ErrExpectedString
+	}
+	return gm.String(expandLiteral(w, s.String())), nil
+}
+
 func expandLiteralNodes(w *gm.World, node gm.Node) (gm.Node, error) {
 	var result gm.ListBuilder
 	for gm.HasValue(node) {
@@ -480,7 +488,8 @@ func mains(args []string) error {
 		gm.NewSymbol("touch"):    &gm.Function{C: -1, F: funTouch},
 		gm.NewSymbol("x"):        &gm.Function{C: -1, F: funExecute},
 		gm.NewSymbol("*args*"):   argsSeq,
-		gm.NewSymbol("$"):        cons,
+		gm.NewSymbol("$$"):       cons,
+		gm.NewSymbol("$"):        &gm.Function{C: 1, F: funExpandString},
 		gm.NewSymbol("-e"):       &gm.Function{C: 1, F: funIsExist},
 		gm.NewSymbol("-d"):       &gm.Function{C: 1, F: funIsDirectory},
 		symbolPathSep:            gm.String(os.PathSeparator),
