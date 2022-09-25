@@ -481,6 +481,8 @@ func mains(args []string) error {
 		gm.NewSymbol("x"):        &gm.Function{C: -1, F: funExecute},
 		gm.NewSymbol("*args*"):   argsSeq,
 		gm.NewSymbol("$"):        cons,
+		gm.NewSymbol("-e"):       &gm.Function{C: 1, F: funIsExist},
+		gm.NewSymbol("-d"):       &gm.Function{C: 1, F: funIsDirectory},
 		symbolPathSep:            gm.String(os.PathSeparator),
 	}
 	for i, sq := 0, argsSeq; i < 9; i++ {
