@@ -1,9 +1,8 @@
 (let*
-  ((windows (equal (getenv "OS") "Windows_NT"))
-   (EXE (if windows ".exe" "")))
+  ((EXE (if (equal (getenv "OS") "Windows_NT") ".exe" "")))
   (make
     $1
-    ((cons "smake$(EXE)" (glob "*.go"))
+    ((cons "smake$(EXE)" (wildcard "*.go"))
      (sh "go fmt")
      (sh "go build")
      )
