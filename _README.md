@@ -17,6 +17,10 @@ Makefile.lsp:
 %>
 ```
 
+Other examples:
+
+- [examples/cc/Makefile.lsp](https://github.com/hymkor/smake/blob/master/examples/cc/Makefile.lsp) for C Project
+
 ## How to build SMake
 
 ```
@@ -75,6 +79,8 @@ Same as $(abspath FILEPATH) of GNU Make
 ### (notdir "FILEPATH")
 
 Same as $(notdir FILEPATH) of GNU Make
+
+### (joinpath "DIR"... "FNAME")
 
 ### (let),(format) and so on
 

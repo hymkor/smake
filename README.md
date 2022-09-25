@@ -6,10 +6,9 @@ SMake is the build tool like make(UNIX) whose Makefile is written with S-express
 Makefile.lsp:
 
 ```lisp
-(let*
+(let
   ((EXE (if (equal (getenv "OS") "Windows_NT") ".exe" "")))
-  (make
-    $1
+  (make $1
     ((cons "smake$(EXE)" (wildcard "*.go"))
      (sh "go fmt")
      (sh "go build")
@@ -19,7 +18,7 @@ Makefile.lsp:
      (sh "go mod tidy")
      )
     ('("update")
-     (touch "main.go")
+     (apply #'touch (wildcard "*.go"))
      )
     ('("readme" "README.md" "Makefile.lsp")
      )
@@ -28,10 +27,15 @@ Makefile.lsp:
      )
     ('("clean")
      (rm "smake$(EXE)~")
+     (rm "smake$(EXE)")
      )
   )
 )
 ```
+
+Other examples:
+
+- [examples/cc/Makefile.lsp](https://github.com/hymkor/smake/blob/master/examples/cc/Makefile.lsp) for C Project
 
 ## How to build SMake
 
@@ -91,6 +95,8 @@ Same as $(abspath FILEPATH) of GNU Make
 ### (notdir "FILEPATH")
 
 Same as $(notdir FILEPATH) of GNU Make
+
+### (joinpath "DIR"... "FNAME")
 
 ### (let),(format) and so on
 
