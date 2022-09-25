@@ -1,7 +1,6 @@
-(let*
+(let
   ((EXE (if (equal (getenv "OS") "Windows_NT") ".exe" "")))
-  (make
-    $1
+  (make $1
     ((cons "smake$(EXE)" (wildcard "*.go"))
      (sh "go fmt")
      (sh "go build")
@@ -11,7 +10,7 @@
      (sh "go mod tidy")
      )
     ('("update")
-     (touch "main.go")
+     (apply #'touch (wildcard "*.go"))
      )
     ('("readme" "README.md" "Makefile.lsp")
      )
@@ -20,6 +19,7 @@
      )
     ('("clean")
      (rm "smake$(EXE)~")
+     (rm "smake$(EXE)")
      )
   )
 )
