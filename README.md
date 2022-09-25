@@ -73,9 +73,17 @@ Same as the UNIX command touch.
 
 Return the value of the environment variable NAME. If it does not exist, return nil.
 
-### (glob "PATTERN")
+### (wildcard "PATTERN")
 
 Expand the PATTERN as a wildcard and return them as a list.
+
+### (abspath "FILEPATH")
+
+Same as $(abspath FILEPATH) of GNU Make
+
+### (notdir "FILEPATH")
+
+Same as $(notdir FILEPATH) of GNU Make
 
 ### (let),(format) and so on
 
