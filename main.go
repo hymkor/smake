@@ -212,6 +212,7 @@ func funTouch(ctx context.Context, w *gm.World, list []gm.Node) (gm.Node, error)
 				return nil, fmt.Errorf("close %s: %w", fname, err)
 			}
 			os.Chtimes(fname, stamp, stamp)
+			fmt.Fprintf(os.Stderr, "touch \"%s\"\n", fname)
 		} else {
 			return nil, fmt.Errorf("open %s: %w", fname, err)
 		}
