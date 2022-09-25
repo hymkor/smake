@@ -12,7 +12,7 @@
        ""))
    ) ; flet param
   (let*
-    ((c-files (glob "*.c"))
+    ((c-files (wildcard "*.c"))
      (o-files (mapcar #'c-to-o c-files))
      (windows (equal (getenv "OS") "Windows_NT"))
      (exe (if windows ".exe" ""))
