@@ -26,3 +26,19 @@ func funAbsPath(ctx context.Context, w *gm.World, args []gm.Node) (gm.Node, erro
 	}
 	return gm.String(absPath), nil
 }
+
+func funWildcard(ctx context.Context, w *gm.World, list []gm.Node) (gm.Node, error) {
+	pattern, ok := list[0].(gm.StringTypes)
+	if !ok {
+		return nil, gm.ErrExpectedString
+	}
+	match, err := filepath.Glob(pattern.String())
+	if err != nil {
+		return nil, err
+	}
+	var result gm.ListBuilder
+	for _, s := range match {
+		result.Add(gm.String(s))
+	}
+	return result.Sequence(), nil
+}
