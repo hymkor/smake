@@ -48,6 +48,10 @@ Execute the external executable directly and return its standard-output as strin
 
 Execute the shell command by CMD.exe or /bin/sh. If it fails, stop.
 
+### (sh- "SHELL-COMMAND")
+
+Same as (sh) but ignores errors.
+
 ### (shell "SHELL-COMMAND")
 
 Execute the shell command and return its standard-output as string.
