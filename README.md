@@ -99,6 +99,10 @@ Same as the UNIX command touch.
 
 Return the value of the environment variable NAME. If it does not exist, return nil.
 
+### (setenv "NAME" "VALUE")
+
+Set the environment variable "NAME" to "VALUE".
+
 ### (wildcard "PATTERN")
 
 Expand the PATTERN as a wildcard and return them as a list.
@@ -112,6 +116,19 @@ Same as $(abspath FILEPATH) of GNU Make
 Same as $(notdir FILEPATH) of GNU Make
 
 ### (joinpath "DIR"... "FNAME")
+
+Make path with "DIR"... "FNAME".
+Same as filepath.Join of golang.
+
+### (-e FILENAME)
+
+If FILENAME exists, it returns t. Otherwise nil.
+Same as -e of Perl.
+
+### (-d FILENAME)
+
+If FILENAME exists and it is a directory, it returns t. Otherwise nil.
+Same as -d of Perl.
 
 ### (let),(format) and so on
 
