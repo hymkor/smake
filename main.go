@@ -13,6 +13,8 @@ import (
 	"time"
 
 	gm "github.com/hymkor/gmnlisp"
+
+	"github.com/hymkor/smake/internal/file"
 )
 
 const (
@@ -303,6 +305,47 @@ func cmdPushd(ctx context.Context, w *gm.World, node gm.Node) (gm.Node, error) {
 	return gm.Progn(ctx, w, node)
 }
 
+func funCopy(ctx context.Context, w *gm.World, list []gm.Node) (gm.Node, error) {
+	if len(list) < 2 {
+		return nil, gm.ErrTooFewArguments
+	}
+	_destinate, ok := list[len(list)-1].(gm.StringTypes)
+	if !ok {
+		return nil, gm.ErrExpectedString
+	}
+	destinate := _destinate.String()
+
+	isDir := false
+	if fileInfo, err := os.Stat(destinate); err == nil && fileInfo.IsDir() {
+		isDir = true
+	} else {
+		if len(list) >= 3 {
+			return nil, fmt.Errorf("invalid destination: %s", destinate)
+		}
+	}
+
+	for _, s := range list[:len(list)-1] {
+		_source, ok := s.(gm.StringTypes)
+		if !ok {
+			return nil, gm.ErrExpectedString
+		}
+		source := _source.String()
+
+		var newFile string
+		if isDir {
+			newFile = filepath.Join(destinate, filepath.Base(source))
+		} else {
+			newFile = destinate
+		}
+		fmt.Printf("cp \"%s\" \"%s\"\n", source, newFile)
+		err := file.Copy(source, newFile, false)
+		if err != nil {
+			return gm.Null, err
+		}
+	}
+	return gm.Null, nil
+}
+
 func shouldUpdate(_list gm.Node) (bool, gm.Node, error) {
 	targetNode, list, err := gm.Shift(_list)
 	if err != nil {
@@ -491,6 +534,7 @@ func mains(args []string) error {
 		gm.NewSymbol("-e"):       &gm.Function{C: 1, F: funIsExist},
 		gm.NewSymbol("-d"):       &gm.Function{C: 1, F: funIsDirectory},
 		gm.NewSymbol("pushd"):    gm.SpecialF(cmdPushd),
+		gm.NewSymbol("cp"):       &gm.Function{C: -1, F: funCopy},
 		symbolPathSep:            gm.String(os.PathSeparator),
 	}
 	for i, sq := 0, argsSeq; i < 9; i++ {
