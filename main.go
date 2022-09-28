@@ -306,6 +306,18 @@ func cmdPushd(ctx context.Context, w *gm.World, node gm.Node) (gm.Node, error) {
 }
 
 func funCopy(ctx context.Context, w *gm.World, list []gm.Node) (gm.Node, error) {
+	return copyOrMove(list, "cp", func(s, d string) error {
+		return file.Copy(s, d, false)
+	})
+}
+
+func funMove(ctx context.Context, w *gm.World, list []gm.Node) (gm.Node, error) {
+	return copyOrMove(list, "mv", func(s, d string) error {
+		return file.Move(s, d)
+	})
+}
+
+func copyOrMove(list []gm.Node, msg string, f func(s, d string) error) (gm.Node, error) {
 	if len(list) < 2 {
 		return nil, gm.ErrTooFewArguments
 	}
@@ -337,8 +349,8 @@ func funCopy(ctx context.Context, w *gm.World, list []gm.Node) (gm.Node, error) 
 		} else {
 			newFile = destinate
 		}
-		fmt.Printf("cp \"%s\" \"%s\"\n", source, newFile)
-		err := file.Copy(source, newFile, false)
+		fmt.Printf("%s \"%s\" \"%s\"\n", msg, source, newFile)
+		err := f(source, newFile)
 		if err != nil {
 			return gm.Null, err
 		}
@@ -535,6 +547,7 @@ func mains(args []string) error {
 		gm.NewSymbol("-d"):       &gm.Function{C: 1, F: funIsDirectory},
 		gm.NewSymbol("pushd"):    gm.SpecialF(cmdPushd),
 		gm.NewSymbol("cp"):       &gm.Function{C: -1, F: funCopy},
+		gm.NewSymbol("mv"):       &gm.Function{C: -1, F: funMove},
 		symbolPathSep:            gm.String(os.PathSeparator),
 	}
 	for i, sq := 0, argsSeq; i < 9; i++ {
