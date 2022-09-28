@@ -139,6 +139,10 @@ After COMMANDS, return to the original current directory.
 
 Copy file SRC... to DST (directory or new filename)
 
+### (mv SRC... DST)
+
+Move file SRC... to DST (directory or new filename)
+
 ### (let),(format) and so on
 
 They are compatible functions with ISLisp. See also [hymkor/gmnlisp](https://github.com/hymkor/gmnlisp)
