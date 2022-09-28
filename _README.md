@@ -119,6 +119,10 @@ Same as -d of Perl.
 Change the current directory to "DIRNAME" and execute COMMANDS like (progn).
 After COMMANDS, return to the original current directory.
 
+### (cp SRC... DST)
+
+Copy file SRC... to DST (directory or new filename)
+
 ### (let),(format) and so on
 
 They are compatible functions with ISLisp. See also [hymkor/gmnlisp](https://github.com/hymkor/gmnlisp)
@@ -131,3 +135,4 @@ They are compatible functions with ISLisp. See also [hymkor/gmnlisp](https://git
 - $/ - OS-specific path separator (Windows \ , UNIX / )
 - \*args\* - the command-line arguments
 - $1...$9 - the same as (elt \*args\* N)
+- $0 ... the current executing smake filename
