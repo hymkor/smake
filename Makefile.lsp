@@ -20,6 +20,10 @@
     ('("clean")
      (rm ($ "smake$(EXE)~"))
      (rm ($ "smake$(EXE)"))
+     (pushd
+       "examples\cc"
+       (x $0 "clean")
+     )
      )
   )
 )
