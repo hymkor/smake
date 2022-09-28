@@ -28,6 +28,10 @@ Makefile.lsp:
     ('("clean")
      (rm ($ "smake$(EXE)~"))
      (rm ($ "smake$(EXE)"))
+     (pushd
+       "examples\cc"
+       (x $0 "clean")
+     )
      )
   )
 )
@@ -125,9 +129,9 @@ Same as filepath.Join of golang.
 If FILENAME exists, it returns t. Otherwise nil.
 Same as -e of Perl.
 
-### (-d FILENAME)
+### (-d DIRNAME)
 
-If FILENAME exists and it is a directory, it returns t. Otherwise nil.
+If DIRNAME exists and it is a directory, it returns t. Otherwise nil.
 Same as -d of Perl.
 
 ### (pushd "DIRNAME" COMMANDS)
