@@ -33,6 +33,16 @@ Makefile.lsp:
        (x $0 "clean")
      )
      )
+    ('("install")
+     (let ((line nil)
+           (r (create-string-input-stream
+                (shell (string-append "where " (notdir $0))))))
+       (while (setq line (read-line r nil nil))
+              (or (equal line $0)
+                  (cp $0 line))
+              )
+       )
+     )
   )
 )
 ```
