@@ -501,6 +501,13 @@ func mains(args []string) error {
 		}
 		vars[gm.NewSymbol("$"+string("123456789"[i]))] = val
 	}
+
+	if arg0, err := os.Executable(); err == nil {
+		vars[gm.NewSymbol("$0")] = gm.String(arg0)
+	} else {
+		println(err.Error())
+	}
+
 	lisp := gm.New().Let(vars)
 
 	_, err = lisp.InterpretBytes(ctx, source)
