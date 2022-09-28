@@ -296,9 +296,14 @@ func cmdPushd(ctx context.Context, w *gm.World, node gm.Node) (gm.Node, error) {
 	if err != nil {
 		return nil, err
 	}
-	defer os.Chdir(curDir)
+	defer func() {
+		fmt.Fprintf(os.Stderr, "cd \"%s\"\n", curDir)
+		os.Chdir(curDir)
+	}()
 
-	err = os.Chdir(dir.String())
+	_dir := dir.String()
+	fmt.Fprintf(os.Stderr, "cd \"%s\"\n", _dir)
+	err = os.Chdir(_dir)
 	if err != nil {
 		return nil, err
 	}
