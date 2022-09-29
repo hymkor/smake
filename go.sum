@@ -1,4 +1,4 @@
-github.com/hymkor/gmnlisp v0.0.0-20220919231049-955893b5d8cf h1:iwV+E1+Zwosw6jevmrhwQr03FzU71jrGAVzClh5cTDs=
-github.com/hymkor/gmnlisp v0.0.0-20220919231049-955893b5d8cf/go.mod h1:cfsik5tIdMp2/t2n3A46rU1GIEzwTvwbNzMZPJ+k3gs=
-golang.org/x/sys v0.0.0-20220624220833-87e55d714810 h1:rHZQSjJdAI4Xf5Qzeh2bBc5YJIkPFVM6oDtMFYmgws0=
-golang.org/x/sys v0.0.0-20220624220833-87e55d714810/go.mod h1:oPkhp1MJrh7nUepCBck5+mAzfO9JrbApNNgaTdGDITg=
+github.com/hymkor/gmnlisp v0.0.0-20220929120640-eac26d0607b4 h1:smu46Q+e7nV1k4XoSzSaZzILxNWh85uR9aR4YsRWZ6A=
+github.com/hymkor/gmnlisp v0.0.0-20220929120640-eac26d0607b4/go.mod h1:cfsik5tIdMp2/t2n3A46rU1GIEzwTvwbNzMZPJ+k3gs=
+golang.org/x/sys v0.0.0-20220928140112-f11e5e49a4ec h1:BkDtF2Ih9xZ7le9ndzTA7KJow28VbQW3odyk/8drmuI=
+golang.org/x/sys v0.0.0-20220928140112-f11e5e49a4ec/go.mod h1:oPkhp1MJrh7nUepCBck5+mAzfO9JrbApNNgaTdGDITg=
