@@ -127,6 +127,10 @@ Copy file SRC... to DST (directory or new filename)
 
 Move file SRC... to DST (directory or new filename)
 
+### (split-sequence SEP SEQUENCE)
+
+`(split-sequence #\: "a:b:c")` =&gt; `("a" "b" "c")`
+
 ### (let),(format) and so on
 
 They are compatible functions with ISLisp. See also [hymkor/gmnlisp](https://github.com/hymkor/gmnlisp)
