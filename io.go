@@ -168,7 +168,10 @@ func funQuoteCommand(ctx context.Context, w *gm.World, list []gm.Node) (gm.Node,
 	if err != nil {
 		return gm.Null, err
 	}
-	return gm.String(strings.TrimSpace(string(output))), nil
+	s := string(output)
+	s = strings.ReplaceAll(s, "\r", "") // CRLF -> LF
+	s = strings.TrimSpace(s)
+	return gm.String(s), nil
 }
 
 func cmdPushd(ctx context.Context, w *gm.World, node gm.Node) (gm.Node, error) {

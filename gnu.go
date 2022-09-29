@@ -56,5 +56,8 @@ func funShell(ctx context.Context, w *gm.World, list []gm.Node) (gm.Node, error)
 	if err != nil {
 		return nil, err
 	}
-	return gm.String(strings.TrimSpace(string(output))), nil
+	o := string(output)
+	o = strings.ReplaceAll(o, "\r", "") // CRLF -> LF
+	o = strings.TrimSpace(o)
+	return gm.String(o), nil
 }
