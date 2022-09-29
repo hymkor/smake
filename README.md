@@ -34,13 +34,9 @@ Makefile.lsp:
        )
      )
     ('("install")
-     (let ((line nil)
-           (r (create-string-input-stream
-                (q "where" (notdir $0)))))
-       (while (setq line (read-line r nil nil))
-              (or (equal line $0)
-                  (cp $0 line))
-              )
+     (mapc
+       (lambda (path) (or (equal path $0) (cp $0 path)))
+       (split-sequence #\newline (q "where" (notdir $0)))
        )
      )
     )
