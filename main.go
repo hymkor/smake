@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"errors"
+	"flag"
 	"fmt"
 	"os"
 	"regexp"
@@ -263,10 +264,12 @@ func cmdMake(ctx context.Context, w *gm.World, node gm.Node) (gm.Node, error) {
 	return gm.Null, doMake(ctx, w, depend, startRule)
 }
 
+var flagMakefile = flag.String("f", "Makefile.lsp", "Read FILE as a makefile.lsp")
+
 func mains(args []string) error {
 	ctx := context.Background()
 
-	source, err := os.ReadFile("Makefile.lsp")
+	source, err := os.ReadFile(*flagMakefile)
 	if err != nil {
 		return err
 	}
@@ -337,7 +340,8 @@ func mains(args []string) error {
 }
 
 func main() {
-	if err := mains(os.Args[1:]); err != nil {
+	flag.Parse()
+	if err := mains(flag.Args()); err != nil {
 		fmt.Fprintln(os.Stderr, err.Error())
 		os.Exit(1)
 	}
