@@ -1,10 +1,12 @@
 package main
 
 import (
+	"bufio"
 	"context"
 	"errors"
 	"flag"
 	"fmt"
+	"io"
 	"os"
 	"regexp"
 	"strings"
@@ -269,10 +271,23 @@ var flagMakefile = flag.String("f", "Makefile.lsp", "Read FILE as a makefile.lsp
 func mains(args []string) error {
 	ctx := context.Background()
 
-	source, err := os.ReadFile(*flagMakefile)
+	fd, err := os.Open(*flagMakefile)
 	if err != nil {
 		return err
 	}
+	br := bufio.NewReader(fd)
+	magicByte, err := br.Peek(1)
+	if err != nil {
+		return fmt.Errorf("%s: %w", *flagMakefile, err)
+	}
+	if magicByte[0] == '#' || magicByte[0] == '@' {
+		br.ReadString('\n')
+	}
+	source, err := io.ReadAll(br)
+	if err != nil {
+		return fmt.Errorf("%s: %w", *flagMakefile, err)
+	}
+	fd.Close()
 
 	var cons gm.Node = gm.Null
 	var argsList gm.ListBuilder
