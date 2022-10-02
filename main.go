@@ -252,7 +252,7 @@ func cmdMake(ctx context.Context, w *gm.World, node gm.Node) (gm.Node, error) {
 		}
 		target, ok := targetNode.(gm.String)
 		if !ok {
-			return nil, fmt.Errorf("%w: %s", gm.ErrExpectedString, targetNode, gm.PRINT)
+			return nil, fmt.Errorf("%w: %s", gm.ErrExpectedString, gm.ToString(targetNode, gm.PRINT))
 		}
 		if defaultTarget == "" {
 			defaultTarget = target
