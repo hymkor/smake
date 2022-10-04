@@ -331,6 +331,7 @@ func mains(args []string) error {
 		gm.NewSymbol("touch"):          &gm.Function{C: -1, F: funTouch},
 		gm.NewSymbol("wildcard"):       &gm.Function{C: 1, F: funWildcard},
 		gm.NewSymbol("x"):              &gm.Function{C: -1, F: funExecute},
+		gm.NewSymbol("shellexecute"):   &gm.Function{C: -1, F: funShellExecute},
 		symbolPathSep:                  gm.String(os.PathSeparator),
 	}
 	for i, sq := 0, argsSeq; i < 9; i++ {
