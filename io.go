@@ -131,8 +131,8 @@ func nodesToCommand(ctx context.Context, w *gm.World, list []gm.Node, out io.Wri
 
 func funExecute(ctx context.Context, w *gm.World, list []gm.Node) (gm.Node, error) {
 	cmd := nodesToCommand(ctx, w, list, w.Errout())
-	cmd.Stdout = w.Stdout()
-	cmd.Stderr = w.Errout()
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
 	return gm.Null, cmd.Run()
 }
 
