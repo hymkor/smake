@@ -268,26 +268,34 @@ func cmdMake(ctx context.Context, w *gm.World, node gm.Node) (gm.Node, error) {
 
 var flagMakefile = flag.String("f", "Makefile.lsp", "Read FILE as a makefile.lsp")
 
+var flagExecute = flag.String("e", "", "inline script")
+
 func mains(args []string) error {
+	var source []byte
+
 	ctx := context.Background()
 
-	fd, err := os.Open(*flagMakefile)
-	if err != nil {
-		return err
+	if *flagExecute != "" {
+		source = []byte(*flagExecute)
+	} else {
+		fd, err := os.Open(*flagMakefile)
+		if err != nil {
+			return err
+		}
+		br := bufio.NewReader(fd)
+		magicByte, err := br.Peek(1)
+		if err != nil {
+			return fmt.Errorf("%s: %w", *flagMakefile, err)
+		}
+		if magicByte[0] == '#' || magicByte[0] == '@' {
+			br.ReadString('\n')
+		}
+		source, err = io.ReadAll(br)
+		if err != nil {
+			return fmt.Errorf("%s: %w", *flagMakefile, err)
+		}
+		fd.Close()
 	}
-	br := bufio.NewReader(fd)
-	magicByte, err := br.Peek(1)
-	if err != nil {
-		return fmt.Errorf("%s: %w", *flagMakefile, err)
-	}
-	if magicByte[0] == '#' || magicByte[0] == '@' {
-		br.ReadString('\n')
-	}
-	source, err := io.ReadAll(br)
-	if err != nil {
-		return fmt.Errorf("%s: %w", *flagMakefile, err)
-	}
-	fd.Close()
 
 	var cons gm.Node = gm.Null
 	var argsList gm.ListBuilder
@@ -351,7 +359,7 @@ func mains(args []string) error {
 
 	lisp := gm.New().Let(vars)
 
-	_, err = lisp.InterpretBytes(ctx, source)
+	_, err := lisp.InterpretBytes(ctx, source)
 	return err
 }
 
