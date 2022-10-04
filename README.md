@@ -157,6 +157,10 @@ Move file SRC... to DST (directory or new filename)
 
 `(split-sequence #\: "a:b:c")` =&gt; `("a" "b" "c")`
 
+### (shellexecute "ACTION" "PATH" \["PARAM"\] \["DIRECTORY"\])
+
+Call Windows-API: shellexecute
+
 ### (let),(format) and so on
 
 They are compatible functions with ISLisp. See also [hymkor/gmnlisp](https://github.com/hymkor/gmnlisp)
