@@ -8,6 +8,15 @@ import (
 	gm "github.com/hymkor/gmnlisp"
 )
 
+func funBasename(ctx context.Context, w *gm.World, args []gm.Node) (gm.Node, error) {
+	_path, ok := args[0].(gm.StringTypes)
+	if !ok {
+		return nil, gm.ErrExpectedString
+	}
+	path := _path.String()
+	return gm.String(path[:len(path)-len(filepath.Ext(path))]), nil
+}
+
 func funNotDir(ctx context.Context, w *gm.World, args []gm.Node) (gm.Node, error) {
 	path1, ok := args[0].(gm.StringTypes)
 	if !ok {
