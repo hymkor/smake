@@ -5,7 +5,7 @@
 ; .c.o:
 ;     gcc -c $<
 (let*
-  ((c-to-o (lambda (c) (string-append (subseq c 0 (- (length c) 2)) ".o")))
+  ((c-to-o (lambda (c) (string-append (basename c) ".o")))
    (c-files (wildcard "*.c"))
    (o-files (mapcar #'c-to-o c-files))
    (exe (if (equal (getenv "OS") "Windows_NT") ".exe" ""))
