@@ -99,6 +99,10 @@ Same as $(abspath FILEPATH) of GNU Make
 
 Same as $(notdir FILEPATH) of GNU Make
 
+### (basename "FILEPATH")
+
+Same as $(basename FILEPATH) of GNU Make
+
 ### (joinpath "DIR"... "FNAME")
 
 Make path with "DIR"... "FNAME".
