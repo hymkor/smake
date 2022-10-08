@@ -12,7 +12,7 @@ func test(code string, expect gm.Node) string {
 }
 
 func TestBasename(t *testing.T) {
-	if e := test(`(basename "hoge.tar")`, gm.String("hoge1")); e != "" {
+	if e := test(`(basename "hoge.tar")`, gm.String("hoge")); e != "" {
 		t.Fatal(e)
 	}
 }
