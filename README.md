@@ -121,6 +121,10 @@ Expand the PATTERN as a wildcard and return them as a list.
 
 Same as $(abspath FILEPATH) of GNU Make
 
+### (dir "FILEPATH")
+
+Same as $(dir FILEPATH) of GNU Make
+
 ### (notdir "FILEPATH")
 
 Same as $(notdir FILEPATH) of GNU Make
