@@ -1,6 +1,7 @@
 package main
 
 import (
+	"path/filepath"
 	"testing"
 
 	gm "github.com/hymkor/gmnlisp"
@@ -23,8 +24,18 @@ func TestDir(t *testing.T) {
 	}
 }
 
-func TestNotDir(t *testing.T){
-	if e := test(`(notdir "foo\\bar\\gar.tar")`, gm.String(`gar.tar`)) ; e != "" {
+func TestNotDir(t *testing.T) {
+	if e := test(`(notdir "foo\\bar\\gar.tar")`, gm.String(`gar.tar`)); e != "" {
+		t.Fatal(e)
+	}
+}
+
+func TestAbs(t *testing.T) {
+	temp,err := filepath.Abs(".")
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+	if e := test(`(abspath ".")`, gm.String(temp)); e != "" {
 		t.Fatal(e)
 	}
 }
