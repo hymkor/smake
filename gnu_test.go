@@ -22,3 +22,9 @@ func TestDir(t *testing.T) {
 		t.Fatal(e)
 	}
 }
+
+func TestNotDir(t *testing.T){
+	if e := test(`(notdir "foo\\bar\\gar.tar")`, gm.String(`gar.tar`)) ; e != "" {
+		t.Fatal(e)
+	}
+}
