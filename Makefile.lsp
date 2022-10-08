@@ -31,5 +31,8 @@
        (split-sequence #\newline (q "where" (notdir $0)))
        )
      )
+    ('("test")
+     (x "go" "test")
+     )
     )
   )
