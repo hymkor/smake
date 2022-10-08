@@ -21,7 +21,7 @@
      (rm ($ "smake$(EXE)~"))
      (rm ($ "smake$(EXE)"))
      (pushd
-       "examples\cc"
+       "examples/cc"
        (x $0 "clean")
        )
      )
