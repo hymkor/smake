@@ -52,15 +52,20 @@ func funGetenv(ctx context.Context, w *gm.World, list []gm.Node) (gm.Node, error
 }
 
 func funSetenv(ctx context.Context, w *gm.World, list []gm.Node) (gm.Node, error) {
-	key, ok := list[0].(gm.StringTypes)
+	_key, ok := list[0].(gm.StringTypes)
 	if !ok {
 		return nil, gm.ErrExpectedString
 	}
-	value, ok := list[1].(gm.StringTypes)
+	key := _key.String()
+
+	_value, ok := list[1].(gm.StringTypes)
 	if !ok {
 		return nil, gm.ErrExpectedString
 	}
-	return gm.Null, os.Setenv(key.String(), value.String())
+	value := _value.String()
+
+	fmt.Fprintf(w.Errout(), "setenv \"%s=%s\"\n", key, value)
+	return gm.Null, os.Setenv(key, value)
 }
 
 func funRemove(ctx context.Context, w *gm.World, list []gm.Node) (gm.Node, error) {
