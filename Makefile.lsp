@@ -1,7 +1,11 @@
-(let
-  ((EXE (if (equal (getenv "OS") "Windows_NT") ".exe" "")))
+(let*
+  ((EXE (if (equal (getenv "OS") "Windows_NT") ".exe" ""))
+   (NAME (notdir (abspath ".")))
+   (AOUT (string-append NAME EXE))
+   (SOURCE (wildcard "*.go"))
+   )
   (make $1
-    ((cons ($ "smake$(EXE)") (wildcard "*.go"))
+    ((cons AOUT SOURCE)
      (sh "go fmt")
      (sh "go build")
      )
@@ -10,7 +14,7 @@
      (sh "go mod tidy")
      )
     ('("update")
-     (apply #'touch (wildcard "*.go"))
+     (apply #'touch SOURCE)
      )
     ('("readme" "README.md" "Makefile.lsp")
      )
@@ -18,8 +22,7 @@
        (sh ($ "gmnlpp$(EXE) $< > \"$@\""))
      )
     ('("clean")
-     (rm ($ "smake$(EXE)~"))
-     (rm ($ "smake$(EXE)"))
+     (rm AOUT (string-append AOUT "~"))
      (pushd
        "examples/cc"
        (x $0 "clean")
@@ -34,5 +37,32 @@
     ('("test")
      (x "go" "test")
      )
-    )
-  )
+    ('("package")
+     (let ((version (shell "git describe --tag")))
+       (mapc
+         (lambda (goos)
+           (setenv "GOOS" goos)
+           (mapc
+             (lambda (goarch)
+               (setenv "GOARCH" goarch)
+               (let* ((exe (shell "go env GOEXE"))
+                      (aout (string-append NAME exe)))
+                 (rm aout)
+                 (x "go" "build")
+                 (x "zip"
+                    (string-append NAME "-" version "-" goos "-" goarch ".zip")
+                    aout)
+                 )
+               ) ; goarch
+             '("386" "amd64")
+             ) ; mapc
+           ) ; goos
+         '("linux" "windows")
+         ) ; mapc
+       ) ; let
+     ) ; "package"
+    ('("clean-zip")
+     (apply #'rm (wildcard "*.zip"))
+     )
+    );make
+  );let
