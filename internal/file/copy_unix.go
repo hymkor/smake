@@ -4,7 +4,6 @@
 package file
 
 import (
-	"errors"
 	"io"
 	"os"
 )
