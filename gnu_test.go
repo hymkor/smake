@@ -31,7 +31,7 @@ func TestNotDir(t *testing.T) {
 }
 
 func TestAbs(t *testing.T) {
-	temp,err := filepath.Abs(".")
+	temp, err := filepath.Abs(".")
 	if err != nil {
 		t.Fatal(err.Error())
 	}
