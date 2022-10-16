@@ -22,11 +22,14 @@
        (sh ($ "gmnlpp$(EXE) $< > \"$@\""))
      )
     ('("clean")
-     (rm AOUT (string-append AOUT "~"))
      (pushd
        "examples/cc"
        (x $0 "clean")
        )
+      (apply #'rm (wildcard "*~"))
+      (if (-e AOUT)
+        (mv AOUT (format nil ".~a~~" AOUT))
+        )
      )
     ('("install")
      (mapc
