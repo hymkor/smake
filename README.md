@@ -6,10 +6,14 @@ SMake is the build tool like make(UNIX) whose Makefile is written with S-express
 Makefile.lsp:
 
 ```lisp
-(let
-  ((EXE (if (equal (getenv "OS") "Windows_NT") ".exe" "")))
+(let*
+  ((EXE (if (equal (getenv "OS") "Windows_NT") ".exe" ""))
+   (NAME (notdir (abspath ".")))
+   (AOUT (string-append NAME EXE))
+   (SOURCE (wildcard "*.go"))
+   )
   (make $1
-    ((cons ($ "smake$(EXE)") (wildcard "*.go"))
+    ((cons AOUT SOURCE)
      (sh "go fmt")
      (sh "go build")
      )
@@ -18,7 +22,7 @@ Makefile.lsp:
      (sh "go mod tidy")
      )
     ('("update")
-     (apply #'touch (wildcard "*.go"))
+     (apply #'touch SOURCE)
      )
     ('("readme" "README.md" "Makefile.lsp")
      )
@@ -26,12 +30,14 @@ Makefile.lsp:
        (sh ($ "gmnlpp$(EXE) $< > \"$@\""))
      )
     ('("clean")
-     (rm ($ "smake$(EXE)~"))
-     (rm ($ "smake$(EXE)"))
      (pushd
-       "examples\cc"
+       "examples/cc"
        (x $0 "clean")
        )
+      (apply #'rm (wildcard "*~"))
+      (if (-e AOUT)
+        (mv AOUT (format nil ".~a~~" AOUT))
+        )
      )
     ('("install")
      (mapc
@@ -39,8 +45,38 @@ Makefile.lsp:
        (split-sequence #\newline (q "where" (notdir $0)))
        )
      )
-    )
-  )
+    ('("test")
+     (x "go" "test")
+     )
+    ('("package")
+     (let ((version (shell "git describe --tag")))
+       (mapc
+         (lambda (goos)
+           (setenv "GOOS" goos)
+           (mapc
+             (lambda (goarch)
+               (setenv "GOARCH" goarch)
+               (let* ((exe (shell "go env GOEXE"))
+                      (aout (string-append NAME exe)))
+                 (rm aout)
+                 (x "go" "build")
+                 (x "zip"
+                    (string-append NAME "-" version "-" goos "-" goarch ".zip")
+                    aout)
+                 )
+               ) ; goarch
+             '("386" "amd64")
+             ) ; mapc
+           ) ; goos
+         '("linux" "windows")
+         ) ; mapc
+       ) ; let
+     ) ; "package"
+    ('("clean-zip")
+     (apply #'rm (wildcard "*.zip"))
+     )
+    );make
+  );let
 ```
 
 Other examples:
