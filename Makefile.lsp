@@ -44,21 +44,23 @@
      (let ((version (shell "git describe --tag")))
        (mapc
          (lambda (goos)
-           (setenv "GOOS" goos)
-           (mapc
-             (lambda (goarch)
-               (setenv "GOARCH" goarch)
-               (let* ((exe (shell "go env GOEXE"))
-                      (aout (string-append NAME exe)))
-                 (rm aout)
-                 (x "go" "build")
-                 (x "zip"
-                    (string-append NAME "-" version "-" goos "-" goarch ".zip")
-                    aout)
-                 )
-               ) ; goarch
-             '("386" "amd64")
-             ) ; mapc
+           (env (("GOOS" goos))
+             (mapc
+               (lambda (goarch)
+                 (env (("GOARCH" goarch))
+                   (let* ((exe (shell "go env GOEXE"))
+                          (aout (string-append NAME exe)))
+                     (rm aout)
+                     (x "go" "build")
+                     (x "zip"
+                        (string-append NAME "-" version "-" goos "-" goarch ".zip")
+                        aout)
+                     )
+                   ) ; env GOARCH
+                 ) ; lambda goarch
+               '("386" "amd64")
+               ) ; mapc
+             ) ; env GOOS
            ) ; goos
          '("linux" "windows")
          ) ; mapc
