@@ -28,8 +28,7 @@
        (sh ($ "gmnlpp$(EXE) $< > \"$@\""))
      )
     ('("clean")
-     (pushd
-       "examples/cc"
+     (pushd "examples/cc"
        (x $0 "clean")
        )
       (apply #'rm (wildcard "*~"))
@@ -38,10 +37,9 @@
         )
      )
     ('("install")
-     (mapc
-       (lambda (path) (or (equal path $0) (cp $0 path)))
-       (split-sequence #\newline (q "where" (notdir $0)))
-       )
+     (foreach path (split-sequence #\newline (q "where" (notdir $0)))
+       (or (equal path $0)
+           (cp $0 path)))
      )
     ('("test")
      (x "go" "test")
@@ -71,3 +69,4 @@
      )
     );make
   );let
+; vim:set lispwords+=foreach,env,mapc,make,pushd:
