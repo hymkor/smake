@@ -23,6 +23,7 @@
      )
     ('("get")
      (sh "go get -u")
+     (sh "go get -u github.com/hymkor/gmnlisp@master")
      (sh "go mod tidy")
      )
     ('("update")
