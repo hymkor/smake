@@ -22,5 +22,11 @@
       )
     (setq result (cons str result))
     (nreverse result)))
+(defmacro pushd (wd &rest commands)
+  `(let ((orig (getwd)))
+     (chdir ,wd)
+     ,@commands
+     (chdir orig)
+     ))
 (defglobal windows (equal (getenv "OS") "Windows_NT"))
 ; vim:set lispwords+=foreach,env,mapc,make,pushd,while:
