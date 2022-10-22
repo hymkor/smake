@@ -12,4 +12,14 @@
         (setenv ,name orig))
     )
   )
-; vim:set lispwords+=foreach,env,mapc,make,pushd:
+(defun string-split (_sep str)
+  (let ((result nil)
+        (index nil)
+        (sep (create-string 1 _sep)))
+    (while (setq index (string-index sep str))
+      (setq result (cons (subseq str 0 index) result))
+      (setq str (subseq str (1+ index) (length str)))
+      )
+    (setq result (cons str result))
+    (nreverse result)))
+; vim:set lispwords+=foreach,env,mapc,make,pushd,while:
