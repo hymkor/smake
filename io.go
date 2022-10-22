@@ -16,6 +16,11 @@ import (
 	"github.com/hymkor/smake/internal/file"
 )
 
+func cmdGetwd(ctx context.Context, w *gm.World, _ gm.Node) (gm.Node, error) {
+	wd, err := os.Getwd()
+	return gm.String(wd), err
+}
+
 func funJoinPath(ctx context.Context, w *gm.World, list []gm.Node) (gm.Node, error) {
 	paths := make([]string, 0, len(list))
 	for _, node := range list {

@@ -303,6 +303,7 @@ func setupFunctions(args []string) gm.Variables {
 		gm.NewSymbol("dir"):          &gm.Function{C: -1, F: funDir},
 		gm.NewSymbol("echo"):         &gm.Function{C: -1, F: funEcho},
 		gm.NewSymbol("getenv"):       &gm.Function{C: 1, F: funGetenv},
+		gm.NewSymbol("getwd"):        gm.SpecialF(cmdGetwd),
 		gm.NewSymbol("glob"):         &gm.Function{C: 1, F: funWildcard},
 		gm.NewSymbol("make"):         gm.SpecialF(cmdMake),
 		gm.NewSymbol("mv"):           &gm.Function{C: -1, F: funMove},
