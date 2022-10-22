@@ -58,6 +58,10 @@ func funSetenv(ctx context.Context, w *gm.World, list []gm.Node) (gm.Node, error
 	}
 	key := _key.String()
 
+	if gm.IsNull(list[1]) {
+		fmt.Fprintf(w.Errout(), "unsetenv \"%s\"\n", key)
+		return gm.Null, os.Unsetenv(key)
+	}
 	_value, ok := list[1].(gm.StringTypes)
 	if !ok {
 		return nil, gm.ErrExpectedString
