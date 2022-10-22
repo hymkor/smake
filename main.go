@@ -310,7 +310,6 @@ func setupFunctions(args []string) gm.Variables {
 		gm.NewSymbol("mv"):           &gm.Function{C: -1, F: funMove},
 		gm.NewSymbol("notdir"):       &gm.Function{C: 1, F: funNotDir},
 		gm.NewSymbol("pathjoin"):     &gm.Function{C: -1, F: funJoinPath},
-		gm.NewSymbol("pushd"):        gm.SpecialF(cmdPushd),
 		gm.NewSymbol("q"):            &gm.Function{C: -1, F: funQuoteCommand},
 		gm.NewSymbol("rm"):           &gm.Function{C: -1, F: funRemove},
 		gm.NewSymbol("setenv"):       &gm.Function{C: 2, F: funSetenv},

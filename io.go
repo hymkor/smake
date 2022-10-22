@@ -196,33 +196,6 @@ func funQuoteCommand(ctx context.Context, w *gm.World, list []gm.Node) (gm.Node,
 	return gm.String(s), nil
 }
 
-func cmdPushd(ctx context.Context, w *gm.World, node gm.Node) (gm.Node, error) {
-	dirNode, node, err := w.ShiftAndEvalCar(ctx, node)
-	if err != nil {
-		return nil, err
-	}
-	dir, ok := dirNode.(gm.StringTypes)
-	if !ok {
-		return nil, gm.ErrExpectedString
-	}
-	curDir, err := os.Getwd()
-	if err != nil {
-		return nil, err
-	}
-	defer func() {
-		fmt.Fprintf(os.Stderr, "cd \"%s\"\n", curDir)
-		os.Chdir(curDir)
-	}()
-
-	_dir := dir.String()
-	fmt.Fprintf(os.Stderr, "cd \"%s\"\n", _dir)
-	err = os.Chdir(_dir)
-	if err != nil {
-		return nil, err
-	}
-	return gm.Progn(ctx, w, node)
-}
-
 func funCopy(ctx context.Context, w *gm.World, list []gm.Node) (gm.Node, error) {
 	return copyOrMove(list, "cp", func(s, d string) error {
 		return file.Copy(s, d, false)
