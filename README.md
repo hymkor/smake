@@ -19,6 +19,7 @@ Makefile.lsp:
      )
     ('("get")
      (sh "go get -u")
+     (sh "go get -u github.com/hymkor/gmnlisp@master")
      (sh "go mod tidy")
      )
     ('("update")
@@ -39,7 +40,7 @@ Makefile.lsp:
         )
      )
     ('("install")
-     (foreach path (split-sequence #\newline (q "where" (notdir $0)))
+     (foreach (path (string-split #\newline (q "where" (notdir $0))))
        (or (equal path $0)
            (cp $0 path)))
      )
@@ -71,7 +72,7 @@ Makefile.lsp:
      )
     );make
   );let
-; vim:set lispwords+=foreach,env,mapc,make,pushd:
+; vim:set lispwords+=foreach,env,mapc,make,pushd,while:
 ```
 
 Other examples:
@@ -197,9 +198,9 @@ Copy file SRC... to DST (directory or new filename)
 
 Move file SRC... to DST (directory or new filename)
 
-### (split-sequence SEP SEQUENCE)
+### (stirng-split SEP SEQUENCE)
 
-`(split-sequence #\: "a:b:c")` =&gt; `("a" "b" "c")`
+`(string-split #\: "a:b:c")` =&gt; `("a" "b" "c")`
 
 ### (shellexecute "ACTION" "PATH" \["PARAM"\] \["DIRECTORY"\])
 

@@ -140,9 +140,9 @@ Copy file SRC... to DST (directory or new filename)
 
 Move file SRC... to DST (directory or new filename)
 
-### (split-sequence SEP SEQUENCE)
+### (stirng-split SEP SEQUENCE)
 
-`(split-sequence #\: "a:b:c")` =&gt; `("a" "b" "c")`
+`(string-split #\: "a:b:c")` =&gt; `("a" "b" "c")`
 
 ### (shellexecute "ACTION" "PATH" \["PARAM"\] \["DIRECTORY"\])
 
