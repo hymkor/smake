@@ -3,6 +3,7 @@ package main
 import (
 	"bufio"
 	"context"
+	_ "embed"
 	"errors"
 	"flag"
 	"fmt"
@@ -13,6 +14,9 @@ import (
 
 	gm "github.com/hymkor/gmnlisp"
 )
+
+//go:embed embed.lsp
+var embededLsp string
 
 const (
 	stringTarget      = "$@"
@@ -367,6 +371,9 @@ func mains(args []string) error {
 	vars := setupFunctions(args)
 
 	lisp := gm.New().Let(vars)
+	if _, err := lisp.Interpret(ctx, embededLsp); err != nil {
+		panic(err.Error())
+	}
 
 	_, err := lisp.InterpretBytes(ctx, source)
 	return err

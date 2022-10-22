@@ -1,9 +1,3 @@
-(defmacro foreach (pair &rest commands)
-  (let ((key (car pair))
-        (values (car (cdr pair))))
-    `(mapc (lambda (,key) ,@commands) ,values))
-  )
-
 (let*
   ((EXE (if (equal (getenv "OS") "Windows_NT") ".exe" ""))
    (NAME (notdir (abspath ".")))
