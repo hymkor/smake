@@ -9,9 +9,7 @@
     `(let ((orig (getenv ,name)))
         (setenv ,name ,value)
         ,@commands
-        (if orig
-          (setenv ,name orig))
-        )
+        (setenv ,name orig))
     )
   )
 ; vim:set lispwords+=foreach,env,mapc,make,pushd:
