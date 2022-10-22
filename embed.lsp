@@ -22,4 +22,5 @@
       )
     (setq result (cons str result))
     (nreverse result)))
+(defglobal windows (equal (getenv "OS") "Windows_NT"))
 ; vim:set lispwords+=foreach,env,mapc,make,pushd,while:

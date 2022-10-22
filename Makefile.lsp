@@ -1,11 +1,11 @@
 (let*
-  ((EXE (if (equal (getenv "OS") "Windows_NT") ".exe" ""))
+  ((EXE (if windows ".exe" ""))
    (NAME (notdir (abspath ".")))
    (AOUT (string-append NAME EXE))
    (SOURCE (wildcard "*.go"))
    )
   (make $1
-    ((cons AOUT SOURCE)
+    ((append (list AOUT "Makefile.lsp" "embed.lsp") SOURCE)
      (sh "go fmt")
      (sh "go build")
      )

@@ -8,7 +8,7 @@
   ((c-to-o (lambda (c) (string-append (basename c) ".o")))
    (c-files (wildcard "*.c"))
    (o-files (mapcar #'c-to-o c-files))
-   (exe (if (equal (getenv "OS") "Windows_NT") ".exe" ""))
+   (exe (if windows ".exe" ""))
    (a-out (string-append (notdir (abspath ".")) exe))
    )
   (apply #'make $1
