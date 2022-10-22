@@ -1,3 +1,9 @@
+(defmacro foreach (pair &rest commands)
+  (let ((key (car pair))
+        (values (car (cdr pair))))
+    `(mapc (lambda (,key) ,@commands) ,values))
+  )
+
 (let*
   ((EXE (if (equal (getenv "OS") "Windows_NT") ".exe" ""))
    (NAME (notdir (abspath ".")))
@@ -42,29 +48,23 @@
      )
     ('("package")
      (let ((version (shell "git describe --tag")))
-       (mapc
-         (lambda (goos)
-           (env (("GOOS" goos))
-             (mapc
-               (lambda (goarch)
-                 (env (("GOARCH" goarch))
-                   (let* ((exe (shell "go env GOEXE"))
-                          (aout (string-append NAME exe)))
-                     (rm aout)
-                     (x "go" "build")
-                     (x "zip"
-                        (string-append NAME "-" version "-" goos "-" goarch ".zip")
-                        aout)
-                     )
-                   ) ; env GOARCH
-                 ) ; lambda goarch
-               '("386" "amd64")
-               ) ; mapc
-             ) ; env GOOS
-           ) ; goos
-         '("linux" "windows")
-         ) ; mapc
-       ) ; let
+       (foreach (goos '("linux" "windows"))
+         (env (("GOOS" goos))
+           (foreach (goarch '("386" "amd64"))
+             (env (("GOARCH" goarch))
+               (let* ((exe (shell "go env GOEXE"))
+                      (aout (string-append NAME exe)))
+                 (rm aout)
+                 (x "go" "build")
+                 (x "zip"
+                    (string-append NAME "-" version "-" goos "-" goarch ".zip")
+                    aout)
+                 )
+               )
+             )
+           )
+         )
+       )
      ) ; "package"
     ('("clean-zip")
      (apply #'rm (wildcard "*.zip"))
