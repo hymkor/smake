@@ -30,8 +30,7 @@ Makefile.lsp:
        (sh ($ "gmnlpp$(EXE) $< > \"$@\""))
      )
     ('("clean")
-     (pushd
-       "examples/cc"
+     (pushd "examples/cc"
        (x $0 "clean")
        )
       (apply #'rm (wildcard "*~"))
@@ -40,45 +39,39 @@ Makefile.lsp:
         )
      )
     ('("install")
-     (mapc
-       (lambda (path) (or (equal path $0) (cp $0 path)))
-       (split-sequence #\newline (q "where" (notdir $0)))
-       )
+     (foreach path (split-sequence #\newline (q "where" (notdir $0)))
+       (or (equal path $0)
+           (cp $0 path)))
      )
     ('("test")
      (x "go" "test")
      )
     ('("package")
      (let ((version (shell "git describe --tag")))
-       (mapc
-         (lambda (goos)
-           (env (("GOOS" goos))
-             (mapc
-               (lambda (goarch)
-                 (env (("GOARCH" goarch))
-                   (let* ((exe (shell "go env GOEXE"))
-                          (aout (string-append NAME exe)))
-                     (rm aout)
-                     (x "go" "build")
-                     (x "zip"
-                        (string-append NAME "-" version "-" goos "-" goarch ".zip")
-                        aout)
-                     )
-                   ) ; env GOARCH
-                 ) ; lambda goarch
-               '("386" "amd64")
-               ) ; mapc
-             ) ; env GOOS
-           ) ; goos
-         '("linux" "windows")
-         ) ; mapc
-       ) ; let
+       (foreach (goos '("linux" "windows"))
+         (doenv ("GOOS" goos)
+           (foreach (goarch '("386" "amd64"))
+             (doenv ("GOARCH" goarch)
+               (let* ((exe (shell "go env GOEXE"))
+                      (aout (string-append NAME exe)))
+                 (rm aout)
+                 (x "go" "build")
+                 (x "zip"
+                    (string-append NAME "-" version "-" goos "-" goarch ".zip")
+                    aout)
+                 )
+               )
+             )
+           )
+         )
+       )
      ) ; "package"
     ('("clean-zip")
      (apply #'rm (wildcard "*.zip"))
      )
     );make
   );let
+; vim:set lispwords+=foreach,env,mapc,make,pushd:
 ```
 
 Other examples:
@@ -151,7 +144,7 @@ Return the value of the environment variable NAME. If it does not exist, return 
 
 Set the environment variable "NAME" to "VALUE".
 
-### (env (("NAME" "VALUE")...) COMMANDS..)
+### (doenv ("NAME" "VALUE") COMMANDS..)
 
 Set the environment variables and execute COMMANDS.
 Then, restores them to thier original values.
