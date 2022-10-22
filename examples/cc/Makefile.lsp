@@ -9,7 +9,7 @@
    (c-files (wildcard "*.c"))
    (o-files (mapcar #'c-to-o c-files))
    (exe (if windows ".exe" ""))
-   (a-out (string-append (notdir (abspath ".")) exe))
+   (a-out (string-append (notdir (getwd)) exe))
    )
   (apply #'make $1
 

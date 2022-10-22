@@ -1,6 +1,6 @@
 (let*
   ((EXE (if windows ".exe" ""))
-   (NAME (notdir (abspath ".")))
+   (NAME (notdir (getwd)))
    (AOUT (string-append NAME EXE))
    (SOURCE (wildcard "*.go"))
    )

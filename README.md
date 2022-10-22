@@ -7,13 +7,13 @@ Makefile.lsp:
 
 ```lisp
 (let*
-  ((EXE (if (equal (getenv "OS") "Windows_NT") ".exe" ""))
-   (NAME (notdir (abspath ".")))
+  ((EXE (if windows ".exe" ""))
+   (NAME (notdir (getwd)))
    (AOUT (string-append NAME EXE))
    (SOURCE (wildcard "*.go"))
    )
   (make $1
-    ((cons AOUT SOURCE)
+    ((append (list AOUT "Makefile.lsp" "embed.lsp") SOURCE)
      (sh "go fmt")
      (sh "go build")
      )
