@@ -7,27 +7,24 @@ import (
 	gm "github.com/hymkor/gmnlisp"
 )
 
-func test(code string, expect gm.Node) string {
+func test(t *testing.T, code string, expect gm.Node) {
 	w := gm.New().Let(setupFunctions([]string{}))
-	return w.Assert(code, expect)
+	if e := w.Assert(code, expect); e != "" {
+		t.Helper()
+		t.Fatal(e)
+	}
 }
 
 func TestBasename(t *testing.T) {
-	if e := test(`(basename "hoge.tar")`, gm.String("hoge")); e != "" {
-		t.Fatal(e)
-	}
+	test(t, `(basename "hoge.tar")`, gm.String("hoge"))
 }
 
 func TestDir(t *testing.T) {
-	if e := test(`(dir "foo\\bar\\gar.tar")`, gm.String(`foo\bar`)); e != "" {
-		t.Fatal(e)
-	}
+	test(t, `(dir "foo\\bar\\gar.tar")`, gm.String(`foo\bar`))
 }
 
 func TestNotDir(t *testing.T) {
-	if e := test(`(notdir "foo\\bar\\gar.tar")`, gm.String(`gar.tar`)); e != "" {
-		t.Fatal(e)
-	}
+	test(t, `(notdir "foo\\bar\\gar.tar")`, gm.String(`gar.tar`))
 }
 
 func TestAbs(t *testing.T) {
@@ -35,7 +32,5 @@ func TestAbs(t *testing.T) {
 	if err != nil {
 		t.Fatal(err.Error())
 	}
-	if e := test(`(abspath ".")`, gm.String(temp)); e != "" {
-		t.Fatal(e)
-	}
+	test(t, `(abspath ".")`, gm.String(temp))
 }
