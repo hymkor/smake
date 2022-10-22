@@ -21,6 +21,14 @@ func cmdGetwd(ctx context.Context, w *gm.World, _ gm.Node) (gm.Node, error) {
 	return gm.String(wd), err
 }
 
+func funChdir(ctx context.Context, w *gm.World, list []gm.Node) (gm.Node, error) {
+	wd, ok := list[0].(gm.StringTypes)
+	if !ok {
+		return nil, gm.ErrExpectedString
+	}
+	return gm.Null, os.Chdir(wd.String())
+}
+
 func funJoinPath(ctx context.Context, w *gm.World, list []gm.Node) (gm.Node, error) {
 	paths := make([]string, 0, len(list))
 	for _, node := range list {

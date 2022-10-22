@@ -299,6 +299,7 @@ func setupFunctions(args []string) gm.Variables {
 		gm.NewSymbol("abspath"):      &gm.Function{C: 1, F: funAbsPath},
 		gm.NewSymbol("assert"):       gm.SpecialF(cmdAssert),
 		gm.NewSymbol("basename"):     &gm.Function{C: 1, F: funBasename},
+		gm.NewSymbol("chdir"):        &gm.Function{C: 1, F: funChdir},
 		gm.NewSymbol("cp"):           &gm.Function{C: -1, F: funCopy},
 		gm.NewSymbol("dir"):          &gm.Function{C: -1, F: funDir},
 		gm.NewSymbol("echo"):         &gm.Function{C: -1, F: funEcho},
