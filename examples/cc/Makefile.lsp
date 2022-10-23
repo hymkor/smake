@@ -12,22 +12,21 @@
    (a-out (string-append (notdir (getwd)) exe))
    )
   (apply #'make $1
-
     ((cons a-out o-files)
      (apply #'x "gcc" "-o" $@ o-files)
      )
-
     ('("clean")
      (apply #'rm a-out o-files)
      )
-
     (mapcar
-      (lambda (c-fname)
-        (list
-          (list 'quote (list (c-to-o c-fname) c-fname))
-          '(x "gcc" "-c" $<)
+      (lambda (c)
+        (let ((o (c-to-o c)))
+          `((list ,o ,c)
+            (x "gcc" "-c" ,c)
+            )
           )
         )
       c-files)
     )
-) ; let* code
+  ) ; let* code
+; vim:set lispwords+=apply,make:
