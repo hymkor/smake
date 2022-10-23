@@ -137,6 +137,8 @@ Same as the UNIX command rm.
 
 Same as the UNIX command touch.
 
+### (foreach (KEY '(VALUE...)) COMMANDS...)
+
 ### (getenv "NAME")
 
 Return the value of the environment variable NAME. If it does not exist, return nil.
@@ -185,6 +187,14 @@ Same as -e of Perl.
 If DIRNAME exists and it is a directory, it returns t. Otherwise nil.
 Same as -d of Perl.
 
+### (chdir "DIRNAME")
+
+Change the current working directory to "DIRNAME"
+
+### (getwd)
+
+Returns the current working directory.
+
 ### (pushd "DIRNAME" COMMANDS)
 
 Change the current directory to "DIRNAME" and execute COMMANDS like (progn).
@@ -209,6 +219,10 @@ Call Windows-API: shellexecute
 ### (let),(format) and so on
 
 They are compatible functions with ISLisp. See also [hymkor/gmnlisp](https://github.com/hymkor/gmnlisp)
+
+### windows
+
+It is `t` (true) when %OS% is `Windows_NT`
 
 ## The built-in variables
 
