@@ -28,7 +28,7 @@ Makefile.lsp:
     ('("readme" "README.md" "Makefile.lsp")
      )
     ('("README.md" "_README.md" "Makefile.lsp")
-       (sh ($ "gmnlpp$(EXE) $< > \"$@\""))
+       (sh (format nil "gmnlpp ~s > ~s" $< $@))
      )
     ('("clean")
      (pushd "examples/cc"
