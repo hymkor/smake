@@ -174,11 +174,11 @@ func shouldUpdate(_list gm.Node) (bool, gm.Node, error) {
 	return gm.HasValue(updatedFiles), updatedFiles, nil
 }
 
-func doMake(ctx context.Context, w *gm.World, depend map[gm.String][2]gm.Node, rule [2]gm.Node) error {
+func doMake(ctx context.Context, w *gm.World, depend map[gm.String][2]gm.Node, rule [2]gm.Node) (bool, error) {
 	// skip first (=target)
 	_, sources, err := gm.Shift(rule[0])
 	if err != nil {
-		return err
+		return false, err
 	}
 	for gm.HasValue(sources) {
 		var source gm.Node
@@ -186,43 +186,44 @@ func doMake(ctx context.Context, w *gm.World, depend map[gm.String][2]gm.Node, r
 
 		source, sources, err = gm.Shift(sources)
 		if err != nil {
-			return fmt.Errorf("%w: %s", err, gm.ToString(sources, gm.PRINT))
+			return false, fmt.Errorf("%w: %s", err, gm.ToString(sources, gm.PRINT))
 		}
 		sourceStr, ok := source.(gm.String)
 		if !ok {
-			return gm.ErrExpectedString
+			return false, gm.ErrExpectedString
 		}
 		if _rule, ok := depend[sourceStr]; ok {
-			if err := doMake(ctx, w, depend, _rule); err != nil {
-				return err
+			if _, err := doMake(ctx, w, depend, _rule); err != nil {
+				return false, err
 			}
 		}
 	}
 	isUpdate, updatedFiles, err := shouldUpdate(rule[0])
 	if err != nil {
-		return err
+		return false, err
 	}
-	if isUpdate {
-		var target gm.Node = gm.String("")
-		var firstSource gm.Node = gm.String("")
-		if cons1, ok := rule[0].(*gm.Cons); ok {
-			target = cons1.Car
-			if cons2, ok := cons1.Cdr.(*gm.Cons); ok {
-				firstSource = cons2.Car
-			}
-		}
-		newWorld := w.Let(
-			gm.Variables{
-				symbolTarget:      target,
-				symbolFirstSource: firstSource,
-				symbolUpdated:     updatedFiles,
-			})
-		_, err = gm.Progn(ctx, newWorld, rule[1])
-		if err != nil {
-			return err
+	if !isUpdate {
+		return false, nil
+	}
+	var target gm.Node = gm.String("")
+	var firstSource gm.Node = gm.String("")
+	if cons1, ok := rule[0].(*gm.Cons); ok {
+		target = cons1.Car
+		if cons2, ok := cons1.Cdr.(*gm.Cons); ok {
+			firstSource = cons2.Car
 		}
 	}
-	return nil
+	newWorld := w.Let(
+		gm.Variables{
+			symbolTarget:      target,
+			symbolFirstSource: firstSource,
+			symbolUpdated:     updatedFiles,
+		})
+	_, err = gm.Progn(ctx, newWorld, rule[1])
+	if err != nil {
+		return false, err
+	}
+	return true, nil
 }
 
 func cmdMake(ctx context.Context, w *gm.World, node gm.Node) (gm.Node, error) {
@@ -267,7 +268,14 @@ func cmdMake(ctx context.Context, w *gm.World, node gm.Node) (gm.Node, error) {
 	if !ok {
 		return nil, fmt.Errorf("*** No rule to make target '%s'.  Stop.", defaultTarget)
 	}
-	return gm.Null, doMake(ctx, w, depend, startRule)
+	isUpdate, err := doMake(ctx, w, depend, startRule)
+	if err != nil {
+		return gm.Null, err
+	}
+	if !isUpdate {
+		fmt.Fprintf(os.Stderr, "'%s' is up to date.\n", defaultTarget)
+	}
+	return gm.Null, nil
 }
 
 var flagMakefile = flag.String("f", "Makefile.lsp", "Read FILE as a makefile.lsp")
