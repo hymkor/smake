@@ -28,21 +28,21 @@ Makefile.lsp:
     ('("readme" "README.md" "Makefile.lsp")
      )
     ('("README.md" "_README.md" "Makefile.lsp")
-       (sh (format nil "gmnlpp ~s > ~s" $< $@))
+     (sh (format nil "gmnlpp ~s > ~s" $< $@))
      )
     ('("clean")
      (pushd "examples/cc"
        (x $0 "clean")
        )
-      (apply #'rm (wildcard "*~"))
-      (if (-e AOUT)
-        (mv AOUT (format nil ".~a~~" AOUT))
-        )
+     (apply #'rm (wildcard "*~"))
+     (if (-e AOUT)
+       (mv AOUT (format nil ".~a~~" AOUT))
+       )
      )
     ('("install")
      (foreach (path (string-split #\newline (q "where" (notdir $0))))
-       (or (equal path $0)
-           (cp $0 path)))
+       (if (not (equal path $0))
+         (cp $0 path)))
      )
     ('("test")
      (x "go" "test")
@@ -72,7 +72,7 @@ Makefile.lsp:
      )
     );make
   );let
-; vim:set lispwords+=foreach,env,mapc,make,pushd,while:
+; vim:set lispwords+=foreach,env,mapc,make,pushd,while,doenv:
 ```
 
 Other examples:
