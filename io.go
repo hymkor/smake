@@ -147,26 +147,42 @@ func funExecute(ctx context.Context, w *gm.World, list []gm.Node) (gm.Node, erro
 }
 
 func funSh(ctx context.Context, w *gm.World, list []gm.Node) (gm.Node, error) {
-	s, ok := list[0].(gm.StringTypes)
-	if !ok {
-		return nil, gm.ErrExpectedString
+	for _, node := range list {
+		s, ok := node.(gm.StringTypes)
+		if !ok {
+			return nil, gm.ErrExpectedString
+		}
+		cmdline := s.String()
+		fmt.Fprintln(os.Stderr, cmdline)
+		cmd := newShell(cmdline)
+		// cmd.Stdout = w.Stdout()
+		// cmd.Stderr = w.Errout()
+		if err := cmd.Run(); err != nil {
+			return gm.Null, err
+		}
 	}
-	cmdline := s.String()
-	fmt.Fprintln(os.Stderr, cmdline)
-	cmd := newShell(cmdline)
-	// cmd.Stdout = w.Stdout()
-	// cmd.Stderr = w.Errout()
-	return gm.Null, cmd.Run()
+	return gm.Null, nil
 }
 
 func funShIgnoreError(ctx context.Context, w *gm.World, list []gm.Node) (gm.Node, error) {
-	rv, err := funSh(ctx, w, list)
-	var ignoreType *exec.ExitError
-	if errors.As(err, &ignoreType) {
-		// fmt.Printf("%+T\n", err)
-		return rv, nil
+	for _, node := range list {
+		s, ok := node.(gm.StringTypes)
+		if !ok {
+			return nil, gm.ErrExpectedString
+		}
+		cmdline := s.String()
+		fmt.Fprintln(os.Stderr, cmdline)
+		cmd := newShell(cmdline)
+		// cmd.Stdout = w.Stdout()
+		// cmd.Stderr = w.Errout()
+		if err := cmd.Run(); err != nil {
+			var ignoreType *exec.ExitError
+			if !errors.As(err, &ignoreType) {
+				return gm.Null, err
+			}
+		}
 	}
-	return rv, err
+	return gm.Null, nil
 }
 
 func funQuoteCommand(ctx context.Context, w *gm.World, list []gm.Node) (gm.Node, error) {

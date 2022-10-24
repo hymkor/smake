@@ -6,13 +6,13 @@
    )
   (make $1
     ((append (list AOUT "Makefile.lsp" "embed.lsp") SOURCE)
-     (sh "go fmt")
-     (sh "go build")
+     (sh "go fmt"
+         "go build")
      )
     ('("get")
-     (sh "go get -u")
-     (sh "go get -u github.com/hymkor/gmnlisp@master")
-     (sh "go mod tidy")
+     (sh "go get -u"
+         "go get -u github.com/hymkor/gmnlisp@master"
+         "go mod tidy")
      )
     ('("update")
      (apply #'touch SOURCE)
