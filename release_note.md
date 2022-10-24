@@ -1,5 +1,6 @@
 - Re-implement (env)[defmacro version] supporting multi environment variables
 - Remove (doenv)
+- (sh) and (sh-) accept multi-statements
 
 v0.2.0
 ======
