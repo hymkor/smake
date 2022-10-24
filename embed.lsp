@@ -15,9 +15,10 @@
        (foreach (p ,pairs)
          (setq orig (cons (cons (car p) (getenv (car p))) orig))
          (setenv (car p) (cdr p)))
-       ,@commands
-       (foreach (p orig)
-         (setenv (car p) (cdr p)))
+       (unwind-protect
+         (progn ,@commands)
+         (foreach (p orig)
+           (setenv (car p) (cdr p))))
        )))
 (defun string-split (_sep str)
   (let ((result nil)
@@ -32,9 +33,9 @@
 (defmacro pushd (wd &rest commands)
   `(let ((orig (getwd)))
      (chdir ,wd)
-     ,@commands
-     (chdir orig)
-     ))
+     (unwind-protect
+       (progn ,@commands)
+       (chdir orig))))
 (defun echo (&rest strings)
   (let ((dem ""))
     (while strings
