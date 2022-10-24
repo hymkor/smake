@@ -3,15 +3,6 @@
         (values (car (cdr pair))))
     `(mapc (lambda (,key) ,@commands) ,values))
   )
-(defmacro doenv (pair &rest commands)
-  (let* ((name (car pair))
-         (value (car (cdr pair))))
-    `(let ((orig (getenv ,name)))
-        (setenv ,name ,value)
-        ,@commands
-        (setenv ,name orig))
-    )
-  )
 (defmacro env (_pairs &rest commands)
   (let ((pairs nil) (p nil))
     (while _pairs
