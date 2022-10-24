@@ -145,7 +145,7 @@ Return the value of the environment variable NAME. If it does not exist, return 
 
 Set the environment variable "NAME" to "VALUE".
 
-### (doenv ("NAME" "VALUE") COMMANDS..)
+### (env (("NAME" "VALUE")...) COMMANDS...)
 
 Set the environment variables and execute COMMANDS.
 Then, restores them to thier original values.
