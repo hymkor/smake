@@ -35,5 +35,12 @@
      ,@commands
      (chdir orig)
      ))
+(defun echo (&rest strings)
+  (let ((dem ""))
+    (while strings
+      (format t "~a~a" dem (car strings))
+      (setq strings (cdr strings))
+      (setq dem " "))
+    (format t "~%")))
 (defglobal windows (equal (getenv "OS") "Windows_NT"))
 ; vim:set lispwords+=foreach,env,mapc,make,pushd,while:

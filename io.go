@@ -121,18 +121,6 @@ func funTouch(ctx context.Context, w *gm.World, list []gm.Node) (gm.Node, error)
 	return gm.Null, nil
 }
 
-func funEcho(ctx context.Context, w *gm.World, list []gm.Node) (gm.Node, error) {
-	stdout := w.Stdout()
-	for i, s := range list {
-		if i > 0 {
-			stdout.Write([]byte{' '})
-		}
-		io.WriteString(stdout, gm.ToString(s, gm.PRINC))
-	}
-	fmt.Fprintln(stdout)
-	return gm.Null, nil
-}
-
 func nodesToCommand(ctx context.Context, w *gm.World, list []gm.Node, out io.Writer) *exec.Cmd {
 	argv := make([]string, len(list))
 	for i, value := range list {
