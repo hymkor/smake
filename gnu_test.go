@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"path/filepath"
 	"testing"
 
@@ -9,6 +10,9 @@ import (
 
 func test(t *testing.T, code string, expect gm.Node) {
 	w := gm.New().Let(setupFunctions([]string{}))
+	if _, err := w.Interpret(context.TODO(), embededLsp); err != nil {
+		panic(err.Error())
+	}
 	if e := w.Assert(code, expect); e != "" {
 		t.Helper()
 		t.Fatal(e)
