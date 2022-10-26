@@ -39,5 +39,7 @@
       (setq strings (cdr strings))
       (setq dem " "))
     (format t "~%")))
+(defun -e (fname)
+	(probe-file fname))
 (defglobal windows (equal (getenv "OS") "Windows_NT"))
 ; vim:set lispwords+=foreach,env,mapc,make,pushd,while:

@@ -303,7 +303,6 @@ func setupFunctions(args []string) gm.Variables {
 		gm.NewSymbol("$$"):           cons,
 		gm.NewSymbol("*args*"):       argsSeq,
 		gm.NewSymbol("-d"):           &gm.Function{C: 1, F: funIsDirectory},
-		gm.NewSymbol("-e"):           &gm.Function{C: 1, F: funIsExist},
 		gm.NewSymbol("abspath"):      &gm.Function{C: 1, F: funAbsPath},
 		gm.NewSymbol("assert"):       gm.SpecialF(cmdAssert),
 		gm.NewSymbol("basename"):     &gm.Function{C: 1, F: funBasename},

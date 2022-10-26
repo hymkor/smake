@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
+	"os"
 
 	gm "github.com/hymkor/gmnlisp"
 	"github.com/nyaosorg/go-windows-su"
@@ -48,4 +49,23 @@ func funShellExecute(ctx context.Context, w *gm.World, list []gm.Node) (gm.Node,
 	}
 	rc, err := sup.ShellExecute()
 	return gm.Integer(rc), err
+}
+
+func funIsDirectory(ctx context.Context, w *gm.World, args []gm.Node) (gm.Node, error) {
+	fnameStr, ok := args[0].(gm.StringTypes)
+	if !ok {
+		return nil, gm.ErrExpectedString
+	}
+	fname := fnameStr.String()
+	stat, err := os.Stat(fname)
+	if err != nil {
+		if os.IsNotExist(err) {
+			return gm.Null, nil
+		}
+		return nil, err
+	}
+	if stat.IsDir() {
+		return gm.True, nil
+	}
+	return gm.Null, nil
 }
