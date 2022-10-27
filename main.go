@@ -122,7 +122,7 @@ func expandLiteral(w *gm.World, s string) string {
 }
 
 func funExpandString(ctx context.Context, w *gm.World, list []gm.Node) (gm.Node, error) {
-	s, ok := list[0].(gm.StringTypes)
+	s, ok := list[0].(gm.String)
 	if !ok {
 		return nil, gm.ErrExpectedString
 	}
@@ -134,7 +134,7 @@ func shouldUpdate(_list gm.Node) (bool, gm.Node, error) {
 	if err != nil {
 		return false, nil, fmt.Errorf("%w: %s", err, gm.ToString(_list, gm.PRINT))
 	}
-	targetPath, ok := targetNode.(gm.StringTypes)
+	targetPath, ok := targetNode.(gm.String)
 	if !ok {
 		return false, nil, fmt.Errorf("%w: %s", gm.ErrExpectedString, gm.ToString(targetNode, gm.PRINT))
 	}
@@ -155,7 +155,7 @@ func shouldUpdate(_list gm.Node) (bool, gm.Node, error) {
 		if err != nil {
 			return false, nil, fmt.Errorf("%w: ..%s", err, gm.ToString(list, gm.PRINT))
 		}
-		sourcePath, ok := sourceNode.(gm.StringTypes)
+		sourcePath, ok := sourceNode.(gm.String)
 		if !ok {
 			return false, nil, gm.ErrExpectedString
 		}

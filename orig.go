@@ -52,7 +52,7 @@ func funShellExecute(ctx context.Context, w *gm.World, list []gm.Node) (gm.Node,
 }
 
 func funIsDirectory(ctx context.Context, w *gm.World, args []gm.Node) (gm.Node, error) {
-	fnameStr, ok := args[0].(gm.StringTypes)
+	fnameStr, ok := args[0].(gm.String)
 	if !ok {
 		return nil, gm.ErrExpectedString
 	}

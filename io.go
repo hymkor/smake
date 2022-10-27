@@ -22,7 +22,7 @@ func cmdGetwd(ctx context.Context, w *gm.World, _ gm.Node) (gm.Node, error) {
 }
 
 func funChdir(ctx context.Context, w *gm.World, list []gm.Node) (gm.Node, error) {
-	wd, ok := list[0].(gm.StringTypes)
+	wd, ok := list[0].(gm.String)
 	if !ok {
 		return nil, gm.ErrExpectedString
 	}
@@ -32,7 +32,7 @@ func funChdir(ctx context.Context, w *gm.World, list []gm.Node) (gm.Node, error)
 func funJoinPath(ctx context.Context, w *gm.World, list []gm.Node) (gm.Node, error) {
 	paths := make([]string, 0, len(list))
 	for _, node := range list {
-		str, ok := node.(gm.StringTypes)
+		str, ok := node.(gm.String)
 		if !ok {
 			return nil, fmt.Errorf("%w: %s", gm.ErrExpectedString, gm.ToString(node, gm.PRINT))
 		}
@@ -53,7 +53,7 @@ func cmdAssert(ctx context.Context, w *gm.World, node gm.Node) (gm.Node, error) 
 }
 
 func funGetenv(ctx context.Context, w *gm.World, list []gm.Node) (gm.Node, error) {
-	key, ok := list[0].(gm.StringTypes)
+	key, ok := list[0].(gm.String)
 	if !ok {
 		return nil, gm.ErrExpectedString
 	}
@@ -65,7 +65,7 @@ func funGetenv(ctx context.Context, w *gm.World, list []gm.Node) (gm.Node, error
 }
 
 func funSetenv(ctx context.Context, w *gm.World, list []gm.Node) (gm.Node, error) {
-	_key, ok := list[0].(gm.StringTypes)
+	_key, ok := list[0].(gm.String)
 	if !ok {
 		return nil, gm.ErrExpectedString
 	}
@@ -75,7 +75,7 @@ func funSetenv(ctx context.Context, w *gm.World, list []gm.Node) (gm.Node, error
 		fmt.Fprintf(w.Errout(), "unsetenv \"%s\"\n", key)
 		return gm.Null, os.Unsetenv(key)
 	}
-	_value, ok := list[1].(gm.StringTypes)
+	_value, ok := list[1].(gm.String)
 	if !ok {
 		return nil, gm.ErrExpectedString
 	}
@@ -87,7 +87,7 @@ func funSetenv(ctx context.Context, w *gm.World, list []gm.Node) (gm.Node, error
 
 func funRemove(ctx context.Context, w *gm.World, list []gm.Node) (gm.Node, error) {
 	for _, fnNode := range list {
-		fnStr, ok := fnNode.(gm.StringTypes)
+		fnStr, ok := fnNode.(gm.String)
 		if !ok {
 			return nil, gm.ErrExpectedString
 		}
@@ -102,7 +102,7 @@ func funRemove(ctx context.Context, w *gm.World, list []gm.Node) (gm.Node, error
 func funTouch(ctx context.Context, w *gm.World, list []gm.Node) (gm.Node, error) {
 	stamp := time.Now()
 	for _, fnNode := range list {
-		fnStr, ok := fnNode.(gm.StringTypes)
+		fnStr, ok := fnNode.(gm.String)
 		if !ok {
 			return nil, gm.ErrExpectedString
 		}
@@ -148,7 +148,7 @@ func funExecute(ctx context.Context, w *gm.World, list []gm.Node) (gm.Node, erro
 
 func funSh(ctx context.Context, w *gm.World, list []gm.Node) (gm.Node, error) {
 	for _, node := range list {
-		s, ok := node.(gm.StringTypes)
+		s, ok := node.(gm.String)
 		if !ok {
 			return nil, gm.ErrExpectedString
 		}
@@ -166,7 +166,7 @@ func funSh(ctx context.Context, w *gm.World, list []gm.Node) (gm.Node, error) {
 
 func funShIgnoreError(ctx context.Context, w *gm.World, list []gm.Node) (gm.Node, error) {
 	for _, node := range list {
-		s, ok := node.(gm.StringTypes)
+		s, ok := node.(gm.String)
 		if !ok {
 			return nil, gm.ErrExpectedString
 		}
@@ -216,7 +216,7 @@ func copyOrMove(list []gm.Node, msg string, f func(s, d string) error) (gm.Node,
 	if len(list) < 2 {
 		return nil, gm.ErrTooFewArguments
 	}
-	_destinate, ok := list[len(list)-1].(gm.StringTypes)
+	_destinate, ok := list[len(list)-1].(gm.String)
 	if !ok {
 		return nil, gm.ErrExpectedString
 	}
@@ -232,7 +232,7 @@ func copyOrMove(list []gm.Node, msg string, f func(s, d string) error) (gm.Node,
 	}
 
 	for _, s := range list[:len(list)-1] {
-		_source, ok := s.(gm.StringTypes)
+		_source, ok := s.(gm.String)
 		if !ok {
 			return nil, gm.ErrExpectedString
 		}
