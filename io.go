@@ -26,7 +26,9 @@ func funChdir(ctx context.Context, w *gm.World, list []gm.Node) (gm.Node, error)
 	if !ok {
 		return nil, gm.ErrExpectedString
 	}
-	return gm.Null, os.Chdir(wd.String())
+	dir := wd.String()
+	fmt.Fprintf(os.Stderr, "chdir \"%s\"\n", dir)
+	return gm.Null, os.Chdir(dir)
 }
 
 func funJoinPath(ctx context.Context, w *gm.World, list []gm.Node) (gm.Node, error) {
