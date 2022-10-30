@@ -1,7 +1,14 @@
-(defmacro foreach (pair &rest commands)
-  (let ((key (car pair))
-        (values (car (cdr pair))))
-    `(mapc (lambda (,key) ,@commands) ,values)))
+(defmacro foreach (vars &rest body)
+  (let ((var (car vars))
+        (values (elt vars 1))
+        (rest (gensym)))
+    `(block
+       nil
+       (let ((,var nil)(,rest ,values))
+         (while ,rest
+           (setq ,var (car ,rest))
+           (setq ,rest (cdr ,rest))
+           ,@body)))))
 (defmacro env (_pairs &rest commands)
   (let ((pairs nil) (p nil))
     (while _pairs
