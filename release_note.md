@@ -1,6 +1,8 @@
 - Re-implement (env)[defmacro version] supporting multi environment variables
 - Remove (doenv)
 - (sh) and (sh-) accept multi-statements
+- (env) and (pushd) now uses (unwind-protect)
+- macros now use (gensym)
 
 v0.2.0
 ======
