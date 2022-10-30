@@ -34,11 +34,12 @@
     (setq result (cons str result))
     (nreverse result)))
 (defmacro pushd (wd &rest commands)
-  `(let ((orig (getwd)))
-     (chdir ,wd)
-     (unwind-protect
-       (progn ,@commands)
-       (chdir orig))))
+  (let ((ORIG (gensym)))
+    `(let ((,ORIG (getwd)))
+       (chdir ,wd)
+       (unwind-protect
+         (progn ,@commands)
+         (chdir ,ORIG)))))
 (defun echo (&rest strings)
   (let ((dem ""))
     (while strings
