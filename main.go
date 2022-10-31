@@ -4,7 +4,6 @@ import (
 	"bufio"
 	"context"
 	_ "embed"
-	"errors"
 	"flag"
 	"fmt"
 	"io"
@@ -28,7 +27,6 @@ const (
 var (
 	rxEmbed = regexp.MustCompile(`\$(\(.*?\)|[\<\?\/\$\@])`)
 
-	errExpectedVector = errors.New("Expected Vector")
 	symbolTarget      = gm.NewSymbol(stringTarget)
 	symbolFirstSource = gm.NewSymbol(stringFirstSource)
 	symbolUpdated     = gm.NewSymbol(stringUpdated)
