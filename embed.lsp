@@ -51,6 +51,10 @@
       (setq dem " "))
     (format t "~%")))
 (defun -e (fname)
-	(probe-file fname))
+  (probe-file fname))
+(defun try-cdr (c)
+  (and c (consp c) (cdr c)))
+(defun -d (fname)
+  (let ((tmp (stat fname)))
+    (and tmp (try-cdr (assoc 'is-dir tmp)))))
 (defglobal windows (equal (getenv "OS") "Windows_NT"))
-; vim:set lispwords+=foreach,env,mapc,make,pushd,while:

@@ -107,22 +107,3 @@ func funStat(ctx context.Context, w *gm.World, args []gm.Node) (gm.Node, error) 
 	}
 	return cons, nil
 }
-
-func funIsDirectory(ctx context.Context, w *gm.World, args []gm.Node) (gm.Node, error) {
-	fnameStr, ok := args[0].(gm.String)
-	if !ok {
-		return nil, gm.ErrExpectedString
-	}
-	fname := fnameStr.String()
-	stat, err := os.Stat(fname)
-	if err != nil {
-		if os.IsNotExist(err) {
-			return gm.Null, nil
-		}
-		return nil, err
-	}
-	if stat.IsDir() {
-		return gm.True, nil
-	}
-	return gm.Null, nil
-}
