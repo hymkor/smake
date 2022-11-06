@@ -51,6 +51,63 @@ func funShellExecute(ctx context.Context, w *gm.World, list []gm.Node) (gm.Node,
 	return gm.Integer(rc), err
 }
 
+func trueOrNil(b bool) gm.Node {
+	if b {
+		return gm.True
+	} else {
+		return gm.Null
+	}
+}
+
+func funStat(ctx context.Context, w *gm.World, args []gm.Node) (gm.Node, error) {
+	_fname, ok := args[0].(gm.String)
+	if !ok {
+		return nil, gm.ErrExpectedString
+	}
+	fname := _fname.String()
+	stat, err := os.Stat(fname)
+	if err != nil {
+		if os.IsNotExist(err) {
+			return gm.Null, nil
+		}
+		return nil, err
+	}
+	var cons gm.Node = gm.Null
+
+	cons = &gm.Cons{
+		Car: &gm.Cons{Car: gm.NewSymbol("name"), Cdr: gm.String(stat.Name())},
+		Cdr: cons,
+	}
+	cons = &gm.Cons{
+		Car: &gm.Cons{Car: gm.NewSymbol("is-dir"), Cdr: trueOrNil(stat.IsDir())},
+		Cdr: cons,
+	}
+	cons = &gm.Cons{
+		Car: &gm.Cons{Car: gm.NewSymbol("size"), Cdr: gm.Integer(stat.Size())},
+		Cdr: cons,
+	}
+	mt := stat.ModTime()
+	cons = &gm.Cons{
+		Car: gm.List(
+			gm.NewSymbol("mod-time"),
+			gm.Integer(mt.Year()),
+			gm.Integer(mt.Month()),
+			gm.Integer(mt.Day()),
+			gm.Integer(mt.Hour()),
+			gm.Integer(mt.Minute()),
+			gm.Integer(mt.Second())),
+		Cdr: cons,
+	}
+	cons = &gm.Cons{
+		Car: &gm.Cons{
+			Car: gm.NewSymbol("mod-time-unix"),
+			Cdr: gm.Integer(mt.Unix()),
+		},
+		Cdr: cons,
+	}
+	return cons, nil
+}
+
 func funIsDirectory(ctx context.Context, w *gm.World, args []gm.Node) (gm.Node, error) {
 	fnameStr, ok := args[0].(gm.String)
 	if !ok {
