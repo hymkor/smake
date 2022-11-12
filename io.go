@@ -36,7 +36,7 @@ func funJoinPath(ctx context.Context, w *gm.World, list []gm.Node) (gm.Node, err
 	for _, node := range list {
 		str, ok := node.(gm.String)
 		if !ok {
-			return nil, fmt.Errorf("%w: %s", gm.ErrExpectedString, gm.ToString(node, gm.PRINT))
+			return nil, fmt.Errorf("%w: %#v", gm.ErrExpectedString, node)
 		}
 		paths = append(paths, str.String())
 	}
@@ -51,7 +51,7 @@ func cmdAssert(ctx context.Context, w *gm.World, node gm.Node) (gm.Node, error) 
 	if gm.HasValue(value) {
 		return gm.Null, nil
 	}
-	return gm.Null, fmt.Errorf("Assertion failed: %s", gm.ToString(node, gm.PRINT))
+	return gm.Null, fmt.Errorf("Assertion failed: %#v", node)
 }
 
 func funGetenv(ctx context.Context, w *gm.World, list []gm.Node) (gm.Node, error) {
@@ -126,7 +126,7 @@ func funTouch(ctx context.Context, w *gm.World, list []gm.Node) (gm.Node, error)
 func nodesToCommand(ctx context.Context, w *gm.World, list []gm.Node, out io.Writer) *exec.Cmd {
 	argv := make([]string, len(list))
 	for i, value := range list {
-		argv[i] = gm.ToString(value, gm.PRINC)
+		argv[i] = value.String()
 		if i > 0 {
 			out.Write([]byte{' '})
 		}

@@ -83,11 +83,11 @@ func expandLiteral(w *gm.World, s string) string {
 			switch s[1] {
 			case '@':
 				if val, err := w.Get(symbolTarget); err == nil {
-					return gm.ToString(val, gm.PRINC)
+					return val.String()
 				}
 			case '<':
 				if val, err := w.Get(symbolFirstSource); err == nil {
-					return gm.ToString(val, gm.PRINC)
+					return val.String()
 				}
 			case '?':
 				if list, err := w.Get(symbolUpdated); err == nil {
@@ -114,7 +114,7 @@ func expandLiteral(w *gm.World, s string) string {
 					return value
 				}
 			}
-			return gm.ToString(value, gm.PRINC)
+			return value.String()
 		}
 	})
 }
@@ -130,11 +130,11 @@ func funExpandString(ctx context.Context, w *gm.World, list []gm.Node) (gm.Node,
 func shouldUpdate(_list gm.Node) (bool, gm.Node, error) {
 	targetNode, list, err := gm.Shift(_list)
 	if err != nil {
-		return false, nil, fmt.Errorf("%w: %s", err, gm.ToString(_list, gm.PRINT))
+		return false, nil, fmt.Errorf("%w: %#v", err, _list)
 	}
 	targetPath, ok := targetNode.(gm.String)
 	if !ok {
-		return false, nil, fmt.Errorf("%w: %s", gm.ErrExpectedString, gm.ToString(targetNode, gm.PRINT))
+		return false, nil, fmt.Errorf("%w: %#v", gm.ErrExpectedString, targetNode)
 	}
 	targetInfo, err := os.Stat(targetPath.String())
 	if err != nil {
@@ -151,7 +151,7 @@ func shouldUpdate(_list gm.Node) (bool, gm.Node, error) {
 
 		sourceNode, list, err = gm.Shift(list)
 		if err != nil {
-			return false, nil, fmt.Errorf("%w: ..%s", err, gm.ToString(list, gm.PRINT))
+			return false, nil, fmt.Errorf("%w: ..%#v", err, list)
 		}
 		sourcePath, ok := sourceNode.(gm.String)
 		if !ok {
@@ -184,7 +184,7 @@ func doMake(ctx context.Context, w *gm.World, depend map[gm.String][2]gm.Node, r
 
 		source, sources, err = gm.Shift(sources)
 		if err != nil {
-			return false, fmt.Errorf("%w: %s", err, gm.ToString(sources, gm.PRINT))
+			return false, fmt.Errorf("%w: %#v", err, sources)
 		}
 		sourceStr, ok := source.(gm.String)
 		if !ok {
@@ -247,15 +247,15 @@ func cmdMake(ctx context.Context, w *gm.World, node gm.Node) (gm.Node, error) {
 		}
 		cond, action, err := w.ShiftAndEvalCar(ctx, condAndAction)
 		if err != nil {
-			return nil, fmt.Errorf("%w: %s", err, gm.ToString(condAndAction, gm.PRINT))
+			return nil, fmt.Errorf("%w: %#v", err, condAndAction)
 		}
 		targetNode, _, err := gm.Shift(cond)
 		if err != nil {
-			return nil, fmt.Errorf("%w: %s", err, gm.ToString(condAndAction, gm.PRINT))
+			return nil, fmt.Errorf("%w: %#v", err, condAndAction)
 		}
 		target, ok := targetNode.(gm.String)
 		if !ok {
-			return nil, fmt.Errorf("%w: %s", gm.ErrExpectedString, gm.ToString(targetNode, gm.PRINT))
+			return nil, fmt.Errorf("%w: %#v", gm.ErrExpectedString, targetNode)
 		}
 		if defaultTarget == "" {
 			defaultTarget = target
