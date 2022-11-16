@@ -114,9 +114,10 @@ Same as $(notdir FILEPATH) of GNU Make
 
 Same as $(basename FILEPATH) of GNU Make
 
-### (joinpath "DIR"... "FNAME")
+###  (pathjoin "DIR" .. "FNAME") , (joinpath "DIR"... "FNAME")
 
 Make path with "DIR"... "FNAME".
+(joinpath) is an alias of (pathjoin).
 Same as filepath.Join of golang.
 
 ### (-e FILENAME)
