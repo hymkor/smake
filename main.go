@@ -308,6 +308,7 @@ func setupFunctions(args []string) gm.Variables {
 		gm.NewSymbol("dir"):          &gm.Function{C: -1, F: funDir},
 		gm.NewSymbol("getenv"):       &gm.Function{C: 1, F: funGetenv},
 		gm.NewSymbol("getwd"):        gm.SpecialF(cmdGetwd),
+		gm.NewSymbol("joinpath"):     &gm.Function{C: -1, F: funJoinPath},
 		gm.NewSymbol("make"):         gm.SpecialF(cmdMake),
 		gm.NewSymbol("mv"):           &gm.Function{C: -1, F: funMove},
 		gm.NewSymbol("notdir"):       &gm.Function{C: 1, F: funNotDir},
@@ -318,11 +319,11 @@ func setupFunctions(args []string) gm.Variables {
 		gm.NewSymbol("sh"):           &gm.Function{C: -1, F: funSh},
 		gm.NewSymbol("sh-"):          &gm.Function{C: -1, F: funShIgnoreError},
 		gm.NewSymbol("shell"):        &gm.Function{C: 1, F: funShell},
+		gm.NewSymbol("shellexecute"): &gm.Function{C: -1, F: funShellExecute},
 		gm.NewSymbol("stat"):         &gm.Function{C: 1, F: funStat},
 		gm.NewSymbol("touch"):        &gm.Function{C: -1, F: funTouch},
 		gm.NewSymbol("wildcard"):     &gm.Function{C: 1, F: funWildcard},
 		gm.NewSymbol("x"):            &gm.Function{C: -1, F: funExecute},
-		gm.NewSymbol("shellexecute"): &gm.Function{C: -1, F: funShellExecute},
 		symbolPathSep:                gm.String(os.PathSeparator),
 	}
 	for i, sq := 0, argsSeq; i < 9; i++ {
