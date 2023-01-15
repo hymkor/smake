@@ -21,6 +21,24 @@ Other examples:
 
 - [examples/cc/Makefile.lsp](https://github.com/hymkor/smake/blob/master/examples/cc/Makefile.lsp) for C Project
 
+Install
+-------
+
+Download the zipfile for your environment from [Releases](https://github.com/hymkor/smake/releases) and unzip.
+
+If you have the scoop-installer,
+
+```
+scoop install https://raw.githubusercontent.com/hymkor/smake/master/smake.json
+```
+
+or
+
+```
+scoop bucket add hymkor https://github.com/hymkor/scoop-bucket
+scoop install smake
+```
+
 ## How to build SMake
 
 ```
