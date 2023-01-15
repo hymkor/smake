@@ -60,6 +60,8 @@
     ('("clean-zip")
      (apply #'rm (wildcard "*.zip"))
      )
+    ('("manifest")
+     (sh "make-scoop-manifest *.zip > smake.json"))
     );make
   );let
 ; vim:set lispwords+=foreach,env,mapc,make,pushd,while,doenv:
