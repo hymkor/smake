@@ -169,7 +169,7 @@ Copy file SRC... to DST (directory or new filename)
 
 Move file SRC... to DST (directory or new filename)
 
-### (stirng-split SEP SEQUENCE)
+### (string-split SEP SEQUENCE)
 
 `(string-split #\: "a:b:c")` =&gt; `("a" "b" "c")`
 
