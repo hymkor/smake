@@ -235,6 +235,10 @@ Move file SRC... to DST (directory or new filename)
 
 Call Windows-API: shellexecute
 
+### (fields "STRING")
+
+Split "STRING" with whilte-spaces. This function is similar with [strings.Fields](https://pkg.go.dev/strings@go1.20.1#Fields) in golang
+
 ### (let),(format) and so on
 
 They are compatible functions with ISLisp. See also [hymkor/gmnlisp](https://github.com/hymkor/gmnlisp)
