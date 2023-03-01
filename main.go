@@ -306,6 +306,7 @@ func setupFunctions(args []string) gm.Variables {
 		gm.NewSymbol("chdir"):        &gm.Function{C: 1, F: funChdir},
 		gm.NewSymbol("cp"):           &gm.Function{C: -1, F: funCopy},
 		gm.NewSymbol("dir"):          &gm.Function{C: -1, F: funDir},
+		gm.NewSymbol("fields"):       &gm.Function{C: 1, F: funFields},
 		gm.NewSymbol("getenv"):       &gm.Function{C: 1, F: funGetenv},
 		gm.NewSymbol("getwd"):        gm.SpecialF(cmdGetwd),
 		gm.NewSymbol("joinpath"):     &gm.Function{C: -1, F: funJoinPath},
@@ -342,6 +343,22 @@ func setupFunctions(args []string) gm.Variables {
 	}
 
 	return vars
+}
+
+func funFields(_ context.Context, w *gm.World, args []gm.Node) (gm.Node, error) {
+	s, ok := args[0].(gm.String)
+	if !ok {
+		return gm.Null, gm.ErrExpectedString
+	}
+	fields := strings.Fields(string(s))
+	var result gm.Node = gm.Null
+	for i := len(fields) - 1; i >= 0; i-- {
+		result = &gm.Cons{
+			Car: gm.String(fields[i]),
+			Cdr: result,
+		}
+	}
+	return result, nil
 }
 
 func mains(args []string) error {
