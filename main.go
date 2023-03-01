@@ -323,7 +323,7 @@ func setupFunctions(args []string) gm.Variables {
 		gm.NewSymbol("stat"):          &gm.Function{C: 1, F: funStat},
 		gm.NewSymbol("string-fields"): &gm.Function{C: 1, F: funFields},
 		gm.NewSymbol("touch"):         &gm.Function{C: -1, F: funTouch},
-		gm.NewSymbol("wildcard"):      &gm.Function{C: 1, F: funWildcard},
+		gm.NewSymbol("wildcard"):      &gm.Function{C: -1, F: funWildcard},
 		gm.NewSymbol("x"):             &gm.Function{C: -1, F: funExecute},
 		symbolPathSep:                 gm.String(os.PathSeparator),
 	}

@@ -47,19 +47,24 @@ func funAbsPath(ctx context.Context, w *gm.World, args []gm.Node) (gm.Node, erro
 }
 
 func funWildcard(ctx context.Context, w *gm.World, list []gm.Node) (gm.Node, error) {
-	pattern, ok := list[0].(gm.String)
-	if !ok {
-		return nil, gm.ErrExpectedString
+	var result gm.Node = gm.Null
+	for i := len(list) - 1; i >= 0; i-- {
+		pattern, ok := list[i].(gm.String)
+		if !ok {
+			return nil, gm.ErrExpectedString
+		}
+		match, err := filepath.Glob(pattern.String())
+		if err != nil {
+			return nil, err
+		}
+		for j := len(match) - 1; j >= 0; j-- {
+			result = &gm.Cons{
+				Car: gm.String(match[j]),
+				Cdr: result,
+			}
+		}
 	}
-	match, err := filepath.Glob(pattern.String())
-	if err != nil {
-		return nil, err
-	}
-	var result gm.ListBuilder
-	for _, s := range match {
-		result.Add(gm.String(s))
-	}
-	return result.Sequence(), nil
+	return result, nil
 }
 
 func funShell(ctx context.Context, w *gm.World, list []gm.Node) (gm.Node, error) {
