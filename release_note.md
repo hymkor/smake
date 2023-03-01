@@ -1,3 +1,5 @@
+- Implement (string-fields "S")
+
 v0.3.0
 ======
 Jan 16, 2023
