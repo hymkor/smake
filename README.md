@@ -170,9 +170,9 @@ Set the environment variable "NAME" to "VALUE".
 Set the environment variables and execute COMMANDS.
 Then, restores them to thier original values.
 
-### (wildcard "PATTERN")
+### (wildcard "PATTERN"...)
 
-Expand the PATTERN as a wildcard and return them as a list.
+Expand PATTERNs as a wildcard and return them as a list.
 
 ### (abspath "FILEPATH")
 

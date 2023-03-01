@@ -1,4 +1,5 @@
 - Implement (string-fields "S")
+- (wildcard) accepts N-arguments (N>=0)
 
 v0.3.0
 ======
