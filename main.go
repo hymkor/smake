@@ -280,7 +280,7 @@ var flagMakefile = flag.String("f", "Makefile.lsp", "Read FILE as a makefile.lsp
 
 var flagExecute = flag.String("e", "", "inline script")
 
-func setupFunctions(args []string) gm.Variables {
+func setupFunctions(args []string) (gm.Variables, gm.Functions) {
 	var cons gm.Node = gm.Null
 	var argsList gm.ListBuilder
 	for _, s := range args {
@@ -297,9 +297,12 @@ func setupFunctions(args []string) gm.Variables {
 	argsSeq := argsList.Sequence()
 
 	vars := gm.Variables{
+		gm.NewSymbol("$$"):     cons,
+		gm.NewSymbol("*args*"): argsSeq,
+		symbolPathSep:          gm.String(os.PathSeparator),
+	}
+	funcs := gm.Functions{
 		gm.NewSymbol("$"):             &gm.Function{C: 1, F: funExpandString},
-		gm.NewSymbol("$$"):            cons,
-		gm.NewSymbol("*args*"):        argsSeq,
 		gm.NewSymbol("abspath"):       &gm.Function{C: 1, F: funAbsPath},
 		gm.NewSymbol("assert"):        gm.SpecialF(cmdAssert),
 		gm.NewSymbol("basename"):      &gm.Function{C: 1, F: funBasename},
@@ -325,7 +328,6 @@ func setupFunctions(args []string) gm.Variables {
 		gm.NewSymbol("touch"):         &gm.Function{C: -1, F: funTouch},
 		gm.NewSymbol("wildcard"):      &gm.Function{C: -1, F: funWildcard},
 		gm.NewSymbol("x"):             &gm.Function{C: -1, F: funExecute},
-		symbolPathSep:                 gm.String(os.PathSeparator),
 	}
 	for i, sq := 0, argsSeq; i < 9; i++ {
 		var val gm.Node = gm.Null
@@ -342,7 +344,7 @@ func setupFunctions(args []string) gm.Variables {
 		println(err.Error())
 	}
 
-	return vars
+	return vars, funcs
 }
 
 func funFields(_ context.Context, w *gm.World, args []gm.Node) (gm.Node, error) {
@@ -388,9 +390,9 @@ func mains(args []string) error {
 		fd.Close()
 	}
 
-	vars := setupFunctions(args)
+	vars, functions := setupFunctions(args)
 
-	lisp := gm.New().Let(vars)
+	lisp := gm.New().Let(vars).Flet(functions)
 	if _, err := lisp.Interpret(ctx, embededLsp); err != nil {
 		panic(err.Error())
 	}

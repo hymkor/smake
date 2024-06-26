@@ -9,7 +9,8 @@ import (
 )
 
 func test(t *testing.T, code string, expect gm.Node) {
-	w := gm.New().Let(setupFunctions([]string{}))
+	v, f := setupFunctions([]string{})
+	w := gm.New().Let(v).Flet(f)
 	if _, err := w.Interpret(context.TODO(), embededLsp); err != nil {
 		panic(err.Error())
 	}
