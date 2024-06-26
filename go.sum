@@ -1,6 +1,6 @@
-github.com/hymkor/gmnlisp v0.2.2-0.20230205111708-dc63a9964e6e h1:bYE7syAnnN+IbtXvryklupPrZ5g+UwUN2pgAlJ1wjwc=
-github.com/hymkor/gmnlisp v0.2.2-0.20230205111708-dc63a9964e6e/go.mod h1:cfsik5tIdMp2/t2n3A46rU1GIEzwTvwbNzMZPJ+k3gs=
+github.com/hymkor/gmnlisp v0.6.0 h1:fAliigxpHkEQet3zuw2qWuvP4eZqImrDqRePUarwNlk=
+github.com/hymkor/gmnlisp v0.6.0/go.mod h1:2ExcfQOOh4EIALY6+kpNXRqrr+c5z7qmjMqZKTAWVcM=
 github.com/nyaosorg/go-windows-su v0.2.1 h1:5V0XavLyjOqPUp7psxxCvBISaneU4XmFPSMlejSl5sc=
 github.com/nyaosorg/go-windows-su v0.2.1/go.mod h1:fWKxSCXwGuDuW6ne0kLp/Cj0joXNDDw01G3LseQJYS0=
-golang.org/x/sys v0.5.0 h1:MUK/U/4lj1t1oPg0HfuXDN/Z1wv31ZJ/YcPiGccS4DU=
-golang.org/x/sys v0.5.0/go.mod h1:oPkhp1MJrh7nUepCBck5+mAzfO9JrbApNNgaTdGDITg=
+golang.org/x/sys v0.21.0 h1:rF+pYz3DAGSQAxAu1CbC7catZg4ebC4UIeIhKxBZvws=
+golang.org/x/sys v0.21.0/go.mod h1:/VUhepiaJMQUp4+oa/7Zr1D23ma6VTLIYjOOTFZPUcA=
