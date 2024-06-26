@@ -9,35 +9,35 @@ import (
 )
 
 func funBasename(ctx context.Context, w *gm.World, args []gm.Node) (gm.Node, error) {
-	_path, ok := args[0].(gm.String)
-	if !ok {
-		return nil, gm.ErrExpectedString
+	_path, err := gm.ExpectString(args[0])
+	if err != nil {
+		return nil, err
 	}
 	path := _path.String()
 	return gm.String(path[:len(path)-len(filepath.Ext(path))]), nil
 }
 
 func funDir(ctx context.Context, w *gm.World, args []gm.Node) (gm.Node, error) {
-	_path, ok := args[0].(gm.String)
-	if !ok {
-		return nil, gm.ErrExpectedString
+	_path, err := gm.ExpectString(args[0])
+	if err != nil {
+		return nil, err
 	}
 	path := _path.String()
 	return gm.String(filepath.Dir(path)), nil
 }
 
 func funNotDir(ctx context.Context, w *gm.World, args []gm.Node) (gm.Node, error) {
-	path1, ok := args[0].(gm.String)
-	if !ok {
-		return nil, gm.ErrExpectedString
+	path1, err := gm.ExpectString(args[0])
+	if err != nil {
+		return nil, err
 	}
 	return gm.String(filepath.Base(path1.String())), nil
 }
 
 func funAbsPath(ctx context.Context, w *gm.World, args []gm.Node) (gm.Node, error) {
-	path1, ok := args[0].(gm.String)
-	if !ok {
-		return nil, gm.ErrExpectedString
+	path1, err := gm.ExpectString(args[0])
+	if err != nil {
+		return nil, err
 	}
 	absPath, err := filepath.Abs(path1.String())
 	if err != nil {
@@ -49,9 +49,9 @@ func funAbsPath(ctx context.Context, w *gm.World, args []gm.Node) (gm.Node, erro
 func funWildcard(ctx context.Context, w *gm.World, list []gm.Node) (gm.Node, error) {
 	var result gm.Node = gm.Null
 	for i := len(list) - 1; i >= 0; i-- {
-		pattern, ok := list[i].(gm.String)
-		if !ok {
-			return nil, gm.ErrExpectedString
+		pattern, err := gm.ExpectString(list[i])
+		if err != nil {
+			return nil, err
 		}
 		match, err := filepath.Glob(pattern.String())
 		if err != nil {
@@ -68,9 +68,9 @@ func funWildcard(ctx context.Context, w *gm.World, list []gm.Node) (gm.Node, err
 }
 
 func funShell(ctx context.Context, w *gm.World, list []gm.Node) (gm.Node, error) {
-	s, ok := list[0].(gm.String)
-	if !ok {
-		return nil, gm.ErrExpectedString
+	s, err := gm.ExpectString(list[0])
+	if err != nil {
+		return nil, err
 	}
 	cmdline := s.String()
 	cmd := newShell(cmdline)

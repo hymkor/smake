@@ -52,9 +52,9 @@ func dollar(w *gm.World) func(string) (string, bool, error) {
 		if !ok {
 			return "", false, gm.ErrExpectedCons
 		}
-		valueStr, ok := cons.Cdr.(gm.String)
-		if !ok {
-			return "", false, gm.ErrExpectedString
+		valueStr, err := gm.ExpectString(cons.Cdr)
+		if err != nil {
+			return "", false, err
 		}
 		return valueStr.String(), true, nil
 	}
@@ -120,9 +120,9 @@ func expandLiteral(w *gm.World, s string) string {
 }
 
 func funExpandString(ctx context.Context, w *gm.World, list []gm.Node) (gm.Node, error) {
-	s, ok := list[0].(gm.String)
-	if !ok {
-		return nil, gm.ErrExpectedString
+	s, err := gm.ExpectString(list[0])
+	if err != nil {
+		return nil, err
 	}
 	return gm.String(expandLiteral(w, s.String())), nil
 }
@@ -132,9 +132,9 @@ func shouldUpdate(_list gm.Node) (bool, gm.Node, error) {
 	if err != nil {
 		return false, nil, fmt.Errorf("%w: %#v", err, _list)
 	}
-	targetPath, ok := targetNode.(gm.String)
-	if !ok {
-		return false, nil, fmt.Errorf("%w: %#v", gm.ErrExpectedString, targetNode)
+	targetPath, err := gm.ExpectString(targetNode)
+	if err != nil {
+		return false, nil, err
 	}
 	targetInfo, err := os.Stat(targetPath.String())
 	if err != nil {
@@ -153,9 +153,9 @@ func shouldUpdate(_list gm.Node) (bool, gm.Node, error) {
 		if err != nil {
 			return false, nil, fmt.Errorf("%w: ..%#v", err, list)
 		}
-		sourcePath, ok := sourceNode.(gm.String)
-		if !ok {
-			return false, nil, gm.ErrExpectedString
+		sourcePath, err := gm.ExpectString(sourceNode)
+		if err != nil {
+			return false, nil, err
 		}
 		sourceInfo, err := os.Stat(sourcePath.String())
 		if err != nil {
@@ -186,9 +186,9 @@ func doMake(ctx context.Context, w *gm.World, depend map[gm.String][2]gm.Node, r
 		if err != nil {
 			return false, fmt.Errorf("%w: %#v", err, sources)
 		}
-		sourceStr, ok := source.(gm.String)
-		if !ok {
-			return false, gm.ErrExpectedString
+		sourceStr, err := gm.ExpectString(source)
+		if err != nil {
+			return false, err
 		}
 		if _rule, ok := depend[sourceStr]; ok {
 			if _, err := doMake(ctx, w, depend, _rule); err != nil {
@@ -253,9 +253,9 @@ func cmdMake(ctx context.Context, w *gm.World, node gm.Node) (gm.Node, error) {
 		if err != nil {
 			return nil, fmt.Errorf("%w: %#v", err, condAndAction)
 		}
-		target, ok := targetNode.(gm.String)
-		if !ok {
-			return nil, fmt.Errorf("%w: %#v", gm.ErrExpectedString, targetNode)
+		target, err := gm.ExpectString(targetNode)
+		if err != nil {
+			return nil, err
 		}
 		if defaultTarget == "" {
 			defaultTarget = target
@@ -346,9 +346,9 @@ func setupFunctions(args []string) gm.Variables {
 }
 
 func funFields(_ context.Context, w *gm.World, args []gm.Node) (gm.Node, error) {
-	s, ok := args[0].(gm.String)
-	if !ok {
-		return gm.Null, gm.ErrExpectedString
+	s, err := gm.ExpectString(args[0])
+	if err != nil {
+		return gm.Null, err
 	}
 	fields := strings.Fields(string(s))
 	var result gm.Node = gm.Null

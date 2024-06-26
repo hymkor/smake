@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"fmt"
 	"os"
 
 	gm "github.com/hymkor/gmnlisp"
@@ -17,29 +16,29 @@ func funShellExecute(ctx context.Context, w *gm.World, list []gm.Node) (gm.Node,
 	default:
 		return nil, gm.ErrTooManyArguments
 	case 4:
-		dir, ok := list[3].(gm.String)
-		if !ok {
-			return nil, fmt.Errorf("[4]: %w", gm.ErrExpectedString)
+		dir, err := gm.ExpectString(list[3])
+		if err != nil {
+			return nil, err
 		}
 		sup.Directory = dir.String()
 		fallthrough
 	case 3:
-		param, ok := list[2].(gm.String)
-		if !ok {
-			return nil, fmt.Errorf("[3]: %w", gm.ErrExpectedString)
+		param, err := gm.ExpectString(list[2])
+		if err != nil {
+			return nil, err
 		}
 		sup.Param = param.String()
 		fallthrough
 	case 2:
-		action, ok := list[0].(gm.String)
-		if !ok {
-			return nil, fmt.Errorf("[1]: %w", gm.ErrExpectedString)
+		action, err := gm.ExpectString(list[0])
+		if err != nil {
+			return nil, err
 		}
 		sup.Action = action.String()
 
-		path, ok := list[1].(gm.String)
-		if !ok {
-			return nil, fmt.Errorf("[2]: %w", gm.ErrExpectedString)
+		path, err := gm.ExpectString(list[1])
+		if err != nil {
+			return nil, err
 		}
 		sup.Path = path.String()
 	case 1:
@@ -60,9 +59,9 @@ func trueOrNil(b bool) gm.Node {
 }
 
 func funStat(ctx context.Context, w *gm.World, args []gm.Node) (gm.Node, error) {
-	_fname, ok := args[0].(gm.String)
-	if !ok {
-		return nil, gm.ErrExpectedString
+	_fname, err := gm.ExpectString(args[0])
+	if err != nil {
+		return nil, err
 	}
 	fname := _fname.String()
 	stat, err := os.Stat(fname)

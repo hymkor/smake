@@ -22,9 +22,9 @@ func cmdGetwd(ctx context.Context, w *gm.World, _ gm.Node) (gm.Node, error) {
 }
 
 func funChdir(ctx context.Context, w *gm.World, list []gm.Node) (gm.Node, error) {
-	wd, ok := list[0].(gm.String)
-	if !ok {
-		return nil, gm.ErrExpectedString
+	wd, err := gm.ExpectString(list[0])
+	if err != nil {
+		return nil, err
 	}
 	dir := wd.String()
 	fmt.Fprintf(os.Stderr, "chdir \"%s\"\n", dir)
@@ -34,9 +34,9 @@ func funChdir(ctx context.Context, w *gm.World, list []gm.Node) (gm.Node, error)
 func funJoinPath(ctx context.Context, w *gm.World, list []gm.Node) (gm.Node, error) {
 	paths := make([]string, 0, len(list))
 	for _, node := range list {
-		str, ok := node.(gm.String)
-		if !ok {
-			return nil, fmt.Errorf("%w: %#v", gm.ErrExpectedString, node)
+		str, err := gm.ExpectString(node)
+		if err != nil {
+			return nil, err
 		}
 		paths = append(paths, str.String())
 	}
@@ -55,9 +55,9 @@ func cmdAssert(ctx context.Context, w *gm.World, node gm.Node) (gm.Node, error) 
 }
 
 func funGetenv(ctx context.Context, w *gm.World, list []gm.Node) (gm.Node, error) {
-	key, ok := list[0].(gm.String)
-	if !ok {
-		return nil, gm.ErrExpectedString
+	key, err := gm.ExpectString(list[0])
+	if err != nil {
+		return nil, err
 	}
 	value, ok := os.LookupEnv(key.String())
 	if !ok {
@@ -67,9 +67,9 @@ func funGetenv(ctx context.Context, w *gm.World, list []gm.Node) (gm.Node, error
 }
 
 func funSetenv(ctx context.Context, w *gm.World, list []gm.Node) (gm.Node, error) {
-	_key, ok := list[0].(gm.String)
-	if !ok {
-		return nil, gm.ErrExpectedString
+	_key, err := gm.ExpectString(list[0])
+	if err != nil {
+		return nil, err
 	}
 	key := _key.String()
 
@@ -77,9 +77,9 @@ func funSetenv(ctx context.Context, w *gm.World, list []gm.Node) (gm.Node, error
 		fmt.Fprintf(w.Errout(), "unsetenv \"%s\"\n", key)
 		return gm.Null, os.Unsetenv(key)
 	}
-	_value, ok := list[1].(gm.String)
-	if !ok {
-		return nil, gm.ErrExpectedString
+	_value, err := gm.ExpectString(list[1])
+	if err != nil {
+		return nil, err
 	}
 	value := _value.String()
 
@@ -89,9 +89,9 @@ func funSetenv(ctx context.Context, w *gm.World, list []gm.Node) (gm.Node, error
 
 func funRemove(ctx context.Context, w *gm.World, list []gm.Node) (gm.Node, error) {
 	for _, fnNode := range list {
-		fnStr, ok := fnNode.(gm.String)
-		if !ok {
-			return nil, gm.ErrExpectedString
+		fnStr, err := gm.ExpectString(fnNode)
+		if err != nil {
+			return nil, err
 		}
 		fname := fnStr.String()
 		if err := os.Remove(fname); err == nil {
@@ -104,9 +104,9 @@ func funRemove(ctx context.Context, w *gm.World, list []gm.Node) (gm.Node, error
 func funTouch(ctx context.Context, w *gm.World, list []gm.Node) (gm.Node, error) {
 	stamp := time.Now()
 	for _, fnNode := range list {
-		fnStr, ok := fnNode.(gm.String)
-		if !ok {
-			return nil, gm.ErrExpectedString
+		fnStr, err := gm.ExpectString(fnNode)
+		if err != nil {
+			return nil, err
 		}
 		fname := fnStr.String()
 		fd, err := os.OpenFile(fname, os.O_WRONLY|os.O_APPEND|os.O_CREATE, 0666)
@@ -150,9 +150,9 @@ func funExecute(ctx context.Context, w *gm.World, list []gm.Node) (gm.Node, erro
 
 func funSh(ctx context.Context, w *gm.World, list []gm.Node) (gm.Node, error) {
 	for _, node := range list {
-		s, ok := node.(gm.String)
-		if !ok {
-			return nil, gm.ErrExpectedString
+		s, err := gm.ExpectString(node)
+		if err != nil {
+			return nil, err
 		}
 		cmdline := s.String()
 		fmt.Fprintln(os.Stderr, cmdline)
@@ -168,9 +168,9 @@ func funSh(ctx context.Context, w *gm.World, list []gm.Node) (gm.Node, error) {
 
 func funShIgnoreError(ctx context.Context, w *gm.World, list []gm.Node) (gm.Node, error) {
 	for _, node := range list {
-		s, ok := node.(gm.String)
-		if !ok {
-			return nil, gm.ErrExpectedString
+		s, err := gm.ExpectString(node)
+		if err != nil {
+			return nil, err
 		}
 		cmdline := s.String()
 		fmt.Fprintln(os.Stderr, cmdline)
@@ -218,9 +218,9 @@ func copyOrMove(list []gm.Node, msg string, f func(s, d string) error) (gm.Node,
 	if len(list) < 2 {
 		return nil, gm.ErrTooFewArguments
 	}
-	_destinate, ok := list[len(list)-1].(gm.String)
-	if !ok {
-		return nil, gm.ErrExpectedString
+	_destinate, err := gm.ExpectString(list[len(list)-1])
+	if err != nil {
+		return nil, err
 	}
 	destinate := _destinate.String()
 
@@ -234,9 +234,9 @@ func copyOrMove(list []gm.Node, msg string, f func(s, d string) error) (gm.Node,
 	}
 
 	for _, s := range list[:len(list)-1] {
-		_source, ok := s.(gm.String)
-		if !ok {
-			return nil, gm.ErrExpectedString
+		_source, err := gm.ExpectString(s)
+		if err != nil {
+			return nil, err
 		}
 		source := _source.String()
 
@@ -247,7 +247,7 @@ func copyOrMove(list []gm.Node, msg string, f func(s, d string) error) (gm.Node,
 			newFile = destinate
 		}
 		fmt.Printf("%s \"%s\" \"%s\"\n", msg, source, newFile)
-		err := f(source, newFile)
+		err = f(source, newFile)
 		if err != nil {
 			return gm.Null, err
 		}
