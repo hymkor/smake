@@ -10,6 +10,7 @@ import (
 	"os"
 	"regexp"
 	"strings"
+	"time"
 
 	gm "github.com/hymkor/gmnlisp"
 )
@@ -125,6 +126,39 @@ func funExpandString(ctx context.Context, w *gm.World, list []gm.Node) (gm.Node,
 		return nil, err
 	}
 	return gm.String(expandLiteral(w, s.String())), nil
+}
+
+func getStamp(node gm.Node) (time.Time, error) {
+	thePath, err := gm.ExpectString(node)
+	if err != nil {
+		return time.Time{}, err
+	}
+	theStat, err := os.Stat(thePath.String())
+	if err != nil {
+		if os.IsNotExist(err) {
+			return time.Time{}, nil
+		}
+		return time.Time{}, err
+	}
+	return theStat.ModTime(), nil
+}
+
+func funUpdatep(ctx context.Context, w *gm.World, list []gm.Node) (gm.Node, error) {
+	targetStamp, err := getStamp(list[0])
+	if err != nil {
+		return nil, err
+	}
+	var result gm.Node = gm.Null
+	for i := 1; i < len(list); i++ {
+		sourceStamp, err := getStamp(list[i])
+		if err != nil {
+			return gm.Null, err
+		}
+		if sourceStamp.After(targetStamp) {
+			result = &gm.Cons{Car: list[i], Cdr: result}
+		}
+	}
+	return result, nil
 }
 
 func shouldUpdate(_list gm.Node) (bool, gm.Node, error) {
@@ -326,6 +360,7 @@ func setupFunctions(args []string) (gm.Variables, gm.Functions) {
 		gm.NewSymbol("stat"):          &gm.Function{C: 1, F: funStat},
 		gm.NewSymbol("string-fields"): &gm.Function{C: 1, F: funFields},
 		gm.NewSymbol("touch"):         &gm.Function{C: -1, F: funTouch},
+		gm.NewSymbol("updatep"):       &gm.Function{Min: 1, F: funUpdatep},
 		gm.NewSymbol("wildcard"):      &gm.Function{C: -1, F: funWildcard},
 		gm.NewSymbol("x"):             &gm.Function{C: -1, F: funExecute},
 	}
