@@ -123,24 +123,29 @@ go build
 
 It returns the list of newer files in SOURCES than TARGET
 
-### (make MAINTARGET ('(TARGET [SOURCES...]) COMMANDS...)...)
+### (make MAINTARGET ('(TARGET [SOURCES...]) COMMANDS...)...) *[deprecated]*
 
 If the file TARGET is newer than SOURCE or TARGET does not exist, execute COMMANDS.
 
 The entry after MAINTARGET is evaluated when the TARGET equals the MAINTARGET
 or the TARGET is written on other evaluated SOURCES.
 
-### ($ "$(VARNAME)")
+### ($ "$(VARNAME)") *[deprecated]*
 
 Expand the value of the variable written in the string-literal.
 
 - "$(x)" to the value of the symbol x or the environment variable.
+- "$/" is same as "$($/)"
+
+These are available in `(make)` block
+
 - "$&lt;" is same as "$($&lt;)"
 - "$?" is same as "$($?)"
 - "$@" is same as "$($@)"
-- "$/" is same as "$($/)"
 
-### (x "COMMAND" "ARG-1" "ARG-2" ...)
+### (x "COMMAND" "ARG-1" "ARG-2" ...) *[deprecated]*
+### (spawnlp "COMMAND" "ARG-1" "ARG-2" ...)
+### (spawnvp "COMMAND" '("ARG-1" "ARG-2" ...))
 
 Execute the external executable directly. If it failes, top.
 
@@ -208,7 +213,7 @@ Same as $(notdir FILEPATH) of GNU Make
 
 Same as $(basename FILEPATH) of GNU Make
 
-###  (pathjoin "DIR" .. "FNAME") , (joinpath "DIR"... "FNAME")
+### (pathjoin "DIR" .. "FNAME") , (joinpath "DIR"... "FNAME")
 
 Make path with "DIR"... "FNAME".
 (joinpath) is an alias of (pathjoin).
@@ -257,7 +262,7 @@ Call Windows-API: shellexecute
 
 Split "STRING" with whilte-spaces. This function is similar with [strings.Fields](https://pkg.go.dev/strings@go1.20.1#Fields) in golang
 
-### (let),(format) and so on
+### (let), (format) and so on
 
 They are compatible functions with ISLisp. See also [hymkor/gmnlisp](https://github.com/hymkor/gmnlisp)
 
@@ -267,10 +272,13 @@ It is `t` (true) when %OS% is `Windows_NT`
 
 ## The built-in variables
 
+- $/ - OS-specific path separator (Windows `\` , UNIX `/` )
+- \*args\* - the command-line arguments
+- $1...$9 - the same as `(elt *args* N)`
+- $0 ... the current executing smake filename
+
+These are available in `(make)` block
+
 - $@ - the target filename
 - $&lt; - the first source filename
 - $? - the updated source filenames
-- $/ - OS-specific path separator (Windows \ , UNIX / )
-- \*args\* - the command-line arguments
-- $1...$9 - the same as (elt \*args\* N)
-- $0 ... the current executing smake filename
