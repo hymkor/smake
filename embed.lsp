@@ -63,3 +63,5 @@
     (dolist (s sources)
       (setq newsrc (append newsrc (if (consp s) s (list s)))))
     (apply #'updatep_ target newsrc)))
+(defun spawnvp (cmd params)
+  (apply #'spawnlp cmd params))
