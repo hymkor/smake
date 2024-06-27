@@ -1,5 +1,8 @@
 - Implement (string-fields "S")
 - (wildcard) accepts N-arguments (N>=0)
+- Update gmnlisp to v0.6.0+ (latest master)
+    - `(apply #'make)` can not be availale now
+- Implement `(updatep OBJ SRC*)` which returns the newer files in `SRC` than `OBJ`
 
 v0.3.0
 ======
