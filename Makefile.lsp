@@ -55,7 +55,7 @@
      (format b " \"~A\"" VERSION)
      (format b " \"~A\"" VERSION)
      (foreach (zip (wildcard (string-append NAME "-" VERSION "-*.zip")))
-       (format b " \~A\"" zip))
+       (format b " \"~A\"" zip))
      (sh (get-output-stream-string b))))
 
   (("clean-zip")
