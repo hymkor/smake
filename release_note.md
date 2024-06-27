@@ -1,3 +1,5 @@
+- The SOURCES of `(updatep TARGET SOURCES...)` can include the sub list of source files now
+
 v0.4.0
 ======
 Jun 27, 2024
