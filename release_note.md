@@ -1,4 +1,5 @@
 - The SOURCES of `(updatep TARGET SOURCES...)` can include the sub list of source files now
+- Add `(spawnlp)` and `(spawnvp)`
 
 v0.4.0
 ======
