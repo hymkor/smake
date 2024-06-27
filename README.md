@@ -1,7 +1,7 @@
 SMake (Make by S-expression)
 ============================
 
-SMake is the build tool like make(UNIX) whose Makefile is written with S-expression.
+SMake is the build tool like MAKE(UNIX) whose Makefile is written with S-expression.
 
 [Makefile.lsp](./Makefile.lsp):
 
