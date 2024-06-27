@@ -3,7 +3,7 @@ SMake (Make by S-expression)
 
 SMake is the build tool like make(UNIX) whose Makefile is written with S-expression.
 
-Makefile.lsp:
+[Makefile.lsp](./Makefile.lsp):
 
 ```Makefile.lsp
 (defglobal EXE     (shell "go env GOEXE"))
@@ -85,7 +85,7 @@ Makefile.lsp:
 
 Other examples:
 
-- [examples/cc/Makefile.lsp](https://github.com/hymkor/smake/blob/master/examples/cc/Makefile.lsp) for C Project
+- [examples/cc/Makefile.lsp](./examples/cc/Makefile.lsp) for C Project
 
 Install
 -------
