@@ -368,6 +368,7 @@ func setupFunctions(args []string) (gm.Variables, gm.Functions) {
 		gm.NewSymbol("updatep_"):      &gm.Function{Min: 1, F: funUpdatep},
 		gm.NewSymbol("wildcard"):      &gm.Function{C: -1, F: funWildcard},
 		gm.NewSymbol("x"):             &gm.Function{C: -1, F: funExecute},
+		gm.NewSymbol("spawnlp"):       &gm.Function{C: -1, F: funExecute},
 	}
 	for i, sq := 0, argsSeq; i < 9; i++ {
 		var val gm.Node = gm.Null
