@@ -117,6 +117,24 @@ scoop install smake
 go build
 ```
 
+## Lisp References
+
+### Base interpreter
+
++ [hymkor/gmnlisp](https://github.com/hymkor/gmnlisp)
+
+### ISLisp Documents (English)
+
++ [ISLISP - Wikipedia](https://en.wikipedia.org/wiki/ISLISP)
++ [ISLisp Home Page][ISLisp]
+
+[ISLisp]: http://islisp.org/
+
+### ISLisp Documents (Japanese)
+
++ [JISX3012:1998 プログラム言語ＩＳＬＩＳＰ](https://kikakurui.com/x3/X3012-1998-01.html)
++ [M.Hiroi's Home Page / お気楽 ISLisp プログラミング超入門](http://www.nct9.ne.jp/m_hiroi/clisp/islisp.html)
+
 ## The functions available in Makefile.lsp
 
 ### (updatep TARGET SOURCES...)
