@@ -2,7 +2,6 @@
 (defglobal NAME    (notdir (getwd)))
 (defglobal TARGET  (string-append NAME EXE))
 (defglobal SOURCE  (wildcard "*.go"))
-(defglobal ALL     (append (list TARGET "Makefile.lsp" "embed.lsp" "go.mod" "go.sum") SOURCE))
 (defglobal NUL     (if windows "NUL" "/dev/null"))
 (defglobal VERSION
   (catch
@@ -11,26 +10,17 @@
       (lambda (c) (throw 'notag "v0.0.0"))
       (shell (string-append "git describe --tags 2>" NUL)))))
 
-(make $1
-  (ALL
-    (sh "go fmt"
-        (format nil "go build -ldflags \"-s -w -X main.version=~A\"" VERSION)))
-
-  ('("get")
+(case $1
+  (("get")
    (sh "go get -u"
        "go get -u github.com/hymkor/gmnlisp@master"
        "go mod tidy"))
 
-  ('("touch")
+  (("touch")
    (foreach (fname SOURCE)
      (touch fname)))
 
-  ('("readme" "README.md" "Makefile.lsp"))
-
-  ('("README.md" "_README.md" "Makefile.lsp")
-   (sh (format nil "gmnlpp ~s > ~s" $< $@)))
-
-  ('("clean")
+  (("clean")
    (pushd "examples/cc"
      (x $0 "clean"))
    (foreach (fname (wildcard "*~"))
@@ -38,16 +28,15 @@
    (if (-e TARGET)
      (mv TARGET (string-append "." TARGET "~"))))
 
-  ('("install")
+  (("install")
    (foreach (path (string-split #\newline (q "where" (notdir $0))))
      (if (not (equal path $0))
        (cp $0 path))))
 
-  ('("test")
+  (("test")
    (x "go" "test"))
 
-  ('("package")
-   (let ((version (shell "git describe --tag")))
+  (("dist")
      (foreach (goos '("linux" "windows"))
        (foreach (goarch '("386" "amd64"))
          (env (("GOOS" goos) ("GOARCH" goarch))
@@ -56,10 +45,10 @@
              (rm target)
              (x "go" "build")
              (x "zip"
-                (string-append NAME "-" version "-" goos "-" goarch ".zip")
-                target)))))))
+                (string-append NAME "-" VERSION "-" goos "-" goarch ".zip")
+                target))))))
 
-  ('("release")
+  (("release")
    (let ((cmdline "gh release create -d --notes \"\" -t"))
      (setq cmdline (string-append cmdline " \"" VERSION "\""))
      (setq cmdline (string-append cmdline " \"" VERSION "\""))
@@ -67,11 +56,20 @@
        (setq cmdline (string-append cmdline " \"" zip "\"")))
      (sh cmdline)))
 
-  ('("clean-zip")
+  (("clean-zip")
    (foreach (fname (wildcard "*.zip"))
      (rm fname)))
 
-  ('("manifest")
-   (sh "make-scoop-manifest *.zip > smake.json")))
+  (("manifest")
+   (sh "make-scoop-manifest *.zip > smake.json"))
+
+  (("readme")
+   (sh "example-into-readme"))
+
+  (t
+    (if (apply #'updatep TARGET "Makefile.lsp" "embed.lsp" "go.mod" "go.sum" SOURCE)
+        (sh "go fmt"
+            (format nil "go build -ldflags \"-s -w -X main.version=~A\"" VERSION))))
+  ) ; end-case
 
 ; vim:set lispwords+=foreach,env,mapc,make,pushd,while,doenv:
