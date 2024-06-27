@@ -1,4 +1,4 @@
-(defglobal EXE     (if windows ".exe" ""))
+(defglobal EXE     (shell "go env GOEXE"))
 (defglobal NAME    (notdir (getwd)))
 (defglobal TARGET  (string-append NAME EXE))
 (defglobal SOURCE  (wildcard "*.go"))
