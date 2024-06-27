@@ -22,7 +22,7 @@
 
   (("clean")
    (pushd "examples/cc"
-     (x $0 "clean"))
+     (spawnlp $0 "clean"))
    (foreach (fname (wildcard "*~"))
      (rm fname))
    (if (-e TARGET)
@@ -34,27 +34,29 @@
        (cp $0 path))))
 
   (("test")
-   (x "go" "test"))
+   (sh "go test"))
 
   (("dist")
-     (foreach (goos '("linux" "windows"))
-       (foreach (goarch '("386" "amd64"))
-         (env (("GOOS" goos) ("GOARCH" goarch))
-           (let* ((exe (shell "go env GOEXE"))
-                  (target (string-append NAME exe)))
-             (rm target)
-             (x "go" "build")
-             (x "zip"
-                (string-append NAME "-" VERSION "-" goos "-" goarch ".zip")
-                target))))))
+   (foreach (goos '("linux" "windows"))
+     (foreach (goarch '("386" "amd64"))
+       (env (("GOOS" goos) ("GOARCH" goarch))
+         (let* ((exe (shell "go env GOEXE"))
+                (target (string-append NAME exe)))
+           (rm target)
+           (sh "go build")
+           (spawnlp
+             "zip"
+             (string-append NAME "-" VERSION "-" goos "-" goarch ".zip")
+             target))))))
 
   (("release")
-   (let ((cmdline "gh release create -d --notes \"\" -t"))
-     (setq cmdline (string-append cmdline " \"" VERSION "\""))
-     (setq cmdline (string-append cmdline " \"" VERSION "\""))
+   (let ((b (create-string-output-stream)))
+     (format b "gh release create -d --notes \"\" -t")
+     (format b " \"~A\"" VERSION)
+     (format b " \"~A\"" VERSION)
      (foreach (zip (wildcard (string-append NAME "-" VERSION "-*.zip")))
-       (setq cmdline (string-append cmdline " \"" zip "\"")))
-     (sh cmdline)))
+       (format b " \~A\"" zip))
+     (sh (get-output-stream-string b))))
 
   (("clean-zip")
    (foreach (fname (wildcard "*.zip"))
@@ -68,8 +70,12 @@
 
   (t
     (if (updatep TARGET "Makefile.lsp" "embed.lsp" "go.mod" "go.sum" SOURCE)
-        (sh "go fmt"
-            (format nil "go build -ldflags \"-s -w -X main.version=~A\"" VERSION))))
+      (progn
+        (sh "go fmt")
+        (spawnlp "go" "build" "-ldflags"
+                 (string-append "-s -w -X main.version=" VERSION)))
+      )
+    ) ; end-t
   ) ; end-case
 
 ; vim:set lispwords+=foreach,env,mapc,make,pushd,while,doenv:
