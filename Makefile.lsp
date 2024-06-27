@@ -67,7 +67,7 @@
    (sh "example-into-readme"))
 
   (t
-    (if (updatep* TARGET "Makefile.lsp" "embed.lsp" "go.mod" "go.sum" SOURCE)
+    (if (updatep TARGET "Makefile.lsp" "embed.lsp" "go.mod" "go.sum" SOURCE)
         (sh "go fmt"
             (format nil "go build -ldflags \"-s -w -X main.version=~A\"" VERSION))))
   ) ; end-case
