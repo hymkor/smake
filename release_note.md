@@ -3,6 +3,7 @@
 - Update gmnlisp to v0.6.0+ (latest master)
     - `(apply #'make)` can not be availale now
 - Implement `(updatep OBJ SRC*)` which returns the newer files in `SRC` than `OBJ`
+- Implement `-version` option
 
 v0.3.0
 ======
