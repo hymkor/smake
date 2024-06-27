@@ -1,13 +1,20 @@
-(defglobal EXE    (if windows ".exe" ""))
-(defglobal NAME   (notdir (getwd)))
-(defglobal TARGET (string-append NAME EXE))
-(defglobal SOURCE (wildcard "*.go"))
-(defglobal ALL    (append (list TARGET "Makefile.lsp" "embed.lsp" "go.mod" "go.sum") SOURCE))
+(defglobal EXE     (if windows ".exe" ""))
+(defglobal NAME    (notdir (getwd)))
+(defglobal TARGET  (string-append NAME EXE))
+(defglobal SOURCE  (wildcard "*.go"))
+(defglobal ALL     (append (list TARGET "Makefile.lsp" "embed.lsp" "go.mod" "go.sum") SOURCE))
+(defglobal NUL     (if windows "NUL" "/dev/null"))
+(defglobal VERSION
+  (catch
+    'notag
+    (with-handler
+      (lambda (c) (throw 'notag "v0.0.0"))
+      (shell (string-append "git describe --tags 2>" NUL)))))
 
 (make $1
   (ALL
-   (sh "go fmt"
-       "go build"))
+    (sh "go fmt"
+        (format nil "go build -ldflags \"-s -w -X main.version=~A\"" VERSION)))
 
   ('("get")
    (sh "go get -u"
