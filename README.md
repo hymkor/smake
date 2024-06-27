@@ -5,73 +5,68 @@ SMake is the build tool like make(UNIX) whose Makefile is written with S-express
 
 Makefile.lsp:
 
-```lisp
-(let*
-  ((EXE (if windows ".exe" ""))
-   (NAME (notdir (getwd)))
-   (AOUT (string-append NAME EXE))
-   (SOURCE (wildcard "*.go"))
-   )
-  (make $1
-    ((append (list AOUT "Makefile.lsp" "embed.lsp" "go.mod" "go.sum") SOURCE)
-     (sh "go fmt"
-         "go build")
-     )
-    ('("get")
-     (sh "go get -u"
-         "go get -u github.com/hymkor/gmnlisp@master"
-         "go mod tidy")
-     )
-    ('("update")
-     (apply #'touch SOURCE)
-     )
-    ('("readme" "README.md" "Makefile.lsp")
-     )
-    ('("README.md" "_README.md" "Makefile.lsp")
-     (sh (format nil "gmnlpp ~s > ~s" $< $@))
-     )
-    ('("clean")
-     (pushd "examples/cc"
-       (x $0 "clean")
-       )
-     (apply #'rm (wildcard "*~"))
-     (if (-e AOUT)
-       (mv AOUT (format nil ".~a~~" AOUT))
-       )
-     )
-    ('("install")
-     (foreach (path (string-split #\newline (q "where" (notdir $0))))
-       (if (not (equal path $0))
-         (cp $0 path)))
-     )
-    ('("test")
-     (x "go" "test")
-     )
-    ('("package")
-     (let ((version (shell "git describe --tag")))
-       (foreach (goos '("linux" "windows"))
-         (foreach (goarch '("386" "amd64"))
-           (env (("GOOS" goos) ("GOARCH" goarch))
-             (let* ((exe (shell "go env GOEXE"))
-                    (aout (string-append NAME exe)))
-               (rm aout)
-               (x "go" "build")
-               (x "zip"
-                  (string-append NAME "-" version "-" goos "-" goarch ".zip")
-                  aout)
-               )
-             )
-           )
-         )
-       )
-     ) ; "package"
-    ('("clean-zip")
-     (apply #'rm (wildcard "*.zip"))
-     )
-    ('("manifest")
-     (sh "make-scoop-manifest *.zip > smake.json"))
-    );make
-  );let
+```Makefile.lsp
+(defglobal EXE    (if windows ".exe" ""))
+(defglobal NAME   (notdir (getwd)))
+(defglobal TARGET (string-append NAME EXE))
+(defglobal SOURCE (wildcard "*.go"))
+(defglobal ALL    (append (list TARGET "Makefile.lsp" "embed.lsp" "go.mod" "go.sum") SOURCE))
+
+(make $1
+  (ALL
+   (sh "go fmt"
+       "go build"))
+
+  ('("get")
+   (sh "go get -u"
+       "go get -u github.com/hymkor/gmnlisp@master"
+       "go mod tidy"))
+
+  ('("touch")
+   (foreach (fname SOURCE)
+     (touch fname)))
+
+  ('("readme" "README.md" "Makefile.lsp"))
+
+  ('("README.md" "_README.md" "Makefile.lsp")
+   (sh (format nil "gmnlpp ~s > ~s" $< $@)))
+
+  ('("clean")
+   (pushd "examples/cc"
+     (x $0 "clean"))
+   (foreach (fname (wildcard "*~"))
+     (rm fname))
+   (if (-e TARGET)
+     (mv TARGET (string-append "." TARGET "~"))))
+
+  ('("install")
+   (foreach (path (string-split #\newline (q "where" (notdir $0))))
+     (if (not (equal path $0))
+       (cp $0 path))))
+
+  ('("test")
+   (x "go" "test"))
+
+  ('("package")
+   (let ((version (shell "git describe --tag")))
+     (foreach (goos '("linux" "windows"))
+       (foreach (goarch '("386" "amd64"))
+         (env (("GOOS" goos) ("GOARCH" goarch))
+           (let* ((exe (shell "go env GOEXE"))
+                  (target (string-append NAME exe)))
+             (rm target)
+             (x "go" "build")
+             (x "zip"
+                (string-append NAME "-" version "-" goos "-" goarch ".zip")
+                target)))))))
+
+  ('("clean-zip")
+   (foreach (fname (wildcard "*.zip"))
+     (rm fname)))
+
+  ('("manifest")
+   (sh "make-scoop-manifest *.zip > smake.json")))
+
 ; vim:set lispwords+=foreach,env,mapc,make,pushd,while,doenv:
 ```
 
@@ -84,7 +79,13 @@ Install
 
 Download the zipfile for your environment from [Releases](https://github.com/hymkor/smake/releases) and unzip.
 
-If you have the scoop-installer,
+### Use Go-installer
+
+```
+go install github.com/hymkor/smake@latest
+```
+
+### Use scoop-installer
 
 ```
 scoop install https://raw.githubusercontent.com/hymkor/smake/master/smake.json
@@ -104,6 +105,10 @@ go build
 ```
 
 ## The functions available in Makefile.lsp
+
+### (updatep TARGET SOURCES...)
+
+It returns the list of newer files in SOURCES than TARGET
 
 ### (make MAINTARGET ('(TARGET [SOURCES...]) COMMANDS...)...)
 
