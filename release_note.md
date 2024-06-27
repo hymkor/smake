@@ -1,3 +1,7 @@
+v0.4.0
+======
+Jun 27, 2024
+
 - Implement (string-fields "S")
 - (wildcard) accepts N-arguments (N>=0)
 - Update gmnlisp to v0.6.0+ (latest master)
