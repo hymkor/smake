@@ -59,6 +59,14 @@
                 (string-append NAME "-" version "-" goos "-" goarch ".zip")
                 target)))))))
 
+  ('("release")
+   (let ((cmdline "gh release create -d --notes \"\" -t"))
+     (setq cmdline (string-append cmdline " \"" VERSION "\""))
+     (setq cmdline (string-append cmdline " \"" VERSION "\""))
+     (foreach (zip (wildcard (string-append NAME "-" VERSION "-*.zip")))
+       (setq cmdline (string-append cmdline " \"" zip "\"")))
+     (sh cmdline)))
+
   ('("clean-zip")
    (foreach (fname (wildcard "*.zip"))
      (rm fname)))
