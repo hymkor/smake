@@ -9,6 +9,7 @@ import (
 	"io"
 	"os"
 	"regexp"
+	"runtime"
 	"strings"
 	"time"
 
@@ -17,6 +18,8 @@ import (
 
 //go:embed embed.lsp
 var embededLsp string
+
+var version string = "snapshot"
 
 const (
 	stringTarget      = "$@"
@@ -310,6 +313,8 @@ func cmdMake(ctx context.Context, w *gm.World, node gm.Node) (gm.Node, error) {
 	return gm.Null, nil
 }
 
+var flagVersion = flag.Bool("version", false, "show version")
+
 var flagMakefile = flag.String("f", "Makefile.lsp", "Read FILE as a makefile.lsp")
 
 var flagExecute = flag.String("e", "", "inline script")
@@ -400,6 +405,15 @@ func funFields(_ context.Context, w *gm.World, args []gm.Node) (gm.Node, error) 
 
 func mains(args []string) error {
 	var source []byte
+
+	if *flagVersion {
+		fmt.Printf("smake %s-%s-%s by %s\n",
+			version,
+			runtime.GOOS,
+			runtime.GOARCH,
+			runtime.Version())
+		return nil
+	}
 
 	ctx := context.Background()
 
