@@ -37,7 +37,7 @@ var (
 	symbolPathSep     = gm.NewSymbol(stringPathSep)
 )
 
-func dollar(w *gm.World) func(string) (string, bool, error) {
+func dollar(ctx context.Context, w *gm.World) func(string) (string, bool, error) {
 	assoc, err := w.Get(gm.NewSymbol("$"))
 	if err != nil {
 		return func(string) (string, bool, error) {
@@ -45,18 +45,18 @@ func dollar(w *gm.World) func(string) (string, bool, error) {
 		}
 	}
 	return func(s string) (string, bool, error) {
-		pair, err := gm.Assoc(gm.String(s), assoc)
+		pair, err := gm.Assoc(ctx, w, gm.String(s), assoc)
 		if err != nil {
 			return "", false, err
 		}
 		if gm.IsNull(pair) {
 			return "", false, nil
 		}
-		cons, ok := pair.(*gm.Cons)
-		if !ok {
-			return "", false, gm.ErrExpectedCons
+		cons, err := gm.ExpectClass[*gm.Cons](ctx, w, pair)
+		if err != nil {
+			return "", false, err
 		}
-		valueStr, err := gm.ExpectString(cons.Cdr)
+		valueStr, err := gm.ExpectClass[gm.String](ctx, w, cons.Cdr)
 		if err != nil {
 			return "", false, err
 		}
@@ -64,24 +64,24 @@ func dollar(w *gm.World) func(string) (string, bool, error) {
 	}
 }
 
-func joinSequence(w *gm.World, node gm.Node) string {
+func joinSequence(ctx context.Context, w *gm.World, node gm.Node) string {
 	var buffer strings.Builder
 	if _, ok := node.(gm.Sequence); ok {
-		gm.SeqEach(node, func(value gm.Node) error {
+		gm.SeqEach(ctx, w, node, func(value gm.Node) error {
 			if buffer.Len() > 0 {
 				buffer.WriteByte(' ')
 			}
-			value.PrintTo(&buffer, gm.PRINC)
+			buffer.WriteString(value.String())
 			return nil
 		})
 	} else {
-		node.PrintTo(&buffer, gm.PRINC)
+		buffer.WriteString(node.String())
 	}
 	return buffer.String()
 }
 
-func expandLiteral(w *gm.World, s string) string {
-	dic := dollar(w)
+func expandLiteral(ctx context.Context, w *gm.World, s string) string {
+	dic := dollar(ctx, w)
 	return rxEmbed.ReplaceAllStringFunc(s, func(s string) string {
 		if len(s) == 2 {
 			switch s[1] {
@@ -95,7 +95,7 @@ func expandLiteral(w *gm.World, s string) string {
 				}
 			case '?':
 				if list, err := w.Get(symbolUpdated); err == nil {
-					return joinSequence(w, list)
+					return joinSequence(ctx, w, list)
 				}
 			case '/':
 				return string(os.PathSeparator)
@@ -124,15 +124,15 @@ func expandLiteral(w *gm.World, s string) string {
 }
 
 func funExpandString(ctx context.Context, w *gm.World, list []gm.Node) (gm.Node, error) {
-	s, err := gm.ExpectString(list[0])
+	s, err := gm.ExpectClass[gm.String](ctx, w, list[0])
 	if err != nil {
 		return nil, err
 	}
-	return gm.String(expandLiteral(w, s.String())), nil
+	return gm.String(expandLiteral(ctx, w, s.String())), nil
 }
 
-func getStamp(node gm.Node) (time.Time, error) {
-	thePath, err := gm.ExpectString(node)
+func getStamp(ctx context.Context, w *gm.World, node gm.Node) (time.Time, error) {
+	thePath, err := gm.ExpectClass[gm.String](ctx, w, node)
 	if err != nil {
 		return time.Time{}, err
 	}
@@ -147,13 +147,13 @@ func getStamp(node gm.Node) (time.Time, error) {
 }
 
 func funUpdatep(ctx context.Context, w *gm.World, list []gm.Node) (gm.Node, error) {
-	targetStamp, err := getStamp(list[0])
+	targetStamp, err := getStamp(ctx, w, list[0])
 	if err != nil {
 		return nil, err
 	}
 	var result gm.Node = gm.Null
 	for i := 1; i < len(list); i++ {
-		sourceStamp, err := getStamp(list[i])
+		sourceStamp, err := getStamp(ctx, w, list[i])
 		if err != nil {
 			return gm.Null, err
 		}
@@ -164,12 +164,12 @@ func funUpdatep(ctx context.Context, w *gm.World, list []gm.Node) (gm.Node, erro
 	return result, nil
 }
 
-func shouldUpdate(_list gm.Node) (bool, gm.Node, error) {
+func shouldUpdate(ctx context.Context, w *gm.World, _list gm.Node) (bool, gm.Node, error) {
 	targetNode, list, err := gm.Shift(_list)
 	if err != nil {
 		return false, nil, fmt.Errorf("%w: %#v", err, _list)
 	}
-	targetPath, err := gm.ExpectString(targetNode)
+	targetPath, err := gm.ExpectClass[gm.String](ctx, w, targetNode)
 	if err != nil {
 		return false, nil, err
 	}
@@ -190,7 +190,7 @@ func shouldUpdate(_list gm.Node) (bool, gm.Node, error) {
 		if err != nil {
 			return false, nil, fmt.Errorf("%w: ..%#v", err, list)
 		}
-		sourcePath, err := gm.ExpectString(sourceNode)
+		sourcePath, err := gm.ExpectClass[gm.String](ctx, w, sourceNode)
 		if err != nil {
 			return false, nil, err
 		}
@@ -223,7 +223,7 @@ func doMake(ctx context.Context, w *gm.World, depend map[gm.String][2]gm.Node, r
 		if err != nil {
 			return false, fmt.Errorf("%w: %#v", err, sources)
 		}
-		sourceStr, err := gm.ExpectString(source)
+		sourceStr, err := gm.ExpectClass[gm.String](ctx, w, source)
 		if err != nil {
 			return false, err
 		}
@@ -233,7 +233,7 @@ func doMake(ctx context.Context, w *gm.World, depend map[gm.String][2]gm.Node, r
 			}
 		}
 	}
-	isUpdate, updatedFiles, err := shouldUpdate(rule[0])
+	isUpdate, updatedFiles, err := shouldUpdate(ctx, w, rule[0])
 	if err != nil {
 		return false, err
 	}
@@ -290,7 +290,7 @@ func cmdMake(ctx context.Context, w *gm.World, node gm.Node) (gm.Node, error) {
 		if err != nil {
 			return nil, fmt.Errorf("%w: %#v", err, condAndAction)
 		}
-		target, err := gm.ExpectString(targetNode)
+		target, err := gm.ExpectClass[gm.String](ctx, w, targetNode)
 		if err != nil {
 			return nil, err
 		}
@@ -319,7 +319,7 @@ var flagMakefile = flag.String("f", "Makefile.lsp", "Read FILE as a makefile.lsp
 
 var flagExecute = flag.String("e", "", "inline script")
 
-func setupFunctions(args []string) (gm.Variables, gm.Functions) {
+func setupFunctions(ctx context.Context, w *gm.World, args []string) (gm.Variables, gm.Functions) {
 	var cons gm.Node = gm.Null
 	var argsList gm.ListBuilder
 	for _, s := range args {
@@ -330,7 +330,7 @@ func setupFunctions(args []string) (gm.Variables, gm.Functions) {
 					Cdr: gm.String(value)},
 				Cdr: cons}
 		} else {
-			argsList.Add(gm.String(s))
+			argsList.Add(ctx, w, gm.String(s))
 		}
 	}
 	argsSeq := argsList.Sequence()
@@ -388,8 +388,8 @@ func setupFunctions(args []string) (gm.Variables, gm.Functions) {
 	return vars, funcs
 }
 
-func funFields(_ context.Context, w *gm.World, args []gm.Node) (gm.Node, error) {
-	s, err := gm.ExpectString(args[0])
+func funFields(ctx context.Context, w *gm.World, args []gm.Node) (gm.Node, error) {
+	s, err := gm.ExpectClass[gm.String](ctx, w, args[0])
 	if err != nil {
 		return gm.Null, err
 	}
@@ -440,14 +440,15 @@ func mains(args []string) error {
 		fd.Close()
 	}
 
-	vars, functions := setupFunctions(args)
+	w := gm.New()
+	vars, functions := setupFunctions(ctx, w, args)
 
-	lisp := gm.New().Let(vars).Flet(functions)
-	if _, err := lisp.Interpret(ctx, embededLsp); err != nil {
+	w = w.Let(vars).Flet(functions)
+	if _, err := w.Interpret(ctx, embededLsp); err != nil {
 		panic(err.Error())
 	}
 
-	_, err := lisp.InterpretBytes(ctx, source)
+	_, err := w.InterpretBytes(ctx, source)
 	return err
 }
 

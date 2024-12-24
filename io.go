@@ -22,7 +22,7 @@ func cmdGetwd(ctx context.Context, w *gm.World, _ gm.Node) (gm.Node, error) {
 }
 
 func funChdir(ctx context.Context, w *gm.World, list []gm.Node) (gm.Node, error) {
-	wd, err := gm.ExpectString(list[0])
+	wd, err := gm.ExpectClass[gm.String](ctx, w, list[0])
 	if err != nil {
 		return nil, err
 	}
@@ -34,7 +34,7 @@ func funChdir(ctx context.Context, w *gm.World, list []gm.Node) (gm.Node, error)
 func funJoinPath(ctx context.Context, w *gm.World, list []gm.Node) (gm.Node, error) {
 	paths := make([]string, 0, len(list))
 	for _, node := range list {
-		str, err := gm.ExpectString(node)
+		str, err := gm.ExpectClass[gm.String](ctx, w, node)
 		if err != nil {
 			return nil, err
 		}
@@ -55,7 +55,7 @@ func cmdAssert(ctx context.Context, w *gm.World, node gm.Node) (gm.Node, error) 
 }
 
 func funGetenv(ctx context.Context, w *gm.World, list []gm.Node) (gm.Node, error) {
-	key, err := gm.ExpectString(list[0])
+	key, err := gm.ExpectClass[gm.String](ctx, w, list[0])
 	if err != nil {
 		return nil, err
 	}
@@ -67,7 +67,7 @@ func funGetenv(ctx context.Context, w *gm.World, list []gm.Node) (gm.Node, error
 }
 
 func funSetenv(ctx context.Context, w *gm.World, list []gm.Node) (gm.Node, error) {
-	_key, err := gm.ExpectString(list[0])
+	_key, err := gm.ExpectClass[gm.String](ctx, w, list[0])
 	if err != nil {
 		return nil, err
 	}
@@ -77,7 +77,7 @@ func funSetenv(ctx context.Context, w *gm.World, list []gm.Node) (gm.Node, error
 		fmt.Fprintf(w.Errout(), "unsetenv \"%s\"\n", key)
 		return gm.Null, os.Unsetenv(key)
 	}
-	_value, err := gm.ExpectString(list[1])
+	_value, err := gm.ExpectClass[gm.String](ctx, w, list[1])
 	if err != nil {
 		return nil, err
 	}
@@ -89,7 +89,7 @@ func funSetenv(ctx context.Context, w *gm.World, list []gm.Node) (gm.Node, error
 
 func funRemove(ctx context.Context, w *gm.World, list []gm.Node) (gm.Node, error) {
 	for _, fnNode := range list {
-		fnStr, err := gm.ExpectString(fnNode)
+		fnStr, err := gm.ExpectClass[gm.String](ctx, w, fnNode)
 		if err != nil {
 			return nil, err
 		}
@@ -104,7 +104,7 @@ func funRemove(ctx context.Context, w *gm.World, list []gm.Node) (gm.Node, error
 func funTouch(ctx context.Context, w *gm.World, list []gm.Node) (gm.Node, error) {
 	stamp := time.Now()
 	for _, fnNode := range list {
-		fnStr, err := gm.ExpectString(fnNode)
+		fnStr, err := gm.ExpectClass[gm.String](ctx, w, fnNode)
 		if err != nil {
 			return nil, err
 		}
@@ -150,7 +150,7 @@ func funExecute(ctx context.Context, w *gm.World, list []gm.Node) (gm.Node, erro
 
 func funSh(ctx context.Context, w *gm.World, list []gm.Node) (gm.Node, error) {
 	for _, node := range list {
-		s, err := gm.ExpectString(node)
+		s, err := gm.ExpectClass[gm.String](ctx, w, node)
 		if err != nil {
 			return nil, err
 		}
@@ -168,7 +168,7 @@ func funSh(ctx context.Context, w *gm.World, list []gm.Node) (gm.Node, error) {
 
 func funShIgnoreError(ctx context.Context, w *gm.World, list []gm.Node) (gm.Node, error) {
 	for _, node := range list {
-		s, err := gm.ExpectString(node)
+		s, err := gm.ExpectClass[gm.String](ctx, w, node)
 		if err != nil {
 			return nil, err
 		}
@@ -203,22 +203,22 @@ func funQuoteCommand(ctx context.Context, w *gm.World, list []gm.Node) (gm.Node,
 }
 
 func funCopy(ctx context.Context, w *gm.World, list []gm.Node) (gm.Node, error) {
-	return copyOrMove(list, "cp", func(s, d string) error {
+	return copyOrMove(ctx, w, list, "cp", func(s, d string) error {
 		return file.Copy(s, d, false)
 	})
 }
 
 func funMove(ctx context.Context, w *gm.World, list []gm.Node) (gm.Node, error) {
-	return copyOrMove(list, "mv", func(s, d string) error {
+	return copyOrMove(ctx, w, list, "mv", func(s, d string) error {
 		return file.Move(s, d)
 	})
 }
 
-func copyOrMove(list []gm.Node, msg string, f func(s, d string) error) (gm.Node, error) {
+func copyOrMove(ctx context.Context, w *gm.World, list []gm.Node, msg string, f func(s, d string) error) (gm.Node, error) {
 	if len(list) < 2 {
 		return nil, gm.ErrTooFewArguments
 	}
-	_destinate, err := gm.ExpectString(list[len(list)-1])
+	_destinate, err := gm.ExpectClass[gm.String](ctx, w, list[len(list)-1])
 	if err != nil {
 		return nil, err
 	}
@@ -234,7 +234,7 @@ func copyOrMove(list []gm.Node, msg string, f func(s, d string) error) (gm.Node,
 	}
 
 	for _, s := range list[:len(list)-1] {
-		_source, err := gm.ExpectString(s)
+		_source, err := gm.ExpectClass[gm.String](ctx, w, s)
 		if err != nil {
 			return nil, err
 		}

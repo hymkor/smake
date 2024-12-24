@@ -9,7 +9,7 @@ import (
 )
 
 func funBasename(ctx context.Context, w *gm.World, args []gm.Node) (gm.Node, error) {
-	_path, err := gm.ExpectString(args[0])
+	_path, err := gm.ExpectClass[gm.String](ctx, w, args[0])
 	if err != nil {
 		return nil, err
 	}
@@ -18,7 +18,7 @@ func funBasename(ctx context.Context, w *gm.World, args []gm.Node) (gm.Node, err
 }
 
 func funDir(ctx context.Context, w *gm.World, args []gm.Node) (gm.Node, error) {
-	_path, err := gm.ExpectString(args[0])
+	_path, err := gm.ExpectClass[gm.String](ctx, w, args[0])
 	if err != nil {
 		return nil, err
 	}
@@ -27,7 +27,7 @@ func funDir(ctx context.Context, w *gm.World, args []gm.Node) (gm.Node, error) {
 }
 
 func funNotDir(ctx context.Context, w *gm.World, args []gm.Node) (gm.Node, error) {
-	path1, err := gm.ExpectString(args[0])
+	path1, err := gm.ExpectClass[gm.String](ctx, w, args[0])
 	if err != nil {
 		return nil, err
 	}
@@ -35,7 +35,7 @@ func funNotDir(ctx context.Context, w *gm.World, args []gm.Node) (gm.Node, error
 }
 
 func funAbsPath(ctx context.Context, w *gm.World, args []gm.Node) (gm.Node, error) {
-	path1, err := gm.ExpectString(args[0])
+	path1, err := gm.ExpectClass[gm.String](ctx, w, args[0])
 	if err != nil {
 		return nil, err
 	}
@@ -49,7 +49,7 @@ func funAbsPath(ctx context.Context, w *gm.World, args []gm.Node) (gm.Node, erro
 func funWildcard(ctx context.Context, w *gm.World, list []gm.Node) (gm.Node, error) {
 	var result gm.Node = gm.Null
 	for i := len(list) - 1; i >= 0; i-- {
-		pattern, err := gm.ExpectString(list[i])
+		pattern, err := gm.ExpectClass[gm.String](ctx, w, list[i])
 		if err != nil {
 			return nil, err
 		}
@@ -68,7 +68,7 @@ func funWildcard(ctx context.Context, w *gm.World, list []gm.Node) (gm.Node, err
 }
 
 func funShell(ctx context.Context, w *gm.World, list []gm.Node) (gm.Node, error) {
-	s, err := gm.ExpectString(list[0])
+	s, err := gm.ExpectClass[gm.String](ctx, w, list[0])
 	if err != nil {
 		return nil, err
 	}

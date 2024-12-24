@@ -16,27 +16,27 @@ func funShellExecute(ctx context.Context, w *gm.World, list []gm.Node) (gm.Node,
 	default:
 		return nil, gm.ErrTooManyArguments
 	case 4:
-		dir, err := gm.ExpectString(list[3])
+		dir, err := gm.ExpectClass[gm.String](ctx, w, list[3])
 		if err != nil {
 			return nil, err
 		}
 		sup.Directory = dir.String()
 		fallthrough
 	case 3:
-		param, err := gm.ExpectString(list[2])
+		param, err := gm.ExpectClass[gm.String](ctx, w, list[2])
 		if err != nil {
 			return nil, err
 		}
 		sup.Param = param.String()
 		fallthrough
 	case 2:
-		action, err := gm.ExpectString(list[0])
+		action, err := gm.ExpectClass[gm.String](ctx, w, list[0])
 		if err != nil {
 			return nil, err
 		}
 		sup.Action = action.String()
 
-		path, err := gm.ExpectString(list[1])
+		path, err := gm.ExpectClass[gm.String](ctx, w, list[1])
 		if err != nil {
 			return nil, err
 		}
@@ -59,7 +59,7 @@ func trueOrNil(b bool) gm.Node {
 }
 
 func funStat(ctx context.Context, w *gm.World, args []gm.Node) (gm.Node, error) {
-	_fname, err := gm.ExpectString(args[0])
+	_fname, err := gm.ExpectClass[gm.String](ctx, w, args[0])
 	if err != nil {
 		return nil, err
 	}
