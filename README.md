@@ -77,14 +77,20 @@ SMake is the build tool like MAKE(UNIX) whose Makefile is written with S-express
    (sh "example-into-readme"))
 
   (t
-    (if (updatep TARGET "Makefile.lsp" "embed.lsp" "go.mod" "go.sum" SOURCE)
-      (progn
-        (sh "go fmt")
-        (spawnlp "go" "build" "-ldflags"
-                 (string-append "-s -w -X main.version=" VERSION)))
-      )
-    ) ; end-t
-  ) ; end-case
+    (let ((ufiles (updatep TARGET "Makefile.lsp" "embed.lsp" "go.mod" "go.sum" SOURCE)))
+      (if ufiles
+        (progn
+          (format (error-output) "Found update files: ~S~%" ufiles)
+          (sh "go fmt")
+          (spawnlp "go" "build" "-ldflags"
+                   (string-append "-s -w -X main.version=" VERSION)))
+        (progn
+          (format (error-output) "No files updated~%")
+          )
+        ); if
+      ); let
+    ); t
+  ); case
 
 ; vim:set lispwords+=foreach,env,mapc,make,pushd,while,doenv:
 ```
