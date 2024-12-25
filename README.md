@@ -25,19 +25,19 @@ SMake is the build tool like MAKE(UNIX) whose Makefile is written with S-express
        "go mod tidy"))
 
   (("touch")
-   (foreach (fname SOURCE)
+   (dolist (fname SOURCE)
      (touch fname)))
 
   (("clean")
    (pushd "examples/cc"
      (spawnlp $0 "clean"))
-   (foreach (fname (wildcard "*~"))
+   (dolist (fname (wildcard "*~"))
      (rm fname))
    (if (-e TARGET)
      (mv TARGET (string-append "." TARGET "~"))))
 
   (("install")
-   (foreach (path (string-split #\newline (q "where" (notdir $0))))
+   (dolist (path (string-split #\newline (q "where" (notdir $0))))
      (if (not (equal path $0))
        (cp $0 path))))
 
@@ -45,8 +45,8 @@ SMake is the build tool like MAKE(UNIX) whose Makefile is written with S-express
    (sh "go test"))
 
   (("dist")
-   (foreach (goos '("linux" "windows"))
-     (foreach (goarch '("386" "amd64"))
+   (dolist (goos '("linux" "windows"))
+     (dolist (goarch '("386" "amd64"))
        (env (("GOOS" goos) ("GOARCH" goarch))
          (let* ((exe (shell "go env GOEXE"))
                 (target (string-append NAME exe)))
@@ -62,12 +62,12 @@ SMake is the build tool like MAKE(UNIX) whose Makefile is written with S-express
      (format b "gh release create -d --notes \"\" -t")
      (format b " \"~A\"" VERSION)
      (format b " \"~A\"" VERSION)
-     (foreach (zip (wildcard (string-append NAME "-" VERSION "-*.zip")))
+     (dolist (zip (wildcard (string-append NAME "-" VERSION "-*.zip")))
        (format b " \"~A\"" zip))
      (sh (get-output-stream-string b))))
 
   (("clean-zip")
-   (foreach (fname (wildcard "*.zip"))
+   (dolist (fname (wildcard "*.zip"))
      (rm fname)))
 
   (("manifest")
@@ -92,7 +92,7 @@ SMake is the build tool like MAKE(UNIX) whose Makefile is written with S-express
     ); t
   ); case
 
-; vim:set lispwords+=foreach,env,mapc,make,pushd,while,doenv:
+; vim:set lispwords+=env,mapc,pushd,while,doenv:
 ```
 
 Other examples:
@@ -187,7 +187,7 @@ Same as the UNIX command rm.
 
 Same as the UNIX command touch.
 
-### (foreach (KEY '(VALUE...)) COMMANDS...)
+### (dolist (KEY '(VALUE...)) COMMANDS...)
 
 ### (getenv "NAME")
 

@@ -8,7 +8,11 @@ If the file TARGET is newer than SOURCE or TARGET does not exist, execute COMMAN
 The entry after MAINTARGET is evaluated when the TARGET equals the MAINTARGET
 or the TARGET is written on other evaluated SOURCES.
 
+Use `(case)` and `(updatep)` instead.
+
 ### ($ "$(VARNAME)") *[deprecated]*
+
+Use `(format nil "...")` instead
 
 Expand the value of the variable written in the string-literal.
 
@@ -22,3 +26,9 @@ These are available in `(make)` block
 - "$@" is same as "$($@)"
 
 ### (x "COMMAND" "ARG-1" "ARG-2" ...) *[deprecated]*
+
+Use `(spawnlp)` instead
+
+### (foreach (KEY '(VALUE...)) COMMANDS...) *[deprecated]*
+
+Use `(dolist (KEY VALUES) COMMANDS...) instead
