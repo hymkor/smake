@@ -1,3 +1,17 @@
+(defmacro assert-eq (source expect)
+  (let ((result (gensym)))
+    `(let ((,result ,source))
+       (if (equal ,result ,expect)
+         (format (error-output) "OK: (assert-eq ~S ~S)~%"
+                 (quote ,source)
+                 ,expect)
+         (progn
+           (format (error-output) "NG: (assert-eq ~S ~S)~%  but ~S~%"
+                   (quote ,source)
+                   ,expect
+                   ,result)
+           (abort))))))
+
 (defmacro foreach (vars &rest body)
   (let ((var (car vars))
         (values (elt vars 1))

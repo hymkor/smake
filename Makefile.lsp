@@ -34,7 +34,18 @@
        (cp $0 path))))
 
   (("test")
-   (sh "go test"))
+   (assert-eq (match "^a*$" "aaaa") '("aaaa"))
+   (assert-eq (match "^v([0-9]+)\.([0-9]+)\.([0-9]+)$" "v10.20.30")
+              '("v10.20.30" "10" "20" "30"))
+   (assert-eq (match "^a*$" "hogehoge") nil)
+   (assert-eq (catch
+                'fail
+                (with-handler
+                  (lambda (c) (throw 'fail 'NG))
+                  (match "(" "hogehoge")))
+              'NG)
+   (sh "go test")
+   )
 
   (("dist")
    (dolist (goos '("linux" "windows"))

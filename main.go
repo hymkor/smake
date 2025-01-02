@@ -369,6 +369,7 @@ func setupFunctions(ctx context.Context, w *gm.World, args []string) (gm.Variabl
 		gm.NewSymbol("wildcard"):      &gm.Function{C: -1, F: funWildcard},
 		gm.NewSymbol("x"):             &gm.Function{C: -1, F: funExecute},
 		gm.NewSymbol("spawnlp"):       &gm.Function{C: -1, F: funExecute},
+		gm.NewSymbol("match"):         gm.Function2(funMatch),
 	}
 	for i, sq := 0, argsSeq; i < 9; i++ {
 		var val gm.Node = gm.Null
