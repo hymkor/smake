@@ -9,9 +9,11 @@ import (
 )
 
 func test(t *testing.T, code string, expect gm.Node) {
-	v, f := setupFunctions([]string{})
-	w := gm.New().Let(v).Flet(f)
-	if _, err := w.Interpret(context.TODO(), embededLsp); err != nil {
+	ctx := context.Background()
+	w := gm.New()
+	v, f := setupFunctions(ctx, w, []string{})
+	w = w.Let(v).Flet(f)
+	if _, err := w.Interpret(ctx, embededLsp); err != nil {
 		panic(err.Error())
 	}
 	if e := w.Assert(code, expect); e != "" {
