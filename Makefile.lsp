@@ -1,5 +1,6 @@
 (defglobal EXE     (shell "go env GOEXE"))
-(defglobal NAME    (notdir (getwd)))
+(defglobal CURDIR  (getwd))
+(defglobal NAME    (notdir CURDIR))
 (defglobal TARGET  (string-append NAME EXE))
 (defglobal SOURCE  (wildcard "*.go"))
 (defglobal NUL     (if windows "NUL" "/dev/null"))
@@ -28,10 +29,16 @@
    (if (-e TARGET)
      (mv TARGET (string-append "." TARGET "~"))))
 
-  (("install")
-   (dolist (path (string-split #\newline (q "where" (notdir $0))))
-     (if (not (equal path $0))
-       (cp $0 path))))
+  (("upgrade") ; upgrade the installed program with the newly built version
+   (if (probe-file TARGET)
+     (let ((delimiter (elt (if windows ";" ":") 0)))
+       (dolist (dir (string-split delimiter (getenv "PATH")))
+         (if (and (not (equalp CURDIR dir))
+                  (probe-file (joinpath dir TARGET)))
+           (progn
+             (format (standard-output) "copy \"~A\" to \"~A\" ? [Y or N] " TARGET dir)
+             (if (equalp (read-line (standard-input) nil nil) "y")
+               (cp TARGET dir))))))))
 
   (("test")
    (assert-eq (match "^a*$" "aaaa") '("aaaa"))
@@ -44,8 +51,7 @@
                   (lambda (c) (throw 'fail 'NG))
                   (match "(" "hogehoge")))
               'NG)
-   (sh "go test")
-   )
+   (sh "go test"))
 
   (("dist")
    (dolist (goos '("linux" "windows"))
