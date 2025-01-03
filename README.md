@@ -32,7 +32,8 @@ go build -ldflags -s -w -X main.version=v0.4.2-6-g940b278
 
 ```Makefile.lsp
 (defglobal EXE     (shell "go env GOEXE"))
-(defglobal NAME    (notdir (getwd)))
+(defglobal CURDIR  (getwd))
+(defglobal NAME    (notdir CURDIR))
 (defglobal TARGET  (string-append NAME EXE))
 (defglobal SOURCE  (wildcard "*.go"))
 (defglobal NUL     (if windows "NUL" "/dev/null"))
@@ -61,12 +62,28 @@ go build -ldflags -s -w -X main.version=v0.4.2-6-g940b278
    (if (-e TARGET)
      (mv TARGET (string-append "." TARGET "~"))))
 
-  (("install")
-   (dolist (path (string-split #\newline (q "where" (notdir $0))))
-     (if (not (equal path $0))
-       (cp $0 path))))
+  (("upgrade") ; upgrade the installed program with the newly built version
+   (if (probe-file TARGET)
+     (let ((delimiter (elt (if windows ";" ":") 0)))
+       (dolist (dir (string-split delimiter (getenv "PATH")))
+         (if (and (not (equalp CURDIR dir))
+                  (probe-file (joinpath dir TARGET)))
+           (progn
+             (format (standard-output) "copy \"~A\" to \"~A\" ? [Y or N] " TARGET dir)
+             (if (equalp (read-line (standard-input) nil nil) "y")
+               (cp TARGET dir))))))))
 
   (("test")
+   (assert-eq (match "^a*$" "aaaa") '("aaaa"))
+   (assert-eq (match "^v([0-9]+)\.([0-9]+)\.([0-9]+)$" "v10.20.30")
+              '("v10.20.30" "10" "20" "30"))
+   (assert-eq (match "^a*$" "hogehoge") nil)
+   (assert-eq (catch
+                'fail
+                (with-handler
+                  (lambda (c) (throw 'fail 'NG))
+                  (match "(" "hogehoge")))
+              'NG)
    (sh "go test"))
 
   (("dist")
