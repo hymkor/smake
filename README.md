@@ -1,7 +1,32 @@
-SMake (Make by S-expression)
-============================
+SMake: Make Powered by S-expressions
+====================================
 
-SMake is the build tool like MAKE(UNIX) whose Makefile is written with S-expression.
+SMake is a build tool similar to `make` on UNIX systems, but it uses S-expressions for its Makefile syntax.
+
+### Example Usage
+
+```
+$ smake clean
+chdir "examples/cc"
+C:\Users\hymkor\src\smake\smake.exe clean
+chdir "C:\Users\hymkor\src\smake"
+rm ".smake.exe~"
+mv "smake.exe" ".smake.exe~"
+
+$ go run github.com/hymkor/smake@latest
+Found update files: ("orig_test.go" "orig.go" "match.go" "main_windows.go" "main_unix.go" "main.go" "io.go" "gnu_test.go" "gnu.go" "go.sum" "go.mod" "embed.lsp" "Makefile.lsp")
+go fmt
+go build -ldflags -s -w -X main.version=v0.4.2-6-g940b278
+```
+
+### Key Features
+
+- **Build Rules in Lisp:**  
+    The Makefile for smake is written entirely in an extended version of ISLisp, providing a powerful and flexible structure for defining build rules. 
+- **Execution Behavior:**  
+    `smake` reads and executes Makefile.lsp in the current directory.
+- **No Installation Required:**  
+    If Go is available, you can use smake without installation via `go run github.com/hymkor/smake@latest`
 
 [Makefile.lsp](./Makefile.lsp):
 
