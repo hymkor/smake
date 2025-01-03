@@ -1,3 +1,6 @@
+- Add `(match REGEXP STRING)`
+- Upgrade gmnlisp to gmnlisp v0.7.7
+
 v0.4.2
 ======
 Nov 25, 2024
