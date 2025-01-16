@@ -1,3 +1,7 @@
+v0.4.3
+======
+Jan 16, 2025
+
 - Add `(match REGEXP STRING)`
 - Upgrade gmnlisp to v0.7.9
 
