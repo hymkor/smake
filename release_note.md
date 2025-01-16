@@ -1,5 +1,5 @@
 - Add `(match REGEXP STRING)`
-- Upgrade gmnlisp to gmnlisp v0.7.7
+- Upgrade gmnlisp to v0.7.9
 
 v0.4.2
 ======
