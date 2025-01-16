@@ -321,6 +321,10 @@ They are compatible functions with ISLisp. See also [hymkor/gmnlisp](https://git
 
 It is `t` (true) when %OS% is `Windows_NT`
 
+### (match REGULAR-EXPRESSION STRING)
+
+If `REGULAR-EXPRESSION` matches `STRING`, `(match)` returns a list containing the entire matched part followed by the captured groups (submatches). If there is no match, it returns `nil`.
+
 ## The built-in variables
 
 - $/ - OS-specific path separator (Windows `\` , UNIX `/` )
