@@ -66,3 +66,8 @@ Use `*path-separator*`
 - $@ - the target filename
 - $&lt; - the first source filename
 - $? - the updated source filenames
+
+### (pathjoin "DIR" .. "FNAME") , (joinpath "DIR"... "FNAME")
+
+Use `(join-path)`
+
