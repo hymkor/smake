@@ -196,8 +196,7 @@ go build
 
 It returns the list of newer files in SOURCES than TARGET
 
-### (spawnlp "COMMAND" "ARG-1" "ARG-2" ...)
-### (spawnvp "COMMAND" '("ARG-1" "ARG-2" ...))
+### (spawn "COMMAND" "ARG-1" "ARG-2" ...)
 
 Execute the external executable directly. If it failes, top.
 
@@ -209,7 +208,7 @@ Execute the external executable directly and return its standard-output as strin
 
 Execute the shell command by CMD.exe or /bin/sh. If it fails, stop.
 
-### (sh- "SHELL-COMMAND")
+### (sh-ignore-error "SHELL-COMMAND")
 
 Same as (sh) but ignores errors.
 
@@ -265,18 +264,16 @@ Same as $(notdir FILEPATH) of GNU Make
 
 Same as $(basename FILEPATH) of GNU Make
 
-### (pathjoin "DIR" .. "FNAME") , (joinpath "DIR"... "FNAME")
+### (join-path "DIR" .. "FNAME")
 
 Make path with "DIR"... "FNAME".
-(joinpath) is an alias of (pathjoin).
-Same as filepath.Join of golang.
 
-### (-e FILENAME)
+### (probe-file FILENAME)
 
 If FILENAME exists, it returns t. Otherwise nil.
 Same as -e of Perl.
 
-### (-d DIRNAME)
+### (probe-directory DIRNAME)
 
 If DIRNAME exists and it is a directory, it returns t. Otherwise nil.
 Same as -d of Perl.
@@ -318,26 +315,39 @@ Split "STRING" with whilte-spaces. This function is similar with [strings.Fields
 
 They are compatible functions with ISLisp. See also [hymkor/gmnlisp](https://github.com/hymkor/gmnlisp)
 
-### windows
-
-It is `t` (true) when %OS% is `Windows_NT`
-
 ### (match REGULAR-EXPRESSION STRING)
 
 If `REGULAR-EXPRESSION` matches `STRING`, `(match)` returns a list containing the entire matched part followed by the captured groups (submatches). If there is no match, it returns `nil`.
 
 ## The built-in variables
 
-- $/ - OS-specific path separator (Windows `\` , UNIX `/` )
-- \*args\* - the command-line arguments
-- $1...$9 - the same as `(elt *args* N)`
-- $0 ... the current executing smake filename
+### \*windows\*
 
-These are available in `(make)` block
+Evaluates to `t` when the environment variable `%OS%` is `"Windows_NT"` (i.e., on Windows).
 
-- $@ - the target filename
-- $&lt; - the first source filename
-- $? - the updated source filenames
+### \*dev-null\*
+
+Evaluates to `"NUL"` on Windows, and to `"/dev/null"` on other systems.
+
+### \*exe-suffix\*
+
+The file extension used for executables on the current operating system (e.g., `".exe"` on Windows; empty string on Unix).
+
+### \*argv\* (formerly \*args\*)
+
+The command-line arguments passed to the program.
+
+### $0, $1, $2, .. $9
+
+Equivalent to `(and (<= N (length *args*)) (elt (cons "path-to-smake *args*) N))` where `"path-to-smake"` is the full path to the SMake executable.
+
+### \*path-separator\*
+
+OS-specific path separator (Windows `"\"` , UNIX `"/"` )
+
+### \*path-list-separator\*
+
+OS-specfic path list separator (Windows `";"`, UNIX `":"`)
 
 License
 -------
