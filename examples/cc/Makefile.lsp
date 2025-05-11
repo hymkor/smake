@@ -9,8 +9,7 @@
 
 (defglobal c-files (wildcard "*.c"))
 (defglobal o-files (mapcar #'c-to-o c-files))
-(defglobal exe     (if windows ".exe" ""))
-(defglobal target  (string-append (notdir (getwd)) exe))
+(defglobal target  (string-append (notdir (getwd)) *exe-suffix*))
 
 (case $1
   (("clean")
