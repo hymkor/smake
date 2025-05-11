@@ -14,8 +14,10 @@
 (case $1
   (("clean")
    (dolist (obj o-files)
-     (rm obj))
-   (rm target))
+     (if (probe-file obj)
+       (rm obj)))
+   (if (probe-file target)
+     (rm target)))
 
   (t
    (dolist (c-src c-files)
