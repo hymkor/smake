@@ -337,7 +337,8 @@ func setupFunctions(ctx context.Context, w *gm.World, args []string) (gm.Variabl
 
 	vars := gm.Variables{
 		gm.NewSymbol("$$"):     cons,
-		gm.NewSymbol("*args*"): argsSeq,
+		gm.NewSymbol("*args*"): argsSeq, // deprecated
+		gm.NewSymbol("*argv*"): argsSeq,
 		symbolPathSep:          gm.String(os.PathSeparator),
 	}
 	funcs := gm.Functions{
