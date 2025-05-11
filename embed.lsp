@@ -73,6 +73,7 @@
     (and tmp (try-cdr (assoc 'is-dir tmp)))))
 (defglobal windows (equal (getenv "OS") "Windows_NT")) ; deprecated
 (defglobal *windows* (equal (getenv "OS") "Windows_NT"))
+(defglobal *dev-null* (if *windows* "NUL" "/dev/null"))
 (defun updatep (target :rest sources)
   (let ((newsrc nil))
     (dolist (s sources)
