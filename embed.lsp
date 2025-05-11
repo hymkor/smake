@@ -80,5 +80,9 @@
     (dolist (s sources)
       (setq newsrc (append newsrc (if (consp s) s (list s)))))
     (apply #'updatep_ target newsrc)))
-(defun spawnvp (cmd params)
-  (apply #'spawnlp cmd params))
+(defun x (cmd &rest params) ; deprecated
+  (apply #'spawn cmd params))
+(defun spawnlp (cmd &rest params) ; deprecated
+  (apply #'spawn cmd params))
+(defun spawnvp (cmd params) ; deprecated
+  (apply #'spawn cmd params))
