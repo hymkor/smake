@@ -74,6 +74,7 @@
 (defglobal windows (equal (getenv "OS") "Windows_NT")) ; deprecated
 (defglobal *windows* (equal (getenv "OS") "Windows_NT"))
 (defglobal *dev-null* (if *windows* "NUL" "/dev/null"))
+(defglobal *exe-suffix* (if *windows* ".exe" ""))
 (defun updatep (target :rest sources)
   (let ((newsrc nil))
     (dolist (s sources)
