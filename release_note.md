@@ -1,3 +1,7 @@
+- Implement `*windows*`    as `(equal (getenv "OS") "Windows_NT")`
+- Implement `*dev-null*`   as `(if *windows* "NUL" "/dev/null")`
+- Implement `*exe-suffix*` as `(if *windows* ".exe" "")`
+
 v0.4.3
 ======
 Jan 16, 2025
