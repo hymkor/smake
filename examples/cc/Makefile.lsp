@@ -20,11 +20,10 @@
      (rm target)))
 
   (t
-   (dolist (c-src c-files)
-     (let ((obj (c-to-o c-src)))
-       (if (updatep obj c-src)
-         (x "gcc" "-c" c-src))))
-   (apply #'x "gcc" "-o" target o-files))
-  ) ; end-cond
+    (dolist (c-src c-files)
+      (if (updatep (c-to-o c-src) c-src)
+        (spawn "gcc" "-c" c-src)))
+    (apply #'spawn "gcc" "-o" target o-files))
+  ) ; case
 
 ; vim:set lispwords+=apply,make:
