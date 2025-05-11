@@ -1,6 +1,7 @@
 - Implement `*windows*`    as `(equal (getenv "OS") "Windows_NT")`
 - Implement `*dev-null*`   as `(if *windows* "NUL" "/dev/null")`
 - Implement `*exe-suffix*` as `(if *windows* ".exe" "")`
+- Implement `spawn` with Go and re-implement `x`, `spawnlp` and `spawnvp` with Lisp code
 
 v0.4.3
 ======
