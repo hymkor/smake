@@ -3,13 +3,12 @@
 (defglobal NAME    (notdir CURDIR))
 (defglobal TARGET  (string-append NAME EXE))
 (defglobal SOURCE  (wildcard "*.go"))
-(defglobal NUL     (if windows "NUL" "/dev/null"))
 (defglobal VERSION
   (catch
     'notag
     (with-handler
       (lambda (c) (throw 'notag "v0.0.0"))
-      (shell (string-append "git describe --tags 2>" NUL)))))
+      (shell (string-append "git describe --tags 2>" *dev-null*)))))
 
 (case $1
   (("get")
