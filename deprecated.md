@@ -27,8 +27,32 @@ These are available in `(make)` block
 
 ### (x "COMMAND" "ARG-1" "ARG-2" ...) *[deprecated]*
 
-Use `(spawnlp)` instead
+Use `(spawn)` instead
+
+### (spawnlp "COMMAND" "ARG-1" "ARG-2" ...) *[deprecated]*
+
+Use `(spawn)` instead
+
+### (spawnvp "COMMAND" '("ARG-1" "ARG-2" ...)) *[deprecated]*
+
+Use `(apply #'spawn "COMMAND" ARGV-LIST)` instead of `(spanvp "COMMAND" ARGV-LIST)`
 
 ### (foreach (KEY '(VALUE...)) COMMANDS...) *[deprecated]*
 
-Use `(dolist (KEY VALUES) COMMANDS...) instead
+Use `(dolist (KEY VALUES) COMMANDS...)` instead
+
+### \*args\* *[deprecated]*
+
+Use `*argv*` insteead
+
+### (-e FILENAME)
+
+Use `(probe-file FILENAME)`
+
+### (-d DIRNAME)
+
+Use `(probe-directory DIRNAME)`
+
+### (sh- "SHELL-COMMAND")
+
+Use `(sh-ignore-error "SHELL-COMMAND")`
