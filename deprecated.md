@@ -56,3 +56,13 @@ Use `(probe-directory DIRNAME)`
 ### (sh- "SHELL-COMMAND")
 
 Use `(sh-ignore-error "SHELL-COMMAND")`
+
+### $/
+
+Use `*path-separator*`
+
+### Local variables in available in (make) block
+
+- $@ - the target filename
+- $&lt; - the first source filename
+- $? - the updated source filenames
