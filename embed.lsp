@@ -91,3 +91,5 @@
   (apply #'join-path params))
 (defun joinpath (&rest params) ; deprecated
   (apply #'join-path params))
+(defun sh- (&rest params)
+  (apply #'sh-ignore-error params))
