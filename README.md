@@ -15,6 +15,8 @@ This approach enables truly cross-platform builds without writing platform-speci
 Example Usage
 -------------
 
+### Using `smake` (Installed)
+
 ```
 $ smake clean
 chdir "examples/cc"
@@ -22,7 +24,11 @@ C:\Users\hymkor\src\smake\smake.exe clean
 chdir "C:\Users\hymkor\src\smake"
 rm ".smake.exe~"
 mv "smake.exe" ".smake.exe~"
+```
 
+### Using `smake` (via `go run`)
+
+```
 $ go run github.com/hymkor/smake@latest
 Found update files: ("orig_test.go" "orig.go" "match.go" "main_windows.go" "main_unix.go" "main.go" "io.go" "gnu_test.go" "gnu.go" "go.sum" "go.mod" "embed.lsp" "Makefile.lsp")
 go fmt
@@ -166,13 +172,15 @@ scoop bucket add hymkor https://github.com/hymkor/scoop-bucket
 scoop install smake
 ```
 
-## How to build SMake
+How to build SMake
+------------------
 
 ```
 go build
 ```
 
-## Lisp References
+Lisp References
+---------------
 
 ### Base interpreter
 
@@ -190,7 +198,8 @@ go build
 + [JISX3012:1998 プログラム言語ＩＳＬＩＳＰ](https://kikakurui.com/x3/X3012-1998-01.html)
 + [M.Hiroi's Home Page / お気楽 ISLisp プログラミング超入門](http://www.nct9.ne.jp/m_hiroi/clisp/islisp.html)
 
-## The functions available in Makefile.lsp
+The functions available in Makefile.lsp
+---------------------------------------
 
 ### (updatep TARGET SOURCES...)
 
@@ -198,7 +207,7 @@ It returns the list of newer files in SOURCES than TARGET
 
 ### (spawn "COMMAND" "ARG-1" "ARG-2" ...)
 
-Execute the external executable directly. If it failes, top.
+Execute the external executable directly. If it fails, the process will stop with an error.
 
 ### (q "COMMAND" "ARG-1" "ARG-2" ...)
 
@@ -206,7 +215,7 @@ Execute the external executable directly and return its standard-output as strin
 
 ### (sh "SHELL-COMMAND")
 
-Execute the shell command by CMD.exe or /bin/sh. If it fails, stop.
+Execute the shell command by CMD.exe or /bin/sh. If it fails, the build process stops with an error.
 
 ### (sh-ignore-error "SHELL-COMMAND")
 
@@ -219,15 +228,15 @@ Same as $(shell "..") of GNU Make.
 
 ### (echo STRING...)
 
-Same as the UNIX command echo.
+Equivalent to the UNIX echo command.
 
 ### (rm FILENAME...)
 
-Same as the UNIX command rm.
+Equivalent to the UNIX rm command.
 
 ### (touch FILENAME...)
 
-Same as the UNIX command touch.
+Equivalent to the UNIX touch command.
 
 ### (dolist (KEY '(VALUE...)) COMMANDS...)
 
@@ -242,7 +251,7 @@ Set the environment variable "NAME" to "VALUE".
 ### (env (("NAME" "VALUE")...) COMMANDS...)
 
 Set the environment variables and execute COMMANDS.
-Then, restores them to thier original values.
+Then, restores them to their original values.
 
 ### (wildcard "PATTERN"...)
 
@@ -309,17 +318,18 @@ Call Windows-API: shellexecute
 
 ### (string-fields "STRING")
 
-Split "STRING" with whilte-spaces. This function is similar with [strings.Fields](https://pkg.go.dev/strings@go1.20.1#Fields) in golang
+Split "STRING" with white-spaces. This function is similar with [strings.Fields](https://pkg.go.dev/strings@go1.20.1#Fields) in golang
 
 ### (let), (format) and so on
 
-They are compatible functions with ISLisp. See also [hymkor/gmnlisp](https://github.com/hymkor/gmnlisp)
+These are standard functions compatible with ISLisp. See also [hymkor/gmnlisp](https://github.com/hymkor/gmnlisp)
 
 ### (match REGULAR-EXPRESSION STRING)
 
 If `REGULAR-EXPRESSION` matches `STRING`, `(match)` returns a list containing the entire matched part followed by the captured groups (submatches). If there is no match, it returns `nil`.
 
-## The built-in variables
+The built-in variables
+----------------------
 
 ### \*windows\*
 
