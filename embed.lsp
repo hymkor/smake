@@ -76,6 +76,8 @@
 (defglobal *windows* (equal (getenv "OS") "Windows_NT"))
 (defglobal *dev-null* (if *windows* "NUL" "/dev/null"))
 (defglobal *exe-suffix* (if *windows* ".exe" ""))
+(defglobal *path-separator* (if *windows* "\\" "/"))
+(defglobal *path-list-separator* (if *windows* ";" ":"))
 (defun updatep (target :rest sources)
   (let ((newsrc nil))
     (dolist (s sources)
