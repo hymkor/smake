@@ -4,6 +4,7 @@
 - Implement `spawn` with Go and re-implement `x`, `spawnlp` and `spawnvp` with Lisp code
 - Implement `probe-directory`
 - Implement `join-path` instead of `joinpath` and `pathjoin`
+- Implement `(sh-ignore-error)` with the same feature as `(sh-)`
 
 v0.4.3
 ======
