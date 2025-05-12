@@ -3,7 +3,17 @@ SMake: Make Powered by S-expressions
 
 SMake is a build tool similar to `make` on UNIX systems, but it uses S-expressions for its Makefile syntax.
 
-### Example Usage
+Why smake?
+----------
+
+Makefiles written for GNU Make often depend heavily on `/bin/sh` or other Unix-specific shell features, making it difficult to write portable build scripts that run the same on both Windows and Linux.
+
+**smake** is a minimal build tool that avoids this problem by embedding all behavior in a Lisp dialect (ISLisp-like). All build logic is expressed using built-in functions, avoiding external shell commands and Unix-specific syntax.
+
+This approach enables truly cross-platform builds without writing platform-specific conditionals, and without assuming Unix-like tools on Windows.
+
+Example Usage
+-------------
 
 ```
 $ smake clean
