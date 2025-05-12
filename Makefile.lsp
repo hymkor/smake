@@ -1,3 +1,8 @@
+;; This Makefile.lsp is for SMake — a Lisp-based build tool used for
+;; maintenance tasks. Building the project doesn’t require this file —
+;; just run `go build`. If you're curious about SMake, see:
+;; https://github.com/hymkor/smake
+
 (defglobal EXE     (shell "go env GOEXE"))
 (defglobal CURDIR  (getwd))
 (defglobal NAME    (notdir CURDIR))

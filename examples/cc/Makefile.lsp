@@ -1,9 +1,15 @@
-; AOUT=$(notdir $(abspath .))$(EXE)
-; OFILES=$(subst .c,.o,$(wildcard *.c))
-; $(AOUT): $(OFILES)
-;     gcc -o $@
-; .c.o:
-;     gcc -c $<
+;; # Equivalent Makefile for GNU Make (for reference)
+;; ifeq ($(OS),Windows_NT)
+;;   EXE=.exe
+;; else
+;;   EXE=
+;; endif
+;; AOUT=$(notdir $(CURDIR))$(EXE)
+;; OFILES=$(subst .c,.o,$(wildcard *.c))
+;; $(AOUT): $(OFILES)
+;;     gcc -o $@ $(OFILES)
+;; .c.o:
+;;     gcc -c $<
 
 (defun c-to-o (c) (string-append (basename c) ".o"))
 
