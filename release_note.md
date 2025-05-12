@@ -7,6 +7,7 @@
 - Implement `(sh-ignore-error)` with the same feature as `(sh-)`
 - Implement `*path-separator*` as `(if *windows* "\\" "/")`
 - Implement `*path-list-separator*` as `(if *windows* ";" ":")`
+- Update gmnlisp to version 0.7.11
 
 v0.4.3
 ======
