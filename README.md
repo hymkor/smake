@@ -29,15 +29,6 @@ go fmt
 go build -ldflags -s -w -X main.version=v0.4.2-6-g940b278
 ```
 
-### Key Features
-
-- **Build Rules in Lisp:**  
-    The Makefile for smake is written entirely in an extended version of ISLisp, providing a powerful and flexible structure for defining build rules. 
-- **Execution Behavior:**  
-    `smake` reads and executes Makefile.lsp in the current directory.
-- **No Installation Required:**  
-    If Go is available, you can use smake without installation via `go run github.com/hymkor/smake@latest`
-
 [Makefile.lsp](./Makefile.lsp):
 
 ```Makefile.lsp
