@@ -22,18 +22,18 @@
 
   (("clean")
    (pushd "examples/cc"
-     (spawnlp $0 "clean"))
+     (spawn $0 "clean"))
    (dolist (fname (wildcard "*~"))
      (rm fname))
-   (if (-e TARGET)
+   (if (probe-file TARGET)
      (mv TARGET (string-append "." TARGET "~"))))
 
   (("upgrade") ; upgrade the installed program with the newly built version
    (if (probe-file TARGET)
-     (let ((delimiter (elt (if windows ";" ":") 0)))
+     (let ((delimiter (elt *path-list-separator* 0)))
        (dolist (dir (string-split delimiter (getenv "PATH")))
          (if (and (not (equalp CURDIR dir))
-                  (probe-file (joinpath dir TARGET)))
+                  (probe-file (join-path dir TARGET)))
            (progn
              (format (standard-output) "copy \"~A\" to \"~A\" ? [Y or N] " TARGET dir)
              (if (equalp (read-line (standard-input) nil nil) "y")
@@ -60,7 +60,7 @@
                 (target (string-append NAME exe)))
            (rm target)
            (sh "go build")
-           (spawnlp
+           (spawn
              "zip"
              (string-append NAME "-" VERSION "-" goos "-" goarch ".zip")
              target))))))
@@ -90,7 +90,7 @@
         (progn
           (format (error-output) "Found update files: ~S~%" ufiles)
           (sh "go fmt")
-          (spawnlp "go" "build" "-ldflags"
+          (spawn "go" "build" "-ldflags"
                    (string-append "-s -w -X main.version=" VERSION)))
         (progn
           (format (error-output) "No files updated~%")
