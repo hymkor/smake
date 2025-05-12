@@ -5,6 +5,8 @@
 - Implement `probe-directory`
 - Implement `join-path` instead of `joinpath` and `pathjoin`
 - Implement `(sh-ignore-error)` with the same feature as `(sh-)`
+- Implement `*path-separator*` as `(if *windows* "\\" "/")`
+- Implement `*path-list-separator*` as `(if *windows* ";" ":")`
 
 v0.4.3
 ======
