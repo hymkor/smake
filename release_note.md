@@ -2,6 +2,7 @@
 - Implement `*dev-null*`   as `(if *windows* "NUL" "/dev/null")`
 - Implement `*exe-suffix*` as `(if *windows* ".exe" "")`
 - Implement `spawn` with Go and re-implement `x`, `spawnlp` and `spawnvp` with Lisp code
+- Implement `probe-directory`
 
 v0.4.3
 ======
