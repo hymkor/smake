@@ -338,6 +338,16 @@ These are available in `(make)` block
 - $&lt; - the first source filename
 - $? - the updated source filenames
 
+License
+-------
+
+MIT License
+
+Author
+------
+
+HAYAMA\_Kaoru (hymkor)
+
 ---
 
 - [Deprecated functions](./deprecated.md)
