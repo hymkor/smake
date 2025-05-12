@@ -18,12 +18,17 @@ Example Usage
 ### Using `smake` (Installed)
 
 ```
-$ smake clean
-chdir "examples/cc"
-C:\Users\hymkor\src\smake\smake.exe clean
-chdir "C:\Users\hymkor\src\smake"
-rm ".smake.exe~"
-mv "smake.exe" ".smake.exe~"
+> cd "./examples/cc"
+
+> smake clean
+rm "main.o"
+rm "sub.o"
+rm "cc.exe"
+
+> smake
+gcc -c main.c
+gcc -c sub.c
+gcc -o cc.exe main.o sub.o
 ```
 
 ### Using `smake` (via `go run`)
@@ -35,117 +40,45 @@ go fmt
 go build -ldflags -s -w -X main.version=v0.4.2-6-g940b278
 ```
 
-[Makefile.lsp](./Makefile.lsp):
+[examples/cc/Makefile.lsp](./examples/cc/Makefile.lsp):
 
-```Makefile.lsp
-(defglobal EXE     (shell "go env GOEXE"))
-(defglobal CURDIR  (getwd))
-(defglobal NAME    (notdir CURDIR))
-(defglobal TARGET  (string-append NAME EXE))
-(defglobal SOURCE  (wildcard "*.go"))
-(defglobal VERSION
-  (catch
-    'notag
-    (with-handler
-      (lambda (c) (throw 'notag "v0.0.0"))
-      (shell (string-append "git describe --tags 2>" *dev-null*)))))
+```examples/cc/Makefile.lsp
+;; # Equivalent Makefile for GNU Make (for reference)
+;; ifeq ($(OS),Windows_NT)
+;;   EXE=.exe
+;; else
+;;   EXE=
+;; endif
+;; AOUT=$(notdir $(CURDIR))$(EXE)
+;; OFILES=$(subst .c,.o,$(wildcard *.c))
+;; $(AOUT): $(OFILES)
+;;     gcc -o $@ $(OFILES)
+;; .c.o:
+;;     gcc -c $<
+
+(defun c-to-o (c) (string-append (basename c) ".o"))
+
+(defglobal c-files (wildcard "*.c"))
+(defglobal o-files (mapcar #'c-to-o c-files))
+(defglobal target  (string-append (notdir (getwd)) *exe-suffix*))
 
 (case $1
-  (("get")
-   (sh "go get -u"
-       "go get -u github.com/hymkor/gmnlisp@master"
-       "go mod tidy"))
-
-  (("touch")
-   (dolist (fname SOURCE)
-     (touch fname)))
-
   (("clean")
-   (pushd "examples/cc"
-     (spawn $0 "clean"))
-   (dolist (fname (wildcard "*~"))
-     (rm fname))
-   (if (probe-file TARGET)
-     (mv TARGET (string-append "." TARGET "~"))))
-
-  (("upgrade") ; upgrade the installed program with the newly built version
-   (if (probe-file TARGET)
-     (let ((delimiter (elt *path-list-separator* 0)))
-       (dolist (dir (string-split delimiter (getenv "PATH")))
-         (if (and (not (equalp CURDIR dir))
-                  (probe-file (join-path dir TARGET)))
-           (progn
-             (format (standard-output) "copy \"~A\" to \"~A\" ? [Y or N] " TARGET dir)
-             (if (equalp (read-line (standard-input) nil nil) "y")
-               (cp TARGET dir))))))))
-
-  (("test")
-   (assert-eq (match "^a*$" "aaaa") '("aaaa"))
-   (assert-eq (match "^v([0-9]+)\.([0-9]+)\.([0-9]+)$" "v10.20.30")
-              '("v10.20.30" "10" "20" "30"))
-   (assert-eq (match "^a*$" "hogehoge") nil)
-   (assert-eq (catch
-                'fail
-                (with-handler
-                  (lambda (c) (throw 'fail 'NG))
-                  (match "(" "hogehoge")))
-              'NG)
-   (sh "go test"))
-
-  (("dist")
-   (dolist (goos '("linux" "windows"))
-     (dolist (goarch '("386" "amd64"))
-       (env (("GOOS" goos) ("GOARCH" goarch))
-         (let* ((exe (shell "go env GOEXE"))
-                (target (string-append NAME exe)))
-           (rm target)
-           (sh "go build")
-           (spawn
-             "zip"
-             (string-append NAME "-" VERSION "-" goos "-" goarch ".zip")
-             target))))))
-
-  (("release")
-   (let ((b (create-string-output-stream)))
-     (format b "gh release create -d --notes \"\" -t")
-     (format b " \"~A\"" VERSION)
-     (format b " \"~A\"" VERSION)
-     (dolist (zip (wildcard (string-append NAME "-" VERSION "-*.zip")))
-       (format b " \"~A\"" zip))
-     (sh (get-output-stream-string b))))
-
-  (("clean-zip")
-   (dolist (fname (wildcard "*.zip"))
-     (rm fname)))
-
-  (("manifest")
-   (sh "make-scoop-manifest *.zip > smake.json"))
-
-  (("readme")
-   (sh "example-into-readme"))
+   (dolist (obj o-files)
+     (if (probe-file obj)
+       (rm obj)))
+   (if (probe-file target)
+     (rm target)))
 
   (t
-    (let ((ufiles (updatep TARGET "Makefile.lsp" "embed.lsp" "go.mod" "go.sum" SOURCE)))
-      (if ufiles
-        (progn
-          (format (error-output) "Found update files: ~S~%" ufiles)
-          (sh "go fmt")
-          (spawn "go" "build" "-ldflags"
-                   (string-append "-s -w -X main.version=" VERSION)))
-        (progn
-          (format (error-output) "No files updated~%")
-          )
-        ); if
-      ); let
-    ); t
-  ); case
+    (dolist (c-src c-files)
+      (if (updatep (c-to-o c-src) c-src)
+        (spawn "gcc" "-c" c-src)))
+    (apply #'spawn "gcc" "-o" target o-files))
+  ) ; case
 
-; vim:set lispwords+=env,mapc,pushd,while,doenv:
+; vim:set lispwords+=apply,make:
 ```
-
-Other examples:
-
-- [examples/cc/Makefile.lsp](./examples/cc/Makefile.lsp) for C Project
 
 Install
 -------
