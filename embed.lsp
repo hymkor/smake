@@ -87,3 +87,7 @@
   (apply #'spawn cmd params))
 (defun spawnvp (cmd params) ; deprecated
   (apply #'spawn cmd params))
+(defun pathjoin (&rest params) ; deprecated
+  (apply #'join-path params))
+(defun joinpath (&rest params) ; deprecated
+  (apply #'join-path params))
