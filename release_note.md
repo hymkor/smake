@@ -1,3 +1,7 @@
+v0.5.0
+======
+May 15, 2025
+
 - Added `*windows*`, which evaluates to `T` when `(getenv "OS")` equals `"Windows_NT"`.
 - Added `*dev-null*`, which expands to `"NUL"` on Windows and `"/dev/null"` otherwise.
 - Added `*exe-suffix*`, which expands to `".exe"` on Windows and an empty string otherwise.
