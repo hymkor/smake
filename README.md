@@ -20,24 +20,32 @@ Example Usage
 ```
 > cd "./examples/cc"
 
-> smake clean
-rm "main.o"
-rm "sub.o"
-rm "cc.exe"
-
 > smake
 gcc -c main.c
 gcc -c sub.c
 gcc -o cc.exe main.o sub.o
+
+> smake clean
+rm "main.o"
+rm "sub.o"
+rm "cc.exe"
 ```
 
 ### Using `smake` (via `go run`)
 
 ```
-$ go run github.com/hymkor/smake@latest
-Found update files: ("orig_test.go" "orig.go" "match.go" "main_windows.go" "main_unix.go" "main.go" "io.go" "gnu_test.go" "gnu.go" "go.sum" "go.mod" "embed.lsp" "Makefile.lsp")
-go fmt
-go build -ldflags -s -w -X main.version=v0.4.2-6-g940b278
+> cd "./examples/cc"
+
+> go run github.com/hymkor/smake@latest
+go: downloading github.com/hymkor/smake v0.5.0
+gcc -c main.c
+gcc -c sub.c
+gcc -o cc.exe main.o sub.o
+
+> go run github.com/hymkor/smake@latest clean
+rm "main.o"
+rm "sub.o"
+rm "cc.exe"
 ```
 
 [examples/cc/Makefile.lsp](./examples/cc/Makefile.lsp):
