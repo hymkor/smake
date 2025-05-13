@@ -159,12 +159,12 @@ Execute the shell command by CMD.exe or /bin/sh. If it fails, the build process 
 
 ### (sh-ignore-error "SHELL-COMMAND")
 
-Same as (sh) but ignores errors.
+Equivalent to `(sh)` but ignores errors.
 
 ### (shell "SHELL-COMMAND")
 
 Execute the shell command and return its standard-output as string.
-Same as $(shell "..") of GNU Make.
+Equivalent to `$(shell "..")` of GNU Make.
 
 ### (echo STRING...)
 
@@ -186,7 +186,7 @@ Return the value of the environment variable NAME. If it does not exist, return 
 
 ### (setenv "NAME" "VALUE")
 
-Set the environment variable "NAME" to "VALUE".
+Set the environment variable `"NAME"` to `"VALUE"`.
 
 ### (env (("NAME" "VALUE")...) COMMANDS...)
 
@@ -199,19 +199,19 @@ Expand PATTERNs as a wildcard and return them as a list.
 
 ### (abspath "FILEPATH")
 
-Same as $(abspath FILEPATH) of GNU Make
+Equivalent to `$(abspath FILEPATH)` of GNU Make
 
 ### (dir "FILEPATH")
 
-Same as $(dir FILEPATH) of GNU Make
+Equivalent to `$(dir FILEPATH)` of GNU Make
 
 ### (notdir "FILEPATH")
 
-Same as $(notdir FILEPATH) of GNU Make
+Equivalent to `$(notdir FILEPATH)` of GNU Make
 
 ### (basename "FILEPATH")
 
-Same as $(basename FILEPATH) of GNU Make
+Equivalent to `$(basename FILEPATH)` of GNU Make
 
 ### (join-path "DIR" .. "FNAME")
 
@@ -220,12 +220,12 @@ Make path with "DIR"... "FNAME".
 ### (probe-file FILENAME)
 
 If FILENAME exists, it returns t. Otherwise nil.
-Same as -e of Perl.
+Equivalent to `-e FILENAME` of Perl.
 
 ### (probe-directory DIRNAME)
 
 If DIRNAME exists and it is a directory, it returns t. Otherwise nil.
-Same as -d of Perl.
+Equivalent to `-d FILENAME` of Perl.
 
 ### (chdir "DIRNAME")
 
@@ -289,7 +289,7 @@ The command-line arguments passed to the program.
 
 ### $0, $1, $2, .. $9
 
-Equivalent to `(and (<= N (length *args*)) (elt (cons "path-to-smake *args*) N))` where `"path-to-smake"` is the full path to the SMake executable.
+Equivalent to `(and (<= N (length *args*)) (elt (cons "path-to-smake" *args*) N))` where `"path-to-smake"` is the full path to the SMake executable.
 
 ### \*path-separator\*
 
