@@ -138,6 +138,8 @@ Lisp References
 + [JISX3012:1998 プログラム言語ＩＳＬＩＳＰ](https://kikakurui.com/x3/X3012-1998-01.html)
 + [M.Hiroi's Home Page / お気楽 ISLisp プログラミング超入門](http://www.nct9.ne.jp/m_hiroi/clisp/islisp.html)
 
+Information about ISLisp is still limited, but if you're looking for more insights, ChatGPT can be surprisingly knowledgeable and might provide helpful answers. Feel free to give it a try.
+
 The functions available in Makefile.lsp
 ---------------------------------------
 
