@@ -1,13 +1,13 @@
-- Implement `*windows*`    as `(equal (getenv "OS") "Windows_NT")`
-- Implement `*dev-null*`   as `(if *windows* "NUL" "/dev/null")`
-- Implement `*exe-suffix*` as `(if *windows* ".exe" "")`
-- Implement `spawn` with Go and re-implement `x`, `spawnlp` and `spawnvp` with Lisp code
-- Implement `probe-directory`
-- Implement `join-path` instead of `joinpath` and `pathjoin`
-- Implement `(sh-ignore-error)` with the same feature as `(sh-)`
-- Implement `*path-separator*` as `(if *windows* "\\" "/")`
-- Implement `*path-list-separator*` as `(if *windows* ";" ":")`
-- Update gmnlisp to version 0.7.11
+- Added `*windows*`, which evaluates to `T` when `(getenv "OS")` equals `"Windows_NT"`.
+- Added `*dev-null*`, which expands to `"NUL"` on Windows and `"/dev/null"` otherwise.
+- Added `*exe-suffix*`, which expands to `".exe"` on Windows and an empty string otherwise.
+- Added `*path-separator*` and `*path-list-separator*` for OS-specific path handling.
+- Added `spawn`, implemented in Go, and reimplemented `x`, `spawnlp`, and `spawnvp` in Lisp.
+- Added `probe-directory`.
+- Added `join-path` as a clearer replacement for the previously used `joinpath` and `pathjoin`.
+- Added `sh-ignore-error`, which behaves like the deprecated `(sh-)`.
+- Deprecated `joinpath`, `pathjoin`, and `(sh-)`, but kept them for backward compatibility.
+- Updated gmnlisp engine to version 0.7.11.
 
 v0.4.3
 ======
