@@ -1,3 +1,7 @@
+- Update gmnlisp to [v0.7.14]
+
+[v0.7.14]: https://github.com/hymkor/gmnlisp/releases/tag/v0.7.14
+
 v0.5.0
 ======
 May 15, 2025
