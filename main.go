@@ -14,6 +14,7 @@ import (
 	"time"
 
 	gm "github.com/hymkor/gmnlisp"
+	_ "github.com/hymkor/gmnlisp/eval"
 )
 
 //go:embed embed.lsp
