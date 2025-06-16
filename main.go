@@ -336,11 +336,17 @@ func setupFunctions(ctx context.Context, w *gm.World, args []string) (gm.Variabl
 	}
 	argsSeq := argsList.Sequence()
 
+	executable := os.Args[0]
+	if value, err := os.Executable(); err == nil {
+		executable = value
+	}
+
 	vars := gm.Variables{
-		gm.NewSymbol("$$"):     cons,
-		gm.NewSymbol("*args*"): argsSeq, // deprecated
-		gm.NewSymbol("*argv*"): argsSeq,
-		symbolPathSep:          gm.String(os.PathSeparator),
+		gm.NewSymbol("$$"):                cons,
+		gm.NewSymbol("*args*"):            argsSeq, // deprecated
+		gm.NewSymbol("*argv*"):            argsSeq,
+		gm.NewSymbol("*executable-name*"): gm.String(executable),
+		symbolPathSep:                     gm.String(os.PathSeparator),
 	}
 	funcs := gm.Functions{
 		gm.NewSymbol("$"):               &gm.Function{C: 1, F: funExpandString},
