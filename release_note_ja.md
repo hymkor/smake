@@ -1,3 +1,8 @@
+- gmnlisp を v0.7.15 へ更新
+- gmnlisp v0.7.15 でオプションになった `(eval)` と `(load)` を有効にするため、`import _ "github.com/hymkor/gmnlisp/eval"` を追加した
+
+[v0.7.15]: https://github.com/hymkor/gmnlisp/releases/tag/v0.7.15
+
 v0.5.1
 ======
 Jun 10, 2025
