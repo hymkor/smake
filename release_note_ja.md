@@ -1,0 +1,23 @@
+v0.5.1
+======
+Jun 10, 2025
+
+- gmnlisp を [v0.7.14] へ更新
+
+[v0.7.14]: https://github.com/hymkor/gmnlisp/releases/tag/v0.7.14
+
+v0.5.0
+======
+May 15, 2025
+
+- `(getenv "OS")` が `"Windows_NT"` と一致する時 `T` となる変数 `*windows*` を追加
+- Windows では `"NUL"`, それ以外の OS では `"/dev/null"` となる変数 `*dev-null*` を追加
+- Windows では`".exe"` 、それ以外の OS では `""` となる変数 `*exe-suffix*` を追加
+- パスの区切り文字として `*path-separator*`、 パスリストの区切り文字として `*path-list-separator*` を追加
+- `spawn` を Go で、`x`,`spawnlp`, `spawnvp` を Lisp で再実装した
+- `probe-directory` を実装
+- `joinpath` や `pathjoin` を非推奨とし、かわりに使う `join-path` を追加
+- `(sh-)`  と同様に機能する `sh-ignore-error` を追加。`(sh-)` は非推奨とした
+- gmnlisp を [v0.7.11] へ更新
+
+[v0.7.11]: https://github.com/hymkor/gmnlisp/releases/tag/v0.7.11
