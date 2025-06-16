@@ -1,5 +1,6 @@
 - Update gmnlisp to [v0.7.15]
 - Added `import _ "github.com/hymkor/gmnlisp/eval"` to enable optional `(eval)` and `(load)` functions in gmnlisp v0.7.15.
+- When running the smake executable, `*executable-name*` is set to its path. (Compatible with [lispect](https://github.com/hymkor/lispect) )
 
 [v0.7.15]: https://github.com/hymkor/gmnlisp/releases/tag/v0.7.15
 
