@@ -270,6 +270,22 @@ These are standard functions compatible with ISLisp. See also [hymkor/gmnlisp](h
 
 If `REGULAR-EXPRESSION` matches `STRING`, `(match)` returns a list containing the entire matched part followed by the captured groups (submatches). If there is no match, it returns `nil`.
 
+### (if-some (VAR EXPR) THEN ELSE)
+
+Evaluate `EXPR` and bind the result to `VAR`.
+If the result is not `nil`, execute the THEN expression.
+Otherwise, execute the ELSE expression.
+Note: only **one expression** is allowed for both THEN and ELSE.
+Also, `VAR` is visible in both THEN and ELSE parts.
+
+Example:
+
+```lisp
+(if-some (val (getenv "CONFIG"))
+  (format t "Config is: ~A~%" val)
+  (format t "No config found.~%"))
+```
+
 The built-in variables
 ----------------------
 
