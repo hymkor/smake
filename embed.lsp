@@ -115,3 +115,30 @@
        (if ,var
            (progn ,@body)))))
 
+(defmacro cond-let (:rest forms)
+  (let
+    ((tmp (gensym)))
+    (list 'let (list (list tmp nil))
+          (cons
+            'cond
+            (mapcar
+              (lambda (form1)
+                (let ((pattern (car form1)))
+                  (if (consp pattern)
+                    ; then
+                    (let ((var (car pattern))
+                          (val (car (cdr pattern)))
+                          (action (cdr form1)))
+                      ; ((setq tmp val) (let ((var val)) action))
+                      (list
+                        (list 'setq tmp val)
+                        (append (list 'let (list (list var tmp))) action)))
+                    ; else
+                    form1) ; if
+                  )
+                ) ; lambda
+              forms) ; mapcar
+            ) ; cons 
+          )
+    ) ; let
+  ) ; defmacro
