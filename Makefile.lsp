@@ -108,18 +108,16 @@
    (sh "example-into-readme"))
 
   (t
-    (let ((ufiles (updatep TARGET "Makefile.lsp" "embed.lsp" "go.mod" "go.sum" SOURCE)))
-      (if ufiles
-        (progn
-          (format (error-output) "Found update files: ~S~%" ufiles)
-          (sh "go fmt")
-          (spawn "go" "build" "-ldflags"
-                   (string-append "-s -w -X main.version=" VERSION)))
-        (progn
-          (format (error-output) "No files updated~%")
-          )
-        ); if
-      ); let
+    (if-some
+      (ufiles (updatep TARGET "Makefile.lsp" "embed.lsp" "go.mod" "go.sum" SOURCE))
+      (progn
+        (format (error-output) "Found update files: ~S~%" ufiles)
+        (finish-output (error-output))
+        (sh "go fmt ./...")
+        (spawn "go" "build" "-ldflags"
+               (string-append "-s -w -X main.version=" VERSION)))
+      (format (error-output) "No files updated~%")
+      ); if-some
     ); t
   ); case
 
