@@ -73,6 +73,15 @@
                 (c nil) ; test-form
                 (string-append c "3")); then-form
               nil); expect
+   (dolist (pattern '(((1 nil) first) ((nil 2) second) ((nil nil) otherwise)))
+     (let ((target (car pattern))
+           (expect (cadr pattern)))
+       (assert-eq
+         (cond-let
+           ((foo (elt target 0)) 'first)
+           ((bar (elt target 1)) 'second)
+           (t 'otherwise))
+         expect)))
    (sh "go test"))
 
   (("dist")
