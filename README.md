@@ -300,6 +300,30 @@ Example:
   (format t "Welcome!~%"))
 ```
 
+### (cond-let CONDITION-CLAUSES...)
+
+Evaluates a series of condition-and-body pairs, where each condition may optionally include a variable binding.
+It works like a combination of `cond` and `let`.
+Each clause consists of either:
+
+* `((VAR EXPR) TEST)` — bind the result of `EXPR` to `VAR`, then evaluate `TEST`.
+* or just `(TEST)` — evaluate TEST directly.
+
+If the test is true (non-`nil`), the associated body expression is executed.
+Only one matching clause is executed.
+The final fallback clause may use `t` as a catch-all.
+
+Example:
+
+```lisp
+(cond-let
+  ((x (getenv "USER")) (stringp x)) (format t "USER: ~A~%" x)
+  ((y (getenv "USERNAME")) t)       (format t "USERNAME: ~A~%" y)
+  (t                                (format t "No user info~%")))
+```
+
+This macro allows concise conditional logic with optional value binding.
+
 The built-in variables
 ----------------------
 
