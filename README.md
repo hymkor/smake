@@ -286,6 +286,20 @@ Example:
   (format t "No config found.~%"))
 ```
 
+### (when-some (VAR EXPR) BODY...)
+
+Evaluate `EXPR` and bind the result to `VAR`.
+If the result is not `nil`, execute the BODY expressions (one or more).
+This is useful when you want to avoid writing separate `let` and `if` forms just to handle optional values.
+
+Example:
+
+```lisp
+(when-some (val (getenv "USERNAME"))
+  (format t "User: ~A~%" val)
+  (format t "Welcome!~%"))
+```
+
 The built-in variables
 ----------------------
 
