@@ -2,15 +2,19 @@
   (let ((result (gensym)))
     `(let ((,result ,source))
        (if (equal ,result ,expect)
-         (format (error-output) "OK: (assert-eq ~S ~S)~%"
-                 (quote ,source)
-                 ,expect)
+         (progn
+           (format (error-output) "OK: (assert-eq ~S ~S)~%"
+                   (quote ,source)
+                   ,expect)
+           (finish-output (error-output)))
          (progn
            (format (error-output) "NG: (assert-eq ~S ~S)~%  but ~S~%"
                    (quote ,source)
                    ,expect
                    ,result)
-           (abort))))))
+           (finish-output (error-output))
+           (abort)))
+       )))
 
 (defmacro foreach (vars &rest body)
   (let ((var (car vars))
