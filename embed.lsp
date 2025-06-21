@@ -99,3 +99,11 @@
   (apply #'join-path params))
 (defun sh- (&rest params)
   (apply #'sh-ignore-error params))
+
+(defmacro if-some (binding then-part else-part)
+  (let ((var (car binding))
+        (val (cadr binding)))
+    `(let ((,var ,val))
+       (if ,var
+           ,then-part
+           ,else-part))))

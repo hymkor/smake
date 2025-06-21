@@ -55,6 +55,16 @@
                   (lambda (c) (throw 'fail 'NG))
                   (match "(" "hogehoge")))
               'NG)
+   (assert-eq (if-some
+                (c (+ 1 2)) ; test-form
+                (+ c 3) ; then-form
+                0) ; else-form
+              6) ; expect
+   (assert-eq (if-some
+                (c nil) ; test-form
+                (+ c 3) ; then-form
+                "NONE") ;else-form
+              "NONE") ; expect
    (sh "go test"))
 
   (("dist")
