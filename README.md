@@ -355,6 +355,10 @@ OS-specific path separator (Windows `"\"` , UNIX `"/"` )
 
 OS-specfic path list separator (Windows `";"`, UNIX `":"`)
 
+### \*executable-name\*
+
+The path of smake's executable
+
 License
 -------
 
