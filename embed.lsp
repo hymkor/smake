@@ -107,3 +107,11 @@
        (if ,var
            ,then-part
            ,else-part))))
+
+(defmacro when-some (binding :rest body)
+  (let ((var (car binding))
+        (val (cadr binding)))
+    `(let ((,var ,val))
+       (if ,var
+           (progn ,@body)))))
+

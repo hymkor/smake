@@ -65,6 +65,14 @@
                 (+ c 3) ; then-form
                 "NONE") ;else-form
               "NONE") ; expect
+   (assert-eq (when-some
+                (c (string-append "1" "2")) ; test-form
+                (string-append c "3")); then-form
+              "123"); expect
+   (assert-eq (when-some
+                (c nil) ; test-form
+                (string-append c "3")); then-form
+              nil); expect
    (sh "go test"))
 
   (("dist")
