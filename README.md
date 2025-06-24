@@ -324,6 +324,26 @@ Example:
 
 This macro allows concise conditional logic with optional value binding.
 
+### (which EXECUTABLE-NAME)
+
+The `which` function searches for files with a given name along the directories listed in the `PATH` environment variable, similar to the Unix `which` command.
+
+```lisp
+(which "go1.20.14")
+```
+
+This returns a list of file paths where an executable named `go1.20.14` was found. On Windows, it automatically checks for file extensions such as `.exe`, `.cmd`, and `.bat`.
+
+#### Example (on Windows):
+
+```shell
+> smake -e "(format (standard-output) \"~S~%\" (which \"nyagos\"))"
+("C:\\Users\\hymko\\Share\\bin\\nyagos.exe"
+ "C:\\Users\\hymko\\Share\\bin\\nyagos"
+ "C:\\Users\\hymko\\Share\\amd64\\nyagos.exe"
+ "C:\\Users\\hymko\\go\\bin\\nyagos.exe")
+```
+
 The built-in variables
 ----------------------
 
