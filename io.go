@@ -134,6 +134,10 @@ func nodesToCommand(ctx context.Context, w *gm.World, list []gm.Node, out io.Wri
 	}
 	fmt.Fprintln(out)
 
+	if f, ok := out.(interface{ Flush() error }); ok {
+		f.Flush()
+	}
+
 	cmd := exec.CommandContext(ctx, argv[0], argv[1:]...)
 	cmd.Stdin = os.Stdin
 	cmd.Stdout = os.Stdout
@@ -149,6 +153,12 @@ func funExecute(ctx context.Context, w *gm.World, list []gm.Node) (gm.Node, erro
 }
 
 func funSh(ctx context.Context, w *gm.World, list []gm.Node) (gm.Node, error) {
+	if w, ok := w.Stdout().(interface{ Flush() error }); ok {
+		w.Flush()
+	}
+	if w, ok := w.Errout().(interface{ Flush() error }); ok {
+		w.Flush()
+	}
 	for _, node := range list {
 		s, err := gm.ExpectClass[gm.String](ctx, w, node)
 		if err != nil {
