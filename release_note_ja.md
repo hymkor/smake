@@ -1,9 +1,12 @@
-- gmnlisp を v0.7.15 へ更新
-- gmnlisp v0.7.15 でオプションになった `(eval)` と `(load)` を有効にするため、`import _ "github.com/hymkor/gmnlisp/eval"` を追加した
+- gmnlisp を [v0.7.16] へ更新
+- gmnlisp [v0.7.15] でオプションになった `(eval)` と `(load)` を有効にするため、`import _ "github.com/hymkor/gmnlisp/eval"` を追加した
 - `*executable-name*` にsmake の実行ファイルのパスを設定するようにした ([lispect](https://github.com/hymkor/lispect) と互換)
 - 条件分岐と let を組み合わせたマクロ `(if-some)`, `(when-some)`, `(cond-let)` を追加
+- 環境変数PATHで指定されるディレクトリリストから実行ファイルを検索する関数 `(which)` を追加
+- `(spawn)`, `(sh)`: 実行前に標準出力、標準エラー出力を Flush するようにした
 
 [v0.7.15]: https://github.com/hymkor/gmnlisp/releases/tag/v0.7.15
+[v0.7.16]: https://github.com/hymkor/gmnlisp/releases/tag/v0.7.16
 
 v0.5.1
 ======

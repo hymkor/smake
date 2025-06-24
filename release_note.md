@@ -1,9 +1,12 @@
-- Update gmnlisp to [v0.7.15]
+- Update gmnlisp to [v0.7.16]
 - Added `import _ "github.com/hymkor/gmnlisp/eval"` to enable optional `(eval)` and `(load)` functions in gmnlisp v0.7.15.
 - `*executable-name*` is set to the path of executable (Compatible with [lispect](https://github.com/hymkor/lispect) )
 - Added `(if-some)`, `(when-some)` and `(cond-let)` macros for optional value binding and conditional execution.
+- Implemented (which), a function similar to the Unix which command, that looks for executables in the system PATH.
+- `(spawn)` and `(sh)` now flush standard-output and error-output before execution.
 
 [v0.7.15]: https://github.com/hymkor/gmnlisp/releases/tag/v0.7.15
+[v0.7.16]: https://github.com/hymkor/gmnlisp/releases/tag/v0.7.16
 
 v0.5.1
 ======
