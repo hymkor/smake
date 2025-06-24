@@ -3,7 +3,11 @@
 ;; just run `go build`. If you're curious about SMake, see:
 ;; https://github.com/hymkor/smake
 
-(defglobal EXE     (shell "go env GOEXE"))
+(if-some (golist (which "go1.20.14"))
+  (defglobal GOEXE (car golist))
+  (defglobal GOEXE "go"))
+
+(defglobal EXE     (shell (string-append GOEXE " env GOEXE")))
 (defglobal CURDIR  (getwd))
 (defglobal NAME    (notdir CURDIR))
 (defglobal TARGET  (string-append NAME EXE))
@@ -17,9 +21,8 @@
 
 (case $1
   (("get")
-   (sh "go get -u"
-       "go get -u github.com/hymkor/gmnlisp@master"
-       "go mod tidy"))
+   (spawn GOEXE "get" "-u")
+   (spawn GOEXE "mod" "tidy"))
 
   (("touch")
    (dolist (fname SOURCE)
@@ -41,6 +44,7 @@
                   (probe-file (join-path dir TARGET)))
            (progn
              (format (standard-output) "copy \"~A\" to \"~A\" ? [Y or N] " TARGET dir)
+             (finish-output (standard-output))
              (if (equalp (read-line (standard-input) nil nil) "y")
                (cp TARGET dir))))))))
 
@@ -82,16 +86,16 @@
            ((bar (elt target 1)) 'second)
            (t 'otherwise))
          expect)))
-   (sh "go test"))
+   (spawn GOEXE "test"))
 
   (("dist")
    (dolist (goos '("linux" "windows"))
      (dolist (goarch '("386" "amd64"))
        (env (("GOOS" goos) ("GOARCH" goarch))
-         (let* ((exe (shell "go env GOEXE"))
+         (let* ((exe (q GOEXE "env" "GOEXE"))
                 (target (string-append NAME exe)))
            (rm target)
-           (sh "go build")
+           (spawn GOEXE "build")
            (spawn
              "zip"
              (string-append NAME "-" VERSION "-" goos "-" goarch ".zip")
@@ -121,9 +125,8 @@
       (ufiles (updatep TARGET "Makefile.lsp" "embed.lsp" "go.mod" "go.sum" SOURCE))
       (progn
         (format (error-output) "Found update files: ~S~%" ufiles)
-        (finish-output (error-output))
-        (sh "go fmt ./...")
-        (spawn "go" "build" "-ldflags"
+        (spawn GOEXE "fmt" "./...")
+        (spawn GOEXE "build" "-ldflags"
                (string-append "-s -w -X main.version=" VERSION)))
       (format (error-output) "No files updated~%")
       ); if-some
