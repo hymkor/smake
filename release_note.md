@@ -1,3 +1,7 @@
+v0.6.0
+======
+Jun 24, 2025
+
 - Update gmnlisp to [v0.7.16]
 - Added `import _ "github.com/hymkor/gmnlisp/eval"` to enable optional `(eval)` and `(load)` functions in gmnlisp v0.7.15.
 - `*executable-name*` is set to the path of executable (Compatible with [lispect](https://github.com/hymkor/lispect) )

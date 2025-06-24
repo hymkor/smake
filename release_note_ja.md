@@ -1,3 +1,7 @@
+v0.6.0
+======
+Jun 24, 2025
+
 - gmnlisp を [v0.7.16] へ更新
 - gmnlisp [v0.7.15] でオプションになった `(eval)` と `(load)` を有効にするため、`import _ "github.com/hymkor/gmnlisp/eval"` を追加した
 - `*executable-name*` にsmake の実行ファイルのパスを設定するようにした ([lispect](https://github.com/hymkor/lispect) と互換)
