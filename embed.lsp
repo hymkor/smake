@@ -142,3 +142,13 @@
           )
     ) ; let
   ) ; defmacro
+
+(defun which (target)
+  (let ((result nil)
+        (delimiter (elt *path-list-separator* 0)))
+    (dolist (dir (cons "." (string-split delimiter (getenv "PATH"))))
+      (dolist (suffix (if *windows* '("" ".exe" ".bat" ".cmd") '("")))
+        (let ((fullpath (string-append (join-path dir target) suffix)))
+          (if (probe-file fullpath)
+            (setq result (cons fullpath result))))))
+    result))
