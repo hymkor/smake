@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"context"
 	_ "embed"
+	"errors"
 	"flag"
 	"fmt"
 	"io"
@@ -316,7 +317,7 @@ func cmdMake(ctx context.Context, w *gm.World, node gm.Node) (gm.Node, error) {
 
 var flagVersion = flag.Bool("version", false, "show version")
 
-var flagMakefile = flag.String("f", "Makefile.lsp", "Read FILE as a makefile.lsp")
+var flagMakefile = flag.String("f", "Makefile.lsp,smake.lsp", "Read comma-separated FILES as rule files; the first existing file is used")
 
 var flagExecute = flag.String("e", "", "inline script")
 
@@ -411,6 +412,31 @@ func funFields(ctx context.Context, w *gm.World, args []gm.Node) (gm.Node, error
 	return result, nil
 }
 
+func openFiles(filenames string) (*os.File, error) {
+	errs := []error{}
+	for {
+		var filename1 string
+		var ok bool
+		filename1, filenames, ok = strings.Cut(filenames, ",")
+		if filename1 != "" {
+			fd, err := os.Open(filename1)
+			if err == nil {
+				return fd, nil
+			}
+			errs = append(errs, err)
+		}
+		if !ok {
+			if len(errs) >= 2 {
+				return nil, errors.Join(errs...)
+			}
+			if len(errs) == 1 {
+				return nil, errs[0]
+			}
+			return nil, errors.New("no filenames specified")
+		}
+	}
+}
+
 func mains(args []string) error {
 	var source []byte
 
@@ -428,7 +454,7 @@ func mains(args []string) error {
 	if *flagExecute != "" {
 		source = []byte(*flagExecute)
 	} else {
-		fd, err := os.Open(*flagMakefile)
+		fd, err := openFiles(*flagMakefile)
 		if err != nil {
 			return err
 		}
