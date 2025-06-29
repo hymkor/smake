@@ -1,3 +1,5 @@
+- Support specifying multiple rule files with -f option (comma-separated). The first existing file is used. Defaults to "Makefile.lsp,smake.lsp".
+
 v0.6.0
 ======
 Jun 24, 2025
