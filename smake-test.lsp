@@ -1,3 +1,5 @@
+;;; match test ;;;
+
 (assert-eq (match "^a*$" "aaaa") '("aaaa"))
 (assert-eq (match "^v([0-9]+)\.([0-9]+)\.([0-9]+)$" "v10.20.30")
            '("v10.20.30" "10" "20" "30"))
@@ -8,6 +10,9 @@
                (lambda (c) (throw 'fail 'NG))
                (match "(" "hogehoge")))
            'NG)
+
+;;; if-some/when-some/cond-let test ;;;
+
 (assert-eq (if-some
              (c (+ 1 2)) ; test-form
              (+ c 3) ; then-form
@@ -35,3 +40,25 @@
         ((bar (elt target 1)) 'second)
         (t 'otherwise))
       expect)))
+
+;;; spawn error test
+
+(assert-eq
+  (catch
+    'spawn-error
+    (with-handler
+      (lambda (c) (throw 'spawn-error 'OK))
+      (spawn "not-exist-command")
+      'NG))
+  'OK)
+
+(assert-eq
+  (catch
+    'spawn-error
+    (with-handler
+      (lambda (c) (throw 'spawn-error 'OK))
+      (if *windows*
+        (spawn "cmd" "/c" "exit 1")
+        (spawn "sh" "-c" "exit 1"))
+      'NG))
+  'OK)
