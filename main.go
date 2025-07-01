@@ -357,6 +357,7 @@ func setupFunctions(ctx context.Context, w *gm.World, args []string) (gm.Variabl
 		gm.NewSymbol("chdir"):           &gm.Function{C: 1, F: funChdir},
 		gm.NewSymbol("cp"):              &gm.Function{C: -1, F: funCopy},
 		gm.NewSymbol("dir"):             &gm.Function{C: -1, F: funDir},
+		gm.NewSymbol("exit-code"):       gm.Function1(funExitCode),
 		gm.NewSymbol("getenv"):          &gm.Function{C: 1, F: funGetenv},
 		gm.NewSymbol("getwd"):           gm.SpecialF(cmdGetwd),
 		gm.NewSymbol("join-path"):       &gm.Function{C: -1, F: funJoinPath},

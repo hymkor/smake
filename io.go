@@ -152,6 +152,18 @@ func funExecute(ctx context.Context, w *gm.World, list []gm.Node) (gm.Node, erro
 	return gm.Null, cmd.Run()
 }
 
+func funExitCode(ctx context.Context, w *gm.World, arg gm.Node) (gm.Node, error) {
+	e, err := gm.ExpectClass[gm.ErrorNode](ctx, w, arg)
+	if err != nil {
+		return nil, err
+	}
+	var exitErr *exec.ExitError
+	if !errors.As(e.Value, &exitErr) {
+		return gm.Null, nil
+	}
+	return gm.Integer(exitErr.ExitCode()), nil
+}
+
 func funSh(ctx context.Context, w *gm.World, list []gm.Node) (gm.Node, error) {
 	if w, ok := w.Stdout().(interface{ Flush() error }); ok {
 		w.Flush()
