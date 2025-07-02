@@ -344,6 +344,21 @@ This returns a list of file paths where an executable named `go1.20.14` was foun
  "C:\\Users\\hymko\\go\\bin\\nyagos.exe")
 ```
 
+### (executable-not-found-p CONDITION)
+
+If `CONDITION` is an error raised by `(spawn ...)` due to the specified command not being found, this function returns `t`. Otherwise, it returns `nil`.
+It is typically used within `with-handler` to detect missing executables when invoking external commands.
+
+### (exit-error-p CONDITION)
+
+If `CONDITION` is an error raised by `(spawn ...)` because the command exited with a non-zero status code, this function returns `t`. Otherwise, it returns `nil`.
+Use it in `with-handler` to distinguish execution failures caused by external commands.
+
+### (exit-code CONDITION)
+
+Returns the exit code of a command that was invoked by `(spawn ...)`, if `CONDITION` represents a non-zero exit status.
+If `CONDITION` is not such an error (i.e., `(exit-error-p CONDITION)` returns `nil`), this function raises a `<domain-error>`.
+
 The built-in variables
 ----------------------
 
