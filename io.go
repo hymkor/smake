@@ -164,6 +164,18 @@ func funExitCode(ctx context.Context, w *gm.World, arg gm.Node) (gm.Node, error)
 	return gm.Integer(exitErr.ExitCode()), nil
 }
 
+func funExitErrorP(ctx context.Context, w *gm.World, arg gm.Node) (gm.Node, error) {
+	e, ok := arg.(gm.ErrorNode)
+	if !ok {
+		return gm.Null, nil
+	}
+	var exitErr *exec.ExitError
+	if !errors.As(e.Value, &exitErr) {
+		return gm.Null, nil
+	}
+	return gm.True, nil
+}
+
 func funSh(ctx context.Context, w *gm.World, list []gm.Node) (gm.Node, error) {
 	if w, ok := w.Stdout().(interface{ Flush() error }); ok {
 		w.Flush()

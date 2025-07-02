@@ -57,10 +57,13 @@
     'spawn-error
     (with-handler
       (lambda (c)
-        (let ((code (exit-code c)))
-          (if (equal code 77)
-            (throw 'spawn-error 'OK)
-            (throw 'spawn-error code))))
+        (if (exit-error-p c)
+          (let ((code (exit-code c)))
+            (if (equal code 77)
+              (throw 'spawn-error 'OK)
+              (throw 'spawn-error code)))
+          (throw 'spawn-error 'NOT-EXIT-ERROR))
+        )
       (if *windows*
         (spawn "cmd" "/c" "exit 77")
         (spawn "sh" "-c" "exit 77"))
