@@ -1,4 +1,5 @@
 - Support specifying multiple rule files with -f option (comma-separated). The first existing file is used. Defaults to "Makefile.lsp,smake.lsp".
+- Added `(executable-not-found-p)`, `(exit-error-p)`, and `(exit-code)` to inspect conditions raised by `(spawn ...)`.
 
 v0.6.0
 ======

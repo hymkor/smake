@@ -1,4 +1,5 @@
 - `-f` オプションでカンマで区切った複数のルールファイルの指定をサポート. デフォルトは `"Makefile.lsp,smake.lsp"` 
+- `(spawn ...)` によって発生した状態を識別するための関数 `(executable-not-found-p)`, `(exit-error-p)`, `(exit-code)` を追加
 
 v0.6.0
 ======
