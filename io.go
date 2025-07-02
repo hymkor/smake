@@ -176,6 +176,17 @@ func funExitErrorP(ctx context.Context, w *gm.World, arg gm.Node) (gm.Node, erro
 	return gm.True, nil
 }
 
+func funExecutableNotFoundP(ctx context.Context, w *gm.World, arg gm.Node) (gm.Node, error) {
+	e, ok := arg.(gm.ErrorNode)
+	if !ok {
+		return gm.Null, nil
+	}
+	if !errors.Is(e.Value, exec.ErrNotFound) {
+		return gm.Null, nil
+	}
+	return gm.True, nil
+}
+
 func funSh(ctx context.Context, w *gm.World, list []gm.Node) (gm.Node, error) {
 	if w, ok := w.Stdout().(interface{ Flush() error }); ok {
 		w.Flush()

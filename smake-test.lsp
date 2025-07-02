@@ -43,29 +43,30 @@
 
 ;;; spawn error test
 
-(assert-eq
-  (catch
-    'spawn-error
-    (with-handler
-      (lambda (c) (throw 'spawn-error 'OK))
-      (spawn "not-exist-command")
-      'NG))
-  'OK)
+(defun spawn-error-handler
+  (c)
+  (cond
+  ((executable-not-found-p c)
+   (throw 'spawn-error 'not-found))
+  ((exit-error-p c)
+   (throw 'spawn-error (exit-code c)))
+  (t
+    (signal-condition c nil))))
 
 (assert-eq
   (catch
     'spawn-error
-    (with-handler
-      (lambda (c)
-        (if (exit-error-p c)
-          (let ((code (exit-code c)))
-            (if (equal code 77)
-              (throw 'spawn-error 'OK)
-              (throw 'spawn-error code)))
-          (throw 'spawn-error 'NOT-EXIT-ERROR))
-        )
+    (with-handler #'spawn-error-handler
+      (spawn "not-exist-command")
+      'NG))
+  'not-found)
+
+(assert-eq
+  (catch
+    'spawn-error
+    (with-handler #'spawn-error-handler
       (if *windows*
         (spawn "cmd" "/c" "exit 77")
         (spawn "sh" "-c" "exit 77"))
       'NG))
-  'OK)
+  77)
