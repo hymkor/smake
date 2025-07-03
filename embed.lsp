@@ -154,3 +154,16 @@
           (if (probe-file fullpath)
             (setq result (cons fullpath result))))))
     result))
+
+(defun file-for-each (filename callback)
+  (assure <string> filename)
+  (assure <function> callback)
+  (block func
+    (let ((line nil))
+      (with-open-input-file
+        (fd filename)
+        (while (setq line (read-line fd nil nil))
+          (let ((result (funcall callback line)))
+            (if result
+              (return-from func result))))))
+    nil))
