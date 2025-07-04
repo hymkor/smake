@@ -21,8 +21,8 @@ func cmdGetwd(ctx context.Context, w *gm.World, _ gm.Node) (gm.Node, error) {
 	return gm.String(wd), err
 }
 
-func funChdir(ctx context.Context, w *gm.World, list []gm.Node) (gm.Node, error) {
-	wd, err := gm.ExpectClass[gm.String](ctx, w, list[0])
+func funChdir(ctx context.Context, w *gm.World, arg gm.Node) (gm.Node, error) {
+	wd, err := gm.ExpectClass[gm.String](ctx, w, arg)
 	if err != nil {
 		return nil, err
 	}
@@ -54,8 +54,8 @@ func cmdAssert(ctx context.Context, w *gm.World, node gm.Node) (gm.Node, error) 
 	return gm.Null, fmt.Errorf("Assertion failed: %#v", node)
 }
 
-func funGetenv(ctx context.Context, w *gm.World, list []gm.Node) (gm.Node, error) {
-	key, err := gm.ExpectClass[gm.String](ctx, w, list[0])
+func funGetenv(ctx context.Context, w *gm.World, arg gm.Node) (gm.Node, error) {
+	key, err := gm.ExpectClass[gm.String](ctx, w, arg)
 	if err != nil {
 		return nil, err
 	}
@@ -66,18 +66,18 @@ func funGetenv(ctx context.Context, w *gm.World, list []gm.Node) (gm.Node, error
 	return gm.String(value), nil
 }
 
-func funSetenv(ctx context.Context, w *gm.World, list []gm.Node) (gm.Node, error) {
-	_key, err := gm.ExpectClass[gm.String](ctx, w, list[0])
+func funSetenv(ctx context.Context, w *gm.World, left, right gm.Node) (gm.Node, error) {
+	_key, err := gm.ExpectClass[gm.String](ctx, w, left)
 	if err != nil {
 		return nil, err
 	}
 	key := _key.String()
 
-	if gm.IsNull(list[1]) {
+	if gm.IsNull(right) {
 		fmt.Fprintf(w.Errout(), "unsetenv \"%s\"\n", key)
 		return gm.Null, os.Unsetenv(key)
 	}
-	_value, err := gm.ExpectClass[gm.String](ctx, w, list[1])
+	_value, err := gm.ExpectClass[gm.String](ctx, w, right)
 	if err != nil {
 		return nil, err
 	}

@@ -125,8 +125,8 @@ func expandLiteral(ctx context.Context, w *gm.World, s string) string {
 	})
 }
 
-func funExpandString(ctx context.Context, w *gm.World, list []gm.Node) (gm.Node, error) {
-	s, err := gm.ExpectClass[gm.String](ctx, w, list[0])
+func funExpandString(ctx context.Context, w *gm.World, arg gm.Node) (gm.Node, error) {
+	s, err := gm.ExpectClass[gm.String](ctx, w, arg)
 	if err != nil {
 		return nil, err
 	}
@@ -350,33 +350,33 @@ func setupFunctions(ctx context.Context, w *gm.World, args []string) (gm.Variabl
 		symbolPathSep:                     gm.String(os.PathSeparator),
 	}
 	funcs := gm.Functions{
-		gm.NewSymbol("$"):                      &gm.Function{C: 1, F: funExpandString},
-		gm.NewSymbol("abspath"):                &gm.Function{C: 1, F: funAbsPath},
+		gm.NewSymbol("$"):                      gm.Function1(funExpandString),
+		gm.NewSymbol("abspath"):                gm.Function1(funAbsPath),
 		gm.NewSymbol("assert"):                 gm.SpecialF(cmdAssert),
-		gm.NewSymbol("basename"):               &gm.Function{C: 1, F: funBasename},
-		gm.NewSymbol("chdir"):                  &gm.Function{C: 1, F: funChdir},
+		gm.NewSymbol("basename"):               gm.Function1(funBasename),
+		gm.NewSymbol("chdir"):                  gm.Function1(funChdir),
 		gm.NewSymbol("cp"):                     &gm.Function{C: -1, F: funCopy},
 		gm.NewSymbol("dir"):                    &gm.Function{C: -1, F: funDir},
 		gm.NewSymbol("executable-not-found-p"): gm.Function1(funExecutableNotFoundP),
 		gm.NewSymbol("exit-code"):              gm.Function1(funExitCode),
 		gm.NewSymbol("exit-error-p"):           gm.Function1(funExitErrorP),
-		gm.NewSymbol("getenv"):                 &gm.Function{C: 1, F: funGetenv},
+		gm.NewSymbol("getenv"):                 gm.Function1(funGetenv),
 		gm.NewSymbol("getwd"):                  gm.SpecialF(cmdGetwd),
 		gm.NewSymbol("join-path"):              &gm.Function{C: -1, F: funJoinPath},
 		gm.NewSymbol("make"):                   gm.SpecialF(cmdMake),
 		gm.NewSymbol("match"):                  gm.Function2(funMatch),
 		gm.NewSymbol("mv"):                     &gm.Function{C: -1, F: funMove},
-		gm.NewSymbol("notdir"):                 &gm.Function{C: 1, F: funNotDir},
+		gm.NewSymbol("notdir"):                 gm.Function1(funNotDir),
 		gm.NewSymbol("q"):                      &gm.Function{C: -1, F: funQuoteCommand},
 		gm.NewSymbol("rm"):                     &gm.Function{C: -1, F: funRemove},
-		gm.NewSymbol("setenv"):                 &gm.Function{C: 2, F: funSetenv},
+		gm.NewSymbol("setenv"):                 gm.Function2(funSetenv),
 		gm.NewSymbol("sh"):                     &gm.Function{C: -1, F: funSh},
 		gm.NewSymbol("sh-ignore-error"):        &gm.Function{C: -1, F: funShIgnoreError},
-		gm.NewSymbol("shell"):                  &gm.Function{C: 1, F: funShell},
+		gm.NewSymbol("shell"):                  gm.Function1(funShell),
 		gm.NewSymbol("shellexecute"):           &gm.Function{C: -1, F: funShellExecute},
 		gm.NewSymbol("spawn"):                  &gm.Function{C: -1, F: funExecute},
-		gm.NewSymbol("stat"):                   &gm.Function{C: 1, F: funStat},
-		gm.NewSymbol("string-fields"):          &gm.Function{C: 1, F: funFields},
+		gm.NewSymbol("stat"):                   gm.Function1(funStat),
+		gm.NewSymbol("string-fields"):          gm.Function1(funFields),
 		gm.NewSymbol("touch"):                  &gm.Function{C: -1, F: funTouch},
 		gm.NewSymbol("updatep_"):               &gm.Function{Min: 1, F: funUpdatep},
 		gm.NewSymbol("wildcard"):               &gm.Function{C: -1, F: funWildcard},
@@ -399,8 +399,8 @@ func setupFunctions(ctx context.Context, w *gm.World, args []string) (gm.Variabl
 	return vars, funcs
 }
 
-func funFields(ctx context.Context, w *gm.World, args []gm.Node) (gm.Node, error) {
-	s, err := gm.ExpectClass[gm.String](ctx, w, args[0])
+func funFields(ctx context.Context, w *gm.World, arg gm.Node) (gm.Node, error) {
+	s, err := gm.ExpectClass[gm.String](ctx, w, arg)
 	if err != nil {
 		return gm.Null, err
 	}

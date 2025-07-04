@@ -58,8 +58,8 @@ func trueOrNil(b bool) gm.Node {
 	}
 }
 
-func funStat(ctx context.Context, w *gm.World, args []gm.Node) (gm.Node, error) {
-	_fname, err := gm.ExpectClass[gm.String](ctx, w, args[0])
+func funStat(ctx context.Context, w *gm.World, arg gm.Node) (gm.Node, error) {
+	_fname, err := gm.ExpectClass[gm.String](ctx, w, arg)
 	if err != nil {
 		return nil, err
 	}

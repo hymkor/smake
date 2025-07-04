@@ -8,8 +8,8 @@ import (
 	gm "github.com/hymkor/gmnlisp"
 )
 
-func funBasename(ctx context.Context, w *gm.World, args []gm.Node) (gm.Node, error) {
-	_path, err := gm.ExpectClass[gm.String](ctx, w, args[0])
+func funBasename(ctx context.Context, w *gm.World, arg gm.Node) (gm.Node, error) {
+	_path, err := gm.ExpectClass[gm.String](ctx, w, arg)
 	if err != nil {
 		return nil, err
 	}
@@ -26,16 +26,16 @@ func funDir(ctx context.Context, w *gm.World, args []gm.Node) (gm.Node, error) {
 	return gm.String(filepath.Dir(path)), nil
 }
 
-func funNotDir(ctx context.Context, w *gm.World, args []gm.Node) (gm.Node, error) {
-	path1, err := gm.ExpectClass[gm.String](ctx, w, args[0])
+func funNotDir(ctx context.Context, w *gm.World, arg gm.Node) (gm.Node, error) {
+	path1, err := gm.ExpectClass[gm.String](ctx, w, arg)
 	if err != nil {
 		return nil, err
 	}
 	return gm.String(filepath.Base(path1.String())), nil
 }
 
-func funAbsPath(ctx context.Context, w *gm.World, args []gm.Node) (gm.Node, error) {
-	path1, err := gm.ExpectClass[gm.String](ctx, w, args[0])
+func funAbsPath(ctx context.Context, w *gm.World, arg gm.Node) (gm.Node, error) {
+	path1, err := gm.ExpectClass[gm.String](ctx, w, arg)
 	if err != nil {
 		return nil, err
 	}
@@ -67,8 +67,8 @@ func funWildcard(ctx context.Context, w *gm.World, list []gm.Node) (gm.Node, err
 	return result, nil
 }
 
-func funShell(ctx context.Context, w *gm.World, list []gm.Node) (gm.Node, error) {
-	s, err := gm.ExpectClass[gm.String](ctx, w, list[0])
+func funShell(ctx context.Context, w *gm.World, arg gm.Node) (gm.Node, error) {
+	s, err := gm.ExpectClass[gm.String](ctx, w, arg)
 	if err != nil {
 		return nil, err
 	}
