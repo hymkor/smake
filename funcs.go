@@ -9,6 +9,8 @@ import (
 	"strings"
 	"time"
 
+	"github.com/nyaosorg/go-windows-mbcs"
+
 	gm "github.com/hymkor/gmnlisp"
 	_ "github.com/hymkor/gmnlisp/eval"
 )
@@ -317,4 +319,16 @@ func funFields(ctx context.Context, w *gm.World, arg gm.Node) (gm.Node, error) {
 		}
 	}
 	return result, nil
+}
+
+func funAnsiToUtf8(ctx context.Context, w *gm.World, s gm.Node) (gm.Node, error) {
+	ansi, err := gm.ExpectClass[gm.String](ctx, w, s)
+	if err != nil {
+		return nil, err
+	}
+	utf8, err := mbcs.AnsiToUtf8([]byte(ansi), mbcs.ACP)
+	if err != nil {
+		return nil, err
+	}
+	return gm.String(utf8), nil
 }

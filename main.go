@@ -50,6 +50,7 @@ func setupFunctions(args []string) (gm.Variables, gm.Functions) {
 	funcs := gm.Functions{
 		gm.NewSymbol("$"):                      gm.Function1(funExpandString),
 		gm.NewSymbol("abspath"):                gm.Function1(funAbsPath),
+		gm.NewSymbol("ansi-to-utf8"):           gm.Function1(funAnsiToUtf8),
 		gm.NewSymbol("assert"):                 gm.SpecialF(cmdAssert),
 		gm.NewSymbol("basename"):               gm.Function1(funBasename),
 		gm.NewSymbol("chdir"):                  gm.Function1(funChdir),
