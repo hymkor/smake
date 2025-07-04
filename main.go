@@ -19,35 +19,20 @@ import (
 //go:embed embed.lsp
 var embededLsp string
 
-var version string = "snapshot"
-
-const (
-	stringPathSep = "$/"
-)
-
-var (
-	symbolPathSep = gm.NewSymbol(stringPathSep)
-
-	flagVersion  = flag.Bool("version", false, "show version")
-	flagMakefile = flag.String("f", "Makefile.lsp,smake.lsp", "Read comma-separated FILES as rule files; the first existing file is used")
-	flagExecute  = flag.String("e", "", "inline script")
-)
-
-func setupFunctions(ctx context.Context, w *gm.World, args []string) (gm.Variables, gm.Functions) {
+func setupFunctions(args []string) (gm.Variables, gm.Functions) {
 	var cons gm.Node = gm.Null
-	var argsList gm.ListBuilder
-	for _, s := range args {
-		if name, value, ok := strings.Cut(s, "="); ok {
+	var argsSeq gm.Node = gm.Null
+	for i := len(args) - 1; i >= 0; i-- {
+		if name, value, ok := strings.Cut(args[i], "="); ok {
 			cons = &gm.Cons{
 				Car: &gm.Cons{
 					Car: gm.String(name),
 					Cdr: gm.String(value)},
 				Cdr: cons}
 		} else {
-			argsList.Add(ctx, w, gm.String(s))
+			argsSeq = &gm.Cons{Car: gm.String(args[i]), Cdr: argsSeq}
 		}
 	}
-	argsSeq := argsList.Sequence()
 
 	executable := os.Args[0]
 	if value, err := os.Executable(); err == nil {
@@ -56,10 +41,11 @@ func setupFunctions(ctx context.Context, w *gm.World, args []string) (gm.Variabl
 
 	vars := gm.Variables{
 		gm.NewSymbol("$$"):                cons,
+		gm.NewSymbol("$/"):                gm.String(os.PathSeparator),
+		gm.NewSymbol("$0"):                gm.String(executable),
 		gm.NewSymbol("*args*"):            argsSeq, // deprecated
 		gm.NewSymbol("*argv*"):            argsSeq,
 		gm.NewSymbol("*executable-name*"): gm.String(executable),
-		symbolPathSep:                     gm.String(os.PathSeparator),
 	}
 	funcs := gm.Functions{
 		gm.NewSymbol("$"):                      gm.Function1(funExpandString),
@@ -102,12 +88,6 @@ func setupFunctions(ctx context.Context, w *gm.World, args []string) (gm.Variabl
 		vars[gm.NewSymbol("$"+string("123456789"[i]))] = val
 	}
 
-	if arg0, err := os.Executable(); err == nil {
-		vars[gm.NewSymbol("$0")] = gm.String(arg0)
-	} else {
-		println(err.Error())
-	}
-
 	return vars, funcs
 }
 
@@ -135,6 +115,14 @@ func openFiles(filenames string) (*os.File, error) {
 		}
 	}
 }
+
+var (
+	flagVersion  = flag.Bool("version", false, "show version")
+	flagMakefile = flag.String("f", "Makefile.lsp,smake.lsp", "Read comma-separated FILES as rule files; the first existing file is used")
+	flagExecute  = flag.String("e", "", "inline script")
+)
+
+var version string = "snapshot"
 
 func mains(args []string) error {
 	var source []byte
@@ -172,12 +160,11 @@ func mains(args []string) error {
 		fd.Close()
 	}
 
-	w := gm.New()
-	vars, functions := setupFunctions(ctx, w, args)
+	vars, functions := setupFunctions(args)
 
-	w = w.Let(vars).Flet(functions)
+	w := gm.New().Let(vars).Flet(functions)
 	if _, err := w.Interpret(ctx, embededLsp); err != nil {
-		panic(err.Error())
+		return err
 	}
 
 	_, err := w.InterpretBytes(ctx, source)
