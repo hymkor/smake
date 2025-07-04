@@ -171,6 +171,26 @@
            (null (setq tmp (funcall callback tmp))))))
   tmp)
 
+(defun q (:rest args)
+  (flet
+    ((chop
+       (s end)
+       (assure <string> s)
+       (assure <character> end)
+       (setq end (create-string 1 end))
+       (let ((L (length s)))
+         (if (and (> L 0) (equal (subseq s (- L 1) L) end))
+           (subseq s 0 (- L 1))
+           s))))
+    (let ((s (create-string-output-stream))
+          (d (create-string-output-stream)))
+      (with-standard-output
+        s
+        (with-error-output
+          d
+          (apply #'spawn args)))
+      (chop (chop (get-output-stream-string s) #\linefeed) #\return))))
+
 ;;; deprecated functions ;;;
 
 (defmacro foreach (vars &rest body)

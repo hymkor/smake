@@ -8,7 +8,6 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
-	"strings"
 	"time"
 
 	gm "github.com/hymkor/gmnlisp"
@@ -220,21 +219,6 @@ func funSh(ctx context.Context, w *gm.World, list []gm.Node) (gm.Node, error) {
 		}
 	}
 	return gm.Null, nil
-}
-
-func funQuoteCommand(ctx context.Context, w *gm.World, list []gm.Node) (gm.Node, error) {
-	cmd := nodesToCommand(ctx, w, list, io.Discard)
-	cmd.Stdout = nil
-	cmd.Stderr = w.Errout()
-	cmd.Stdin = os.Stdin // w.Stdin()
-	output, err := cmd.Output()
-	if err != nil {
-		return gm.Null, err
-	}
-	s := string(output)
-	s = strings.ReplaceAll(s, "\r", "") // CRLF -> LF
-	s = strings.TrimSpace(s)
-	return gm.String(s), nil
 }
 
 func funCopy(ctx context.Context, w *gm.World, list []gm.Node) (gm.Node, error) {

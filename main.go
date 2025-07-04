@@ -66,7 +66,6 @@ func setupFunctions(args []string) (gm.Variables, gm.Functions) {
 		gm.NewSymbol("match"):                  gm.Function2(funMatch),
 		gm.NewSymbol("mv"):                     &gm.Function{C: -1, F: funMove},
 		gm.NewSymbol("notdir"):                 gm.Function1(funNotDir),
-		gm.NewSymbol("q"):                      &gm.Function{C: -1, F: funQuoteCommand},
 		gm.NewSymbol("rm"):                     &gm.Function{C: -1, F: funRemove},
 		gm.NewSymbol("setenv"):                 gm.Function2(funSetenv),
 		gm.NewSymbol("sh"):                     &gm.Function{C: -1, F: funSh},
