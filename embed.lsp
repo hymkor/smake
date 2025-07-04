@@ -85,13 +85,25 @@
 (defglobal *exe-suffix* (if *windows* ".exe" ""))
 (defglobal *path-separator* (if *windows* "\\" "/"))
 (defglobal *path-list-separator* (if *windows* ";" ":"))
+
 (defun updatep (target :rest sources)
-  (let ((newsrc nil))
-    (dolist (s sources)
-      (if s
-        (setq newsrc (append newsrc (if (consp s) s (list s))))))
-    (if newsrc
-      (apply #'updatep_ target newsrc))))
+  (assure <string> target)
+  (labels
+    ((stamp
+       (f)
+       (and (setq f (stat f))
+            (setq f (assoc 'mod-time-unix f))
+            (cdr f))))
+    (if (setq target (stamp target))
+      ; target exists
+      (mapcan
+        (lambda (s)
+          (assure <string> s)
+          (let ((source-stamp (stamp s)))
+            (and source-stamp (< target source-stamp) (list s))))
+        sources)
+      sources)))
+
 (defun x (cmd &rest params) ; deprecated
   (apply #'spawn cmd params))
 (defun spawnlp (cmd &rest params) ; deprecated

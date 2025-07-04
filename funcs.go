@@ -138,24 +138,6 @@ func getStamp(ctx context.Context, w *gm.World, node gm.Node) (time.Time, error)
 	return theStat.ModTime(), nil
 }
 
-func funUpdatep(ctx context.Context, w *gm.World, list []gm.Node) (gm.Node, error) {
-	targetStamp, err := getStamp(ctx, w, list[0])
-	if err != nil {
-		return nil, err
-	}
-	var result gm.Node = gm.Null
-	for i := 1; i < len(list); i++ {
-		sourceStamp, err := getStamp(ctx, w, list[i])
-		if err != nil {
-			return gm.Null, err
-		}
-		if sourceStamp.After(targetStamp) {
-			result = &gm.Cons{Car: list[i], Cdr: result}
-		}
-	}
-	return result, nil
-}
-
 func shouldUpdate(ctx context.Context, w *gm.World, _list gm.Node) (bool, gm.Node, error) {
 	targetNode, list, err := gm.Shift(_list)
 	if err != nil {
