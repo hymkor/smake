@@ -222,27 +222,6 @@ func funSh(ctx context.Context, w *gm.World, list []gm.Node) (gm.Node, error) {
 	return gm.Null, nil
 }
 
-func funShIgnoreError(ctx context.Context, w *gm.World, list []gm.Node) (gm.Node, error) {
-	for _, node := range list {
-		s, err := gm.ExpectClass[gm.String](ctx, w, node)
-		if err != nil {
-			return nil, err
-		}
-		cmdline := s.String()
-		fmt.Fprintln(os.Stderr, cmdline)
-		cmd := newShell(cmdline)
-		// cmd.Stdout = w.Stdout()
-		// cmd.Stderr = w.Errout()
-		if err := cmd.Run(); err != nil {
-			var ignoreType *exec.ExitError
-			if !errors.As(err, &ignoreType) {
-				return gm.Null, err
-			}
-		}
-	}
-	return gm.Null, nil
-}
-
 func funQuoteCommand(ctx context.Context, w *gm.World, list []gm.Node) (gm.Node, error) {
 	cmd := nodesToCommand(ctx, w, list, io.Discard)
 	cmd.Stdout = nil

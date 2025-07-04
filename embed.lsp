@@ -99,6 +99,23 @@
   (apply #'join-path params))
 (defun joinpath (&rest params) ; deprecated
   (apply #'join-path params))
+
+(defun sh-ignore-error (:rest cmdline)
+  (while cmdline
+    (catch
+      'c
+      (with-handler
+        (lambda (c)
+          (cond
+            ((executable-not-found-p c)
+             (throw 'c nil))
+            ((exit-error-p c)
+             (throw 'c (exit-code c)))
+            (t
+              (signal-condition c nil))))
+        (sh (car cmdline))))
+    (setq cmdline (cdr cmdline))))
+
 (defun sh- (&rest params)
   (apply #'sh-ignore-error params))
 
