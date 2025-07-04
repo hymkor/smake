@@ -65,11 +65,35 @@
   (catch
     'spawn-error
     (with-handler #'spawn-error-handler
+      (sh "not-exist-command")
+      'NG))
+  (if *windows* 1 127))
+
+(assert-eq
+  (catch
+    'spawn-error
+    (with-handler #'spawn-error-handler
+      (sh-ignore-error "not-exist-command")
+      'NG))
+  'NG)
+
+(assert-eq
+  (catch
+    'spawn-error
+    (with-handler #'spawn-error-handler
       (if *windows*
         (spawn "cmd" "/c" "exit 77")
         (spawn "sh" "-c" "exit 77"))
       'NG))
   77)
+
+(assert-eq
+  (catch
+    'spawn-error
+    (with-handler #'spawn-error-handler
+      (sh-ignore-error "exit 77")
+      'NG))
+  'NG)
 
 (defglobal *newline*
   (if *windows*
@@ -101,4 +125,3 @@
       (sh-ignore-error "echo あはは"))
     (ansi-to-utf8 (get-output-stream-string B)))
   (string-append "あはは" *newline*))
-
