@@ -1,5 +1,9 @@
 - Support specifying multiple rule files with -f option (comma-separated). The first existing file is used. Defaults to "Makefile.lsp,smake.lsp".
 - Added `(executable-not-found-p)`, `(exit-error-p)`, and `(exit-code)` to inspect conditions raised by `(spawn ...)`.
+- Implement `(ansi-to-utf8)`
+- Make `(spawn)` and `(sh)` redirect their stdout and stderr to `(standard-output)` and (error-output) respectively
+- Reimplement `(q)`, `(shell)` and `(sh-ignore-error)` in Lisp instead of Go
+- Refactor `(file-for-each)`, `(which)`, `(updatep)` and `(probe-directory)`
 
 v0.6.0
 ======
