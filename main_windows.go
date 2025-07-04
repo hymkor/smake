@@ -12,7 +12,7 @@ func newShell(cmdline string) *exec.Cmd {
 
 	buffer.WriteString(`/S /C "`)
 	buffer.WriteString(cmdline)
-	buffer.WriteString(` "`)
+	buffer.WriteString(`"`)
 
 	cmdExe, ok := os.LookupEnv("COMSPEC")
 	if !ok {
