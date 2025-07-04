@@ -145,10 +145,22 @@ func nodesToCommand(ctx context.Context, w *gm.World, list []gm.Node, out io.Wri
 	return cmd
 }
 
+func reflectRedirect(w *gm.World, cmd *exec.Cmd) {
+	if w, ok := w.Stdout().(interface{ RawWriter() io.Writer }); ok {
+		cmd.Stdout = w.RawWriter()
+	} else {
+		cmd.Stdout = os.Stdout
+	}
+	if w, ok := w.Errout().(interface{ RawWriter() io.Writer }); ok {
+		cmd.Stderr = w.RawWriter()
+	} else {
+		cmd.Stderr = os.Stderr
+	}
+}
+
 func funExecute(ctx context.Context, w *gm.World, list []gm.Node) (gm.Node, error) {
 	cmd := nodesToCommand(ctx, w, list, w.Errout())
-	cmd.Stdout = os.Stdout
-	cmd.Stderr = os.Stderr
+	reflectRedirect(w, cmd)
 	return gm.Null, cmd.Run()
 }
 
