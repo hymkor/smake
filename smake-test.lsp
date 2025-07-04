@@ -70,3 +70,35 @@
         (spawn "sh" "-c" "exit 77"))
       'NG))
   77)
+
+(defglobal *newline*
+  (if *windows*
+    (string-append (create-string 1 #\return ) (create-string 1 #\linefeed))
+    (create-string 1 #\linefeed)))
+
+(assert-eq
+  (let ((B (create-string-output-stream)))
+    (with-standard-output
+      B
+      (if *windows*
+        (spawn "cmd" "/c" "echo あはは")
+        (spawn "echo" "あはは")))
+    (ansi-to-utf8 (get-output-stream-string B)))
+  (string-append "あはは" *newline*))
+
+(assert-eq
+  (let ((B (create-string-output-stream)))
+    (with-standard-output
+      B
+      (sh "echo あはは"))
+    (ansi-to-utf8 (get-output-stream-string B)))
+  (string-append "あはは" *newline*))
+
+(assert-eq
+  (let ((B (create-string-output-stream)))
+    (with-standard-output
+      B
+      (sh-ignore-error "echo あはは"))
+    (ansi-to-utf8 (get-output-stream-string B)))
+  (string-append "あはは" *newline*))
+
