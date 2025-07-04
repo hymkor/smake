@@ -70,11 +70,14 @@
     (format t "~%")))
 (defun -e (fname)
   (probe-file fname))
-(defun try-cdr (c)
-  (and c (consp c) (cdr c)))
+
 (defun probe-directory (fname)
   (let ((tmp (stat fname)))
-    (and tmp (try-cdr (assoc 'is-dir tmp)))))
+    (and tmp
+         (setq tmp (assoc 'is-dir tmp))
+         (consp tmp)
+         (cdr tmp))))
+
 (defun -d (fname) (probe-directory fname)) ; deprecated
 (defglobal windows (equal (getenv "OS") "Windows_NT")) ; deprecated
 (defglobal *windows* (equal (getenv "OS") "Windows_NT"))

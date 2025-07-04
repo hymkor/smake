@@ -125,3 +125,7 @@
       (sh-ignore-error "echo あはは"))
     (ansi-to-utf8 (get-output-stream-string B)))
   (string-append "あはは" *newline*))
+
+(assert-eq (probe-directory ".") t)
+(assert-eq (probe-directory "not-exist") nil)
+(assert-eq (probe-directory *executable-name*) nil)
