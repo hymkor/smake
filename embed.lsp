@@ -152,14 +152,14 @@
   ) ; defmacro
 
 (defun which (target)
-  (let ((result nil)
-        (delimiter (elt *path-list-separator* 0)))
-    (dolist (dir (cons "." (string-split delimiter (getenv "PATH"))))
-      (dolist (suffix (if *windows* '("" ".exe" ".bat" ".cmd") '("")))
-        (let ((fullpath (string-append (join-path dir target) suffix)))
-          (if (probe-file fullpath)
-            (setq result (cons fullpath result))))))
-    result))
+  (mapcan
+    (lambda (dir)
+      (mapcan
+        (lambda (s) ; suffix
+          (setq s (string-append (join-path dir target) s))
+          (and (probe-file s) (list s)))
+        (if *windows* '("" ".exe" ".bat" ".cmd") '(""))))
+    (cons "." (string-split (elt *path-list-separator* 0) (getenv "PATH")))))
 
 (defun file-for-each (filename callback)
   (assure <string> filename)
