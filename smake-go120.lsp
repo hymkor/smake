@@ -141,6 +141,10 @@
           ((build-cmd)
            (apply #'go-build-cmd args))
 
+          ((env)
+           (mapc
+             (lambda (c) (format (standard-output) "~S=~S~%" c (eval c)))
+             '(GO120 GOEXE EXE CURDIR NAME TARGET SOURCE VERSION)))
           (t
             (error "~S: not command" sub-command))
           ); case
