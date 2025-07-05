@@ -69,7 +69,6 @@ func setupFunctions(args []string) (gm.Variables, gm.Functions) {
 		gm.NewSymbol("rm"):                     &gm.Function{C: -1, F: funRemove},
 		gm.NewSymbol("setenv"):                 gm.Function2(funSetenv),
 		gm.NewSymbol("sh"):                     &gm.Function{C: -1, F: funSh},
-		gm.NewSymbol("shell"):                  gm.Function1(funShell),
 		gm.NewSymbol("shellexecute"):           &gm.Function{C: -1, F: funShellExecute},
 		gm.NewSymbol("spawn"):                  &gm.Function{C: -1, F: funExecute},
 		gm.NewSymbol("stat"):                   gm.Function1(funStat),

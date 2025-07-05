@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"path/filepath"
-	"strings"
 
 	gm "github.com/hymkor/gmnlisp"
 )
@@ -65,22 +64,4 @@ func funWildcard(ctx context.Context, w *gm.World, list []gm.Node) (gm.Node, err
 		}
 	}
 	return result, nil
-}
-
-func funShell(ctx context.Context, w *gm.World, arg gm.Node) (gm.Node, error) {
-	s, err := gm.ExpectClass[gm.String](ctx, w, arg)
-	if err != nil {
-		return nil, err
-	}
-	cmdline := s.String()
-	cmd := newShell(cmdline)
-	cmd.Stdout = nil
-	output, err := cmd.Output()
-	if err != nil {
-		return nil, err
-	}
-	o := string(output)
-	o = strings.ReplaceAll(o, "\r", "") // CRLF -> LF
-	o = strings.TrimSpace(o)
-	return gm.String(o), nil
 }
