@@ -161,18 +161,15 @@
         (if *windows* '("" ".exe" ".bat" ".cmd") '(""))))
     (cons "." (string-split (elt *path-list-separator* 0) (getenv "PATH")))))
 
-(defun file-for-each (filename callback)
-  (assure <string> filename)
+(defun file-for-each (tmp callback)
+  (assure <string> tmp) ; filename, line or result
   (assure <function> callback)
-  (block func
-    (let ((line nil))
-      (with-open-input-file
-        (fd filename)
-        (while (setq line (read-line fd nil nil))
-          (let ((result (funcall callback line)))
-            (if result
-              (return-from func result))))))
-    nil))
+  (with-open-input-file
+    (fd tmp)
+    (while
+      (and (setq tmp (read-line fd nil nil))
+           (null (setq tmp (funcall callback tmp))))))
+  tmp)
 
 ;;; deprecated functions ;;;
 
