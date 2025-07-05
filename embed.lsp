@@ -16,17 +16,6 @@
            (abort)))
        )))
 
-(defmacro foreach (vars &rest body)
-  (let ((var (car vars))
-        (values (elt vars 1))
-        (rest (gensym)))
-    `(block
-       nil
-       (let ((,var nil)(,rest ,values))
-         (while ,rest
-           (setq ,var (car ,rest))
-           (setq ,rest (cdr ,rest))
-           ,@body)))))
 (defmacro env (_pairs &rest commands)
   (let ((pairs nil)
         (p nil)
@@ -45,6 +34,7 @@
          (progn ,@commands)
          (dolist (,POINTER ,ORIG)
            (setenv (car ,POINTER) (cdr ,POINTER)))))))
+
 (defun string-split (_sep str)
   (let ((result nil)
         (index nil)
@@ -54,6 +44,7 @@
       (setq str (subseq str (1+ index) (length str))))
     (setq result (cons str result))
     (nreverse result)))
+
 (defmacro pushd (wd &rest commands)
   (let ((ORIG (gensym)))
     `(let ((,ORIG (getwd)))
@@ -61,6 +52,7 @@
        (unwind-protect
          (progn ,@commands)
          (chdir ,ORIG)))))
+
 (defun echo (&rest strings)
   (let ((dem ""))
     (while strings
@@ -68,8 +60,6 @@
       (setq strings (cdr strings))
       (setq dem " "))
     (format t "~%")))
-(defun -e (fname)
-  (probe-file fname))
 
 (defun probe-directory (fname)
   (let ((tmp (stat fname)))
@@ -78,8 +68,6 @@
          (consp tmp)
          (cdr tmp))))
 
-(defun -d (fname) (probe-directory fname)) ; deprecated
-(defglobal windows (equal (getenv "OS") "Windows_NT")) ; deprecated
 (defglobal *windows* (equal (getenv "OS") "Windows_NT"))
 (defglobal *dev-null* (if *windows* "NUL" "/dev/null"))
 (defglobal *exe-suffix* (if *windows* ".exe" ""))
@@ -104,17 +92,6 @@
         sources)
       sources)))
 
-(defun x (cmd &rest params) ; deprecated
-  (apply #'spawn cmd params))
-(defun spawnlp (cmd &rest params) ; deprecated
-  (apply #'spawn cmd params))
-(defun spawnvp (cmd params) ; deprecated
-  (apply #'spawn cmd params))
-(defun pathjoin (&rest params) ; deprecated
-  (apply #'join-path params))
-(defun joinpath (&rest params) ; deprecated
-  (apply #'join-path params))
-
 (defun sh-ignore-error (:rest cmdline)
   (while cmdline
     (catch
@@ -130,9 +107,6 @@
               (signal-condition c nil))))
         (sh (car cmdline))))
     (setq cmdline (cdr cmdline))))
-
-(defun sh- (&rest params)
-  (apply #'sh-ignore-error params))
 
 (defmacro if-some (binding then-part else-part)
   (let ((var (car binding))
@@ -199,3 +173,41 @@
             (if result
               (return-from func result))))))
     nil))
+
+;;; deprecated functions ;;;
+
+(defmacro foreach (vars &rest body)
+  (let ((var (car vars))
+        (values (elt vars 1))
+        (rest (gensym)))
+    `(block
+       nil
+       (let ((,var nil)(,rest ,values))
+         (while ,rest
+           (setq ,var (car ,rest))
+           (setq ,rest (cdr ,rest))
+           ,@body)))))
+
+(defun -e (fname) (probe-file fname))
+
+(defun -d (fname) (probe-directory fname))
+
+(defglobal windows *windows*)
+
+(defun x (cmd &rest params)
+  (apply #'spawn cmd params))
+
+(defun spawnlp (cmd &rest params)
+  (apply #'spawn cmd params))
+
+(defun spawnvp (cmd params)
+  (apply #'spawn cmd params))
+
+(defun pathjoin (&rest params)
+  (apply #'join-path params))
+
+(defun joinpath (&rest params)
+  (apply #'join-path params))
+
+(defun sh- (&rest params)
+  (apply #'sh-ignore-error params))
