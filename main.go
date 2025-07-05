@@ -46,6 +46,7 @@ func setupFunctions(args []string) (gm.Variables, gm.Functions) {
 		gm.NewSymbol("*args*"):            argsSeq, // deprecated
 		gm.NewSymbol("*argv*"):            argsSeq,
 		gm.NewSymbol("*executable-name*"): gm.String(executable),
+		gm.NewSymbol("*discard*"):         gm.NewWriterStream(io.Discard),
 	}
 	funcs := gm.Functions{
 		gm.NewSymbol("$"):                      gm.Function1(funExpandString),
