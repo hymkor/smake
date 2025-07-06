@@ -394,6 +394,10 @@ OS-specfic path list separator (Windows `";"`, UNIX `":"`)
 
 The path of smake's executable
 
+### \*discard\*
+
+`*discard*` is a global output stream that silently ignores all writes.
+
 License
 -------
 
