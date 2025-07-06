@@ -15,7 +15,8 @@
            'notag
            (with-handler
              (lambda (c) (throw 'notag "v0.0.0"))
-             (shell (string-append "git describe --tags 2>" *dev-null*))))))
+             (with-error-output *discard*
+               (q "git" "describe" "--tags"))))))
   (labels
     ((find-str-file
        (word filename)
