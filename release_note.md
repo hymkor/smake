@@ -4,6 +4,7 @@
 - Make `(spawn)` and `(sh)` redirect their stdout and stderr to `(standard-output)` and (error-output) respectively
 - Reimplement `(q)`, `(shell)` and `(sh-ignore-error)` in Lisp instead of Go
 - Refactor `(file-for-each)`, `(which)`, `(updatep)` and `(probe-directory)`
+- Add `*discard*` as a global output stream that silently ignores all writes
 
 v0.6.0
 ======

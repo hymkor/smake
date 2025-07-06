@@ -4,6 +4,7 @@
 - `(spawn)` や `(sh)` で標準出力や標準エラー出力を `(standard-output)` や `(error-output)` へリダイレクトするようにした
 - Go で実装していた `(q)`, `(shell)`, `(sh-ignore-error)` を Lisp で作り直した
 - `(file-for-each)`, `(which)`, `(updatep)`, `(probe-directory)` の実装を改善
+- すべての書き込みを破棄するグローバルな出力ストリーム出力先として `*discard*` を実装
 
 v0.6.0
 ======
