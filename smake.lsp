@@ -19,6 +19,10 @@
   (("build" "" nil)
    (funcall make 'build))
 
+  (("bump")
+   (let ((bump (load "smake-bump.lsp")))
+     (funcall bump)))
+
   (t
     (funcall make $1))
   ) ; case
