@@ -5,6 +5,9 @@
 - Reimplement `(q)`, `(shell)` and `(sh-ignore-error)` in Lisp instead of Go
 - Refactor `(file-for-each)`, `(which)`, `(updatep)` and `(probe-directory)`
 - Add `*discard*` as a global output stream that silently ignores all writes
+- Update gmnlisp to [v0.7.17]
+
+[v0.7.17]: https://github.com/hymkor/gmnlisp/releases/tag/v0.7.17
 
 v0.6.0
 ======

@@ -5,6 +5,9 @@
 - Go で実装していた `(q)`, `(shell)`, `(sh-ignore-error)` を Lisp で作り直した
 - `(file-for-each)`, `(which)`, `(updatep)`, `(probe-directory)` の実装を改善
 - すべての書き込みを破棄するグローバルな出力ストリーム出力先として `*discard*` を実装
+- gmnlisp を [v0.7.17] へ更新
+
+[v0.7.17]: https://github.com/hymkor/gmnlisp/releases/tag/v0.7.17
 
 v0.6.0
 ======
