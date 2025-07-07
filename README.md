@@ -359,6 +359,10 @@ Use it in `with-handler` to distinguish execution failures caused by external co
 Returns the exit code of a command that was invoked by `(spawn ...)`, if `CONDITION` represents a non-zero exit status.
 If `CONDITION` is not such an error (i.e., `(exit-error-p CONDITION)` returns `nil`), this function raises a `<domain-error>`.
 
+### (ansi-to-utf8 STRING)
+
+On Windows, ansi-to-utf8 converts the given string from the current ANSI code page to UTF-8. On other platforms, it returns the string unchanged.
+
 The built-in variables
 ----------------------
 
