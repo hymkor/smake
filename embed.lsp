@@ -27,13 +27,17 @@
       (setq pairs (cons `(cons ,(car p) ,(elt p 1)) pairs)))
     (setq pairs (cons 'list pairs))
     `(let ((,ORIG nil))
-       (dolist (,POINTER ,pairs)
-         (setq ,ORIG (cons (cons (car ,POINTER) (getenv (car ,POINTER))) ,ORIG))
-         (setenv (car ,POINTER) (cdr ,POINTER)))
+       (mapc
+         (lambda (,POINTER)
+           (setq ,ORIG (cons (cons (car ,POINTER) (getenv (car ,POINTER))) ,ORIG))
+           (setenv (car ,POINTER) (cdr ,POINTER))
+           )
+         ,pairs)
        (unwind-protect
          (progn ,@commands)
-         (dolist (,POINTER ,ORIG)
-           (setenv (car ,POINTER) (cdr ,POINTER)))))))
+         (mapc
+           (lambda (,POINTER) (setenv (car ,POINTER) (cdr ,POINTER)))
+           ,ORIG)))))
 
 (defun string-split (_sep str)
   (let ((result nil)
