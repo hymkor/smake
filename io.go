@@ -213,7 +213,7 @@ func funSh(ctx context.Context, w *gm.World, list []gm.Node) (gm.Node, error) {
 		cmdline := s.String()
 		cmd := newShell(cmdline)
 		reflectRedirect(w, cmd)
-		fmt.Fprintln(cmd.Stderr, cmdline)
+		fmt.Fprintln(w.Errout(), cmdline)
 		if err := cmd.Run(); err != nil {
 			return gm.Null, err
 		}
