@@ -122,14 +122,27 @@ func funTouch(ctx context.Context, w *gm.World, list []gm.Node) (gm.Node, error)
 	return gm.Null, nil
 }
 
-func nodesToCommand(ctx context.Context, w *gm.World, list []gm.Node, out io.Writer) *exec.Cmd {
+func getRawWriter(w io.Writer) io.Writer {
+	if raw, ok := w.(interface{ RawWriter() io.Writer }); ok {
+		return raw.RawWriter()
+	}
+	return w
+}
+
+func funSpawn(ctx context.Context, w *gm.World, list []gm.Node) (gm.Node, error) {
 	argv := make([]string, len(list))
-	for i, value := range list {
-		argv[i] = value.String()
-		if i > 0 {
+	out := w.Errout()
+	if len(list) > 0 {
+		i := 0
+		for {
+			argv[i] = list[i].String()
+			io.WriteString(out, argv[i])
+			i++
+			if i >= len(list) {
+				break
+			}
 			out.Write([]byte{' '})
 		}
-		io.WriteString(out, argv[i])
 	}
 	fmt.Fprintln(out)
 
@@ -139,27 +152,8 @@ func nodesToCommand(ctx context.Context, w *gm.World, list []gm.Node, out io.Wri
 
 	cmd := exec.CommandContext(ctx, argv[0], argv[1:]...)
 	cmd.Stdin = os.Stdin
-	cmd.Stdout = os.Stdout
-	cmd.Stderr = os.Stderr
-	return cmd
-}
-
-func reflectRedirect(w *gm.World, cmd *exec.Cmd) {
-	if w, ok := w.Stdout().(interface{ RawWriter() io.Writer }); ok {
-		cmd.Stdout = w.RawWriter()
-	} else {
-		cmd.Stdout = os.Stdout
-	}
-	if w, ok := w.Errout().(interface{ RawWriter() io.Writer }); ok {
-		cmd.Stderr = w.RawWriter()
-	} else {
-		cmd.Stderr = os.Stderr
-	}
-}
-
-func funExecute(ctx context.Context, w *gm.World, list []gm.Node) (gm.Node, error) {
-	cmd := nodesToCommand(ctx, w, list, w.Errout())
-	reflectRedirect(w, cmd)
+	cmd.Stdout = getRawWriter(w.Stdout())
+	cmd.Stderr = getRawWriter(w.Errout())
 	return gm.Null, cmd.Run()
 }
 
@@ -212,8 +206,9 @@ func funSh(ctx context.Context, w *gm.World, list []gm.Node) (gm.Node, error) {
 		}
 		cmdline := s.String()
 		cmd := newShell(cmdline)
-		reflectRedirect(w, cmd)
 		fmt.Fprintln(w.Errout(), cmdline)
+		cmd.Stdout = getRawWriter(w.Stdout())
+		cmd.Stderr = getRawWriter(w.Errout())
 		if err := cmd.Run(); err != nil {
 			return gm.Null, err
 		}

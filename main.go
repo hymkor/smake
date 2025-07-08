@@ -71,7 +71,7 @@ func setupFunctions(args []string) (gm.Variables, gm.Functions) {
 		gm.NewSymbol("setenv"):                 gm.Function2(funSetenv),
 		gm.NewSymbol("sh"):                     &gm.Function{C: -1, F: funSh},
 		gm.NewSymbol("shellexecute"):           &gm.Function{C: -1, F: funShellExecute},
-		gm.NewSymbol("spawn"):                  &gm.Function{C: -1, F: funExecute},
+		gm.NewSymbol("spawn"):                  &gm.Function{C: -1, F: funSpawn},
 		gm.NewSymbol("stat"):                   gm.Function1(funStat),
 		gm.NewSymbol("string-fields"):          gm.Function1(funFields),
 		gm.NewSymbol("touch"):                  &gm.Function{C: -1, F: funTouch},
