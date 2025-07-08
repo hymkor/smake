@@ -1,3 +1,5 @@
+- Changed the output destination of messages from (sh), (make), (chdir), and (touch) from os.Stderr to the stream returned by (error-output).
+
 v0.7.0
 ======
 Jul 7, 2025

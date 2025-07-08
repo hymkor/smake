@@ -1,3 +1,5 @@
+- os.Stderr となっていた `(sh)`, `(make)`, `(chdir)`, `(touch)` のメッセージの出力先を `(error-output)` の設定先とした。
+
 v0.7.0
 ======
 Jul 7, 2025
