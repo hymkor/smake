@@ -26,7 +26,7 @@ func funChdir(ctx context.Context, w *gm.World, arg gm.Node) (gm.Node, error) {
 		return nil, err
 	}
 	dir := wd.String()
-	fmt.Fprintf(os.Stderr, "chdir \"%s\"\n", dir)
+	fmt.Fprintf(w.Errout(), "chdir \"%s\"\n", dir)
 	return gm.Null, os.Chdir(dir)
 }
 
