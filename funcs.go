@@ -282,7 +282,7 @@ func cmdMake(ctx context.Context, w *gm.World, node gm.Node) (gm.Node, error) {
 		return gm.Null, err
 	}
 	if !isUpdate {
-		fmt.Fprintf(os.Stderr, "'%s' is up to date.\n", defaultTarget)
+		fmt.Fprintf(w.Errout(), "'%s' is up to date.\n", defaultTarget)
 	}
 	return gm.Null, nil
 }
