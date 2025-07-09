@@ -1,3 +1,5 @@
+; (defglobal start-zero (get-internal-run-time))
+
 (defmacro assert-eq (source expect)
   (let ((result (gensym)))
     `(let ((,result ,source))
@@ -238,3 +240,8 @@
 
 (defun sh- (&rest params)
   (apply #'sh-ignore-error params))
+
+; (format (standard-output)
+;        "~%Elapsed time: ~A seconds for embed.lsp~%"
+;        (quotient (- (get-internal-run-time) start-zero)
+;                  (internal-time-units-per-second)))
