@@ -3,7 +3,8 @@
 ;;;     (defglobal make (load "smake-go120.lsp"))
 ;;; Call a method:
 ;;;     (funcall make 'build) or (funcall make "build")
-(let* ((GO120   (which "go1.20.14"))
+(let* ((STARTTM (get-internal-run-time))
+       (GO120   (which "go1.20.14"))
        (GOEXE   (if (consp GO120) (car GO120) "go"))
        (EXE     (shell (string-append GOEXE " env GOEXE")))
        (CURDIR  (getwd))
@@ -156,11 +157,16 @@
           ((env)
            (mapc
              (lambda (c) (format (standard-output) "~S=~S~%" c (eval c)))
-             '(GO120 GOEXE EXE CURDIR NAME TARGET SOURCE VERSION)))
+             '(GO120 GOEXE EXE CURDIR NAME TARGET SOURCE VERSION))
+           )
           (t
             (error "~S: not command" sub-command))
           ); case
         ) ; block sub-command
+      (format (standard-output)
+              "~%Elapsed time: ~A seconds~%"
+              (quotient (- (get-internal-run-time) STARTTM)
+                        (internal-time-units-per-second)))
       ) ; lambda (method)
     ) ; label
   ) ; let*
