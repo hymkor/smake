@@ -40,12 +40,15 @@
                  (cond
                    ((string-index "go:build" line)
                     t)
-                   ((and (string-index "package " line)
-                         (not (string-index "_test" line)))
-                    (return-from func (string-index "main" line)))
+                   ((string-index "package " line)
+                    (if (string-index "_test" line)
+                      t
+                      (return-from func (string-index "main" line))))
                    (t
                      nil)))))
-           (wildcard (join-path dir "*.go")))))
+           (mapcan
+             (lambda (fn) (if (string-index "_test.go" fn) nil (list fn)))
+             (wildcard (join-path dir "*.go"))))))
 
      (go-build
        () 
