@@ -19,7 +19,12 @@
              (with-error-output *discard*
                (q "git" "describe" "--tags"))))))
   (labels
-    ((find-str-file
+    ((dbg!
+       (x)
+       (format (error-output) "[~S]~%" x)
+       x)
+
+     (find-str-file
        (word filename)
        (file-for-each filename (lambda (line) (string-index word line))))
 
