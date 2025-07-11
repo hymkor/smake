@@ -1,4 +1,5 @@
 - Changed the output destination of messages from (sh), (make), (chdir), and (touch) from os.Stderr to the stream returned by (error-output).
+- Implemented `(lookpath)`, which returns the full path of the first executable found in the directories listed in the `PATH` environment variable. (Written in Go, so it's faster than the Lisp version `(which)`, but only returns the first match.)
 
 v0.7.0
 ======
