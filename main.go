@@ -75,6 +75,7 @@ func setupFunctions(args []string) (gm.Variables, gm.Functions) {
 		gm.NewSymbol("stat"):                   gm.Function1(funStat),
 		gm.NewSymbol("string-fields"):          gm.Function1(funFields),
 		gm.NewSymbol("touch"):                  &gm.Function{C: -1, F: funTouch},
+		gm.NewSymbol("lookpath"):               gm.Function1(funLookPath),
 		gm.NewSymbol("wildcard"):               &gm.Function{C: -1, F: funWildcard},
 	}
 	for i, sq := 0, argsSeq; i < 9; i++ {

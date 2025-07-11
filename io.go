@@ -268,3 +268,15 @@ func copyOrMove(ctx context.Context, w *gm.World, list []gm.Node, msg string, f 
 	}
 	return gm.Null, nil
 }
+
+func funLookPath(ctx context.Context, w *gm.World, arg gm.Node) (gm.Node, error) {
+	fname, err := gm.ExpectClass[gm.String](ctx, w, arg)
+	if err != nil {
+		return nil, err
+	}
+	result, err := exec.LookPath(string(fname))
+	if err != nil {
+		return gm.Null, nil
+	}
+	return gm.String(result), err
+}
