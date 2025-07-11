@@ -4,8 +4,8 @@
 ;;; Call a method:
 ;;;     (funcall make 'build) or (funcall make "build")
 (let* ((STARTTM (get-internal-run-time))
-       (GO120   (which "go1.20.14"))
-       (GOEXE   (if (consp GO120) (car GO120) "go"))
+       (GO120   (lookpath "go1.20.14"))
+       (GOEXE   (or GO120 "go"))
        (EXE     (shell (string-append GOEXE " env GOEXE")))
        (CURDIR  (getwd))
        (NAME    (notdir CURDIR))
