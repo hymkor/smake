@@ -111,7 +111,7 @@
 
           ((get)
            (spawn GOEXE "get" "-u")
-           (if (consp GO120)
+           (if GO120
              (mapc
                (lambda (i)
                  (if (find-str-file (car i) "go.mod")
