@@ -1,5 +1,5 @@
-github.com/hymkor/gmnlisp v0.7.17 h1:TJW9sHKXKjOky8zf8ktKu5bic6fBO8BYYwqAmBGfpAY=
-github.com/hymkor/gmnlisp v0.7.17/go.mod h1:Pv7KUqJHx3k+1OraL2x2/jBRlUtvSa8n54bQQVHcz+w=
+github.com/hymkor/gmnlisp v0.7.18 h1:v9Gp3GyfXh4Cg9n5FcBnUNFUB1BmlbEBht8Vs+s2eKw=
+github.com/hymkor/gmnlisp v0.7.18/go.mod h1:Pv7KUqJHx3k+1OraL2x2/jBRlUtvSa8n54bQQVHcz+w=
 github.com/nyaosorg/go-windows-mbcs v0.4.4 h1:x5MqDvOsfRO8F2a9Uedlm3I6SB/H0whN4KZknTOLe3w=
 github.com/nyaosorg/go-windows-mbcs v0.4.4/go.mod h1:P610Wyc6LcgDbx2VZhwUQn02XRuwjqGK2l/3wox3auA=
 github.com/nyaosorg/go-windows-su v0.2.1 h1:5V0XavLyjOqPUp7psxxCvBISaneU4XmFPSMlejSl5sc=
