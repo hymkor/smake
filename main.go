@@ -119,6 +119,7 @@ var (
 	flagVersion  = flag.Bool("version", false, "show version")
 	flagMakefile = flag.String("f", "Makefile.lsp,smake.lsp", "Read comma-separated FILES as rule files; the first existing file is used")
 	flagExecute  = flag.String("e", "", "inline script")
+	flagPrint    = flag.Bool("p", false, "Print the result of the last evaluated expression")
 )
 
 var version string = "snapshot"
@@ -166,7 +167,10 @@ func mains(args []string) error {
 		return err
 	}
 
-	_, err := w.InterpretBytes(ctx, source)
+	v, err := w.InterpretBytes(ctx, source)
+	if *flagPrint {
+		fmt.Printf("%#v\n", v)
+	}
 	return err
 }
 
