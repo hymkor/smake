@@ -3,7 +3,7 @@
 ;;;     (defglobal make (load "smake-go120.lsp"))
 ;;; Call a method:
 ;;;     (funcall make 'build) or (funcall make "build")
-(let* ((STARTTM (get-internal-run-time))
+(let* (;(STARTTM (get-internal-run-time))
        (GO120   (lookpath "go1.20.14"))
        (GOEXE   (or GO120 "go"))
        (EXE     (shell (string-append GOEXE " env GOEXE")))
@@ -242,10 +242,10 @@
             (error "~S: not command" sub-command))
           ); case
         ) ; block sub-command
-      (format (standard-output)
-              "~%Elapsed time: ~A seconds~%"
-              (quotient (- (get-internal-run-time) STARTTM)
-                        (internal-time-units-per-second)))
+      ;(format (standard-output)
+      ;        "~%Elapsed time: ~A seconds~%"
+      ;        (quotient (- (get-internal-run-time) STARTTM)
+      ;                  (internal-time-units-per-second)))
       ) ; lambda (method)
     ) ; label
   ) ; let*
