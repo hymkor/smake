@@ -1,9 +1,9 @@
 - os.Stderr となっていた `(sh)`, `(make)`, `(chdir)`, `(touch)` のメッセージの出力先を `(error-output)` の設定先とした。
 - 環境変数 PATH のディレクトリリストを検索して最初に見付かった実行ファイルのフルパスを得る `(lookpath)` を実装した ( Go製なので、Lisp版の `(which)` より速いが、最初に見付かったものしか列挙しない)
-- gmplisp を [v0.7.18] へ更新
 - 最後に評価した値を表示するオプション `-p` を追加
+- gmplisp を [v0.7.19] へ更新
 
-[v0.7.18]: https://github.com/hymkor/gmnlisp/releases/tag/v0.7.18
+[v0.7.19]: https://github.com/hymkor/gmnlisp/releases/tag/v0.7.19
 
 v0.7.0
 ======

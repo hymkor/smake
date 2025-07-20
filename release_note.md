@@ -1,9 +1,9 @@
 - Changed the output destination of messages from `(sh)`, `(make)`, `(chdir)`, and `(touch)` from os.Stderr to the stream returned by `(error-output)`.
 - Implemented `(lookpath)`, which returns the full path of the first executable found in the directories listed in the `PATH` environment variable. (Written in Go, so it's faster than the Lisp version `(which)`, but only returns the first match.)
-- Update gmnlisp to [v0.7.18]
 - Added the `-p` option to the executable to print the result of the last evaluated expression.
+- Update gmnlisp to [v0.7.19]
 
-[v0.7.18]: https://github.com/hymkor/gmnlisp/releases/tag/v0.7.18
+[v0.7.19]: https://github.com/hymkor/gmnlisp/releases/tag/v0.7.19
 
 v0.7.0
 ======
