@@ -1,4 +1,5 @@
 (defglobal make (load "smake-go120.lsp"))
+(defglobal start-time (get-internal-run-time))
 
 (case $1
   (("dist")
@@ -27,3 +28,8 @@
   (t
     (funcall make $1))
   ) ; case
+
+(format (standard-output)
+        "~%Elapsed time: ~A seconds~%"
+        (quotient (- (get-internal-run-time) start-time)
+                  (internal-time-units-per-second)))
