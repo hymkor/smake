@@ -157,7 +157,7 @@ func shouldUpdate(ctx context.Context, w *gm.World, _list gm.Node) (bool, gm.Nod
 	targetStamp := targetInfo.ModTime()
 
 	var updatedFiles gm.Node = gm.Null
-	for gm.HasValue(list) {
+	for gm.IsSome(list) {
 		var sourceNode gm.Node
 
 		sourceNode, list, err = gm.Shift(list)
@@ -180,7 +180,7 @@ func shouldUpdate(ctx context.Context, w *gm.World, _list gm.Node) (bool, gm.Nod
 			}
 		}
 	}
-	return gm.HasValue(updatedFiles), updatedFiles, nil
+	return gm.IsSome(updatedFiles), updatedFiles, nil
 }
 
 func doMake(ctx context.Context, w *gm.World, depend map[gm.String][2]gm.Node, rule [2]gm.Node) (bool, error) {
@@ -189,7 +189,7 @@ func doMake(ctx context.Context, w *gm.World, depend map[gm.String][2]gm.Node, r
 	if err != nil {
 		return false, err
 	}
-	for gm.HasValue(sources) {
+	for gm.IsSome(sources) {
 		var source gm.Node
 		var err error
 
@@ -248,7 +248,7 @@ func cmdMake(ctx context.Context, w *gm.World, node gm.Node) (gm.Node, error) {
 
 	depend := map[gm.String][2]gm.Node{}
 
-	for gm.HasValue(node) {
+	for gm.IsSome(node) {
 		var condAndAction gm.Node
 		var err error
 

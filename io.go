@@ -47,7 +47,7 @@ func cmdAssert(ctx context.Context, w *gm.World, node gm.Node) (gm.Node, error) 
 	if err != nil {
 		return gm.Null, err
 	}
-	if gm.HasValue(value) {
+	if gm.IsSome(value) {
 		return gm.Null, nil
 	}
 	return gm.Null, fmt.Errorf("Assertion failed: %#v", node)
