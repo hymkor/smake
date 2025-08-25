@@ -49,7 +49,6 @@ func setupFunctions(args []string) (gm.Variables, gm.Functions) {
 		gm.NewSymbol("*discard*"):         gm.NewWriterStream(io.Discard),
 	}
 	funcs := gm.Functions{
-		gm.NewSymbol("$"):                      gm.Function1(funExpandString),
 		gm.NewSymbol("abspath"):                gm.Function1(funAbsPath),
 		gm.NewSymbol("ansi-to-utf8"):           gm.Function1(funAnsiToUtf8),
 		gm.NewSymbol("assert"):                 gm.SpecialF(cmdAssert),

@@ -29,33 +29,6 @@ var (
 	symbolUpdated     = gm.NewSymbol(stringUpdated)
 )
 
-func dollar(ctx context.Context, w *gm.World) func(string) (string, bool, error) {
-	assoc, err := w.Get(gm.NewSymbol("$"))
-	if err != nil {
-		return func(string) (string, bool, error) {
-			return "", false, nil
-		}
-	}
-	return func(s string) (string, bool, error) {
-		pair, err := gm.Assoc(ctx, w, gm.String(s), assoc)
-		if err != nil {
-			return "", false, err
-		}
-		if gm.IsNone(pair) {
-			return "", false, nil
-		}
-		cons, err := gm.ExpectClass[*gm.Cons](ctx, w, pair)
-		if err != nil {
-			return "", false, err
-		}
-		valueStr, err := gm.ExpectClass[gm.String](ctx, w, cons.Cdr)
-		if err != nil {
-			return "", false, err
-		}
-		return valueStr.String(), true, nil
-	}
-}
-
 func joinSequence(ctx context.Context, w *gm.World, node gm.Node) string {
 	var buffer strings.Builder
 	if _, ok := node.(gm.Sequence); ok {
@@ -70,57 +43,6 @@ func joinSequence(ctx context.Context, w *gm.World, node gm.Node) string {
 		buffer.WriteString(node.String())
 	}
 	return buffer.String()
-}
-
-func expandLiteral(ctx context.Context, w *gm.World, s string) string {
-	dic := dollar(ctx, w)
-	return rxEmbed.ReplaceAllStringFunc(s, func(s string) string {
-		if len(s) == 2 {
-			switch s[1] {
-			case '@':
-				if val, err := w.Get(symbolTarget); err == nil {
-					return val.String()
-				}
-			case '<':
-				if val, err := w.Get(symbolFirstSource); err == nil {
-					return val.String()
-				}
-			case '?':
-				if list, err := w.Get(symbolUpdated); err == nil {
-					return joinSequence(ctx, w, list)
-				}
-			case '/':
-				return string(os.PathSeparator)
-			case '$':
-				return "$"
-			}
-			return s
-		} else {
-			key := s[2 : len(s)-1]
-			//println("replace:", key)
-			value, err := w.Get(gm.NewSymbol(key))
-			if err != nil {
-				if value, ok := os.LookupEnv(key); ok {
-					return value
-				}
-				value, ok, err := dic(key)
-				if err != nil {
-					println(err.Error())
-				} else if ok {
-					return value
-				}
-			}
-			return value.String()
-		}
-	})
-}
-
-func funExpandString(ctx context.Context, w *gm.World, arg gm.Node) (gm.Node, error) {
-	s, err := gm.ExpectClass[gm.String](ctx, w, arg)
-	if err != nil {
-		return nil, err
-	}
-	return gm.String(expandLiteral(ctx, w, s.String())), nil
 }
 
 func getStamp(ctx context.Context, w *gm.World, node gm.Node) (time.Time, error) {
