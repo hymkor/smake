@@ -1,3 +1,5 @@
+- Removed the deprecated function `$`
+
 v0.8.0
 ======
 Jul 20, 2025
