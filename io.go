@@ -72,7 +72,7 @@ func funSetenv(ctx context.Context, w *gm.World, left, right gm.Node) (gm.Node, 
 	}
 	key := _key.String()
 
-	if gm.IsNull(right) {
+	if gm.IsNone(right) {
 		fmt.Fprintf(w.Errout(), "unsetenv \"%s\"\n", key)
 		return gm.Null, os.Unsetenv(key)
 	}

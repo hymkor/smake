@@ -41,7 +41,7 @@ func dollar(ctx context.Context, w *gm.World) func(string) (string, bool, error)
 		if err != nil {
 			return "", false, err
 		}
-		if gm.IsNull(pair) {
+		if gm.IsNone(pair) {
 			return "", false, nil
 		}
 		cons, err := gm.ExpectClass[*gm.Cons](ctx, w, pair)
