@@ -10,21 +10,6 @@ or the TARGET is written on other evaluated SOURCES.
 
 Use `(case)` and `(updatep)` instead.
 
-### ($ "$(VARNAME)") *[deprecated]*
-
-Use `(format nil "...")` instead
-
-Expand the value of the variable written in the string-literal.
-
-- "$(x)" to the value of the symbol x or the environment variable.
-- "$/" is same as "$($/)"
-
-These are available in `(make)` block
-
-- "$&lt;" is same as "$($&lt;)"
-- "$?" is same as "$($?)"
-- "$@" is same as "$($@)"
-
 ### (x "COMMAND" "ARG-1" "ARG-2" ...) *[deprecated]*
 
 Use `(spawn)` instead
